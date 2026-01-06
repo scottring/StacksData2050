@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "bubble": {
+      "command": "node",
+      "args": [
+        "/Users/scottkaufman/Developer/StacksData2050/bubble_mcp/dist/mcp-server.js"
+      ],
+      "env": {
+        "BUBBLE_API_URL": "https://app.stacksdata.com/version-live",
+        "BUBBLE_API_TOKEN": "25c9fbc54eb17e72b4d0e344e1a4a2fe",
+        "MCP_MODE": "read-write"
+      }
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=yrguoooxamecsjtkfqcw"
+    }
+  }
+}
