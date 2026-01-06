@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { QuestionInput, Question, Choice, Answer } from './question-input'
 import { AnswerRejectionComment, AnswerRejection } from './answer-rejection-comment'
 import {
@@ -26,6 +27,7 @@ export interface QuestionItemProps {
   choices: Choice[]
   answer: Answer | undefined
   onAnswerChange: (questionId: string, value: any, type: string) => void
+  onClarificationChange?: (questionId: string, clarification: string) => void
   disabled?: boolean
   sheetId: string
   rejection?: AnswerRejection
@@ -42,6 +44,7 @@ export function QuestionItem({
   choices,
   answer,
   onAnswerChange,
+  onClarificationChange,
   disabled = false,
   sheetId,
   rejection,
@@ -52,6 +55,7 @@ export function QuestionItem({
   hasComment = false,
   listTableColumns = [],
 }: QuestionItemProps) {
+  const [showClarificationInput, setShowClarificationInput] = useState(false)
   const hasValue = answer && (
     answer.text_value ||
     answer.text_area_value ||
@@ -165,6 +169,59 @@ export function QuestionItem({
           sheetId={sheetId}
           listTableColumns={listTableColumns}
         />
+
+        {/* Additional comments/clarification */}
+        <div className="mt-2">
+          {answer?.clarification && !showClarificationInput ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-amber-900 mb-1">Additional Comments:</p>
+                  <p className="text-sm text-amber-800">{answer.clarification}</p>
+                </div>
+                {!disabled && onClarificationChange && (
+                  <button
+                    type="button"
+                    onClick={() => setShowClarificationInput(true)}
+                    className="text-xs text-amber-700 hover:text-amber-900 underline"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : showClarificationInput && onClarificationChange ? (
+            <div className="border border-gray-300 rounded-md p-3">
+              <label className="text-sm font-medium text-gray-700 block mb-2">
+                Additional Comments:
+              </label>
+              <textarea
+                className="w-full min-h-[80px] rounded-md border border-gray-300 px-3 py-2 text-sm"
+                value={answer?.clarification || ''}
+                onChange={(e) => onClarificationChange(question.id, e.target.value)}
+                placeholder="Add any additional comments or information..."
+                disabled={disabled}
+              />
+              <button
+                type="button"
+                onClick={() => setShowClarificationInput(false)}
+                className="mt-2 text-xs text-gray-600 hover:text-gray-900 underline"
+              >
+                Close
+              </button>
+            </div>
+          ) : (
+            !disabled && onClarificationChange && (
+              <button
+                type="button"
+                onClick={() => setShowClarificationInput(true)}
+                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                Click to add additional comments/information
+              </button>
+            )
+          )}
+        </div>
 
         {/* Rejection comment if exists */}
         {rejection && (

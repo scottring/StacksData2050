@@ -38,6 +38,7 @@ export interface Answer {
   date_value: string | null
   choice_id: string | null
   sheet_id: string | null
+  clarification: string | null
 }
 
 export interface ListTableColumn {

@@ -71,6 +71,7 @@ interface Answer {
   date_value: string | null
   choice_id: string | null
   sheet_id: string | null
+  clarification: string | null
 }
 
 interface SheetStatusRecord {
@@ -667,6 +668,25 @@ export default function SheetPage() {
     debouncedAutoSave()
   }
 
+  const handleClarificationChange = (questionId: string, clarification: string) => {
+    setLocalAnswers(prev => {
+      const next = new Map(prev)
+      const existing = next.get(questionId) || {}
+
+      const updated = { ...existing, clarification }
+
+      next.set(questionId, updated)
+
+      // Track pending changes for auto-save
+      pendingChangesRef.current.set(questionId, updated)
+
+      return next
+    })
+
+    // Trigger debounced auto-save
+    debouncedAutoSave()
+  }
+
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => {
       const next = new Set(prev)
@@ -1021,6 +1041,7 @@ export default function SheetPage() {
                         choices={choices}
                         answer={localAnswers.get(question.id)}
                         onAnswerChange={handleAnswerChange}
+                        onClarificationChange={handleClarificationChange}
                         disabled={isReadOnly}
                         sheetId={sheetId}
                         rejection={getRejectionForQuestion(question.id)}
@@ -1044,6 +1065,7 @@ export default function SheetPage() {
                               choices={choices}
                               answer={localAnswers.get(question.id)}
                               onAnswerChange={handleAnswerChange}
+                              onClarificationChange={handleClarificationChange}
                               disabled={isReadOnly}
                               sheetId={sheetId}
                               rejection={getRejectionForQuestion(question.id)}
@@ -1074,6 +1096,7 @@ export default function SheetPage() {
                       choices={choices}
                       answer={localAnswers.get(question.id)}
                       onAnswerChange={handleAnswerChange}
+                      onClarificationChange={handleClarificationChange}
                       disabled={isReadOnly}
                       sheetId={sheetId}
                       rejection={getRejectionForQuestion(question.id)}
