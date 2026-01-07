@@ -431,6 +431,10 @@ export default function SheetPage() {
         listTableColumns: listTableColumns || []
       })
 
+      // Initialize expanded sections (expand all by default)
+      const sectionIds = (sections || []).map(s => s.id)
+      setExpandedSections(new Set([...sectionIds, 'contact-profile']))
+
       // Initialize local answers from existing answers
       // For list table questions, we need to group all answers by row
       const answerMap = new Map<string, any>()
@@ -1054,26 +1058,53 @@ export default function SheetPage() {
                   {/* Subsections */}
                   {subs.map(({ subsection, subsectionNumber, questions: subQuestions }) => (
                     <div key={subsection.id}>
-                      <h4 className="font-medium text-muted-foreground mb-4">
-                        {sectionNumber}.{subsectionNumber} {subsection.name}
+                      <h4 className="font-medium text-muted-foreground mb-2">
+                        {sectionNumber}.{subsectionNumber} {subQuestions[0]?.subsection_name_sort || subsection.name}
                       </h4>
+                      {subsection.content && (
+                        <p className="text-sm text-muted-foreground mb-4 pl-4">
+                          {subsection.content}
+                        </p>
+                      )}
                       <div className="space-y-4 pl-4 border-l-2 border-muted">
-                        {subQuestions.map((question, idx) => (
-                          <div key={question.id} className="group">
-                            <QuestionItem
-                              question={question}
-                              choices={choices}
-                              answer={localAnswers.get(question.id)}
-                              onAnswerChange={handleAnswerChange}
-                              onClarificationChange={handleClarificationChange}
-                              disabled={isReadOnly}
-                              sheetId={sheetId}
-                              rejection={getRejectionForQuestion(question.id)}
-                              questionNumber={`${sectionNumber}.${subsectionNumber}.${idx + 1}`}
-                              listTableColumns={listTableColumns}
-                            />
-                          </div>
-                        ))}
+                        {subQuestions.map((question, idx) => {
+                          // Check if this is a dependent question (immediately follows parent and has dependent_no_show)
+                          const isDependent = idx > 0 && question.dependent_no_show
+                          const parentIdx = idx - 1
+
+                          // For dependent questions, use parent numbering + .1
+                          // For independent questions, increment the main counter
+                          let questionNumber
+                          if (isDependent) {
+                            // Count how many dependent questions precede this one for the same parent
+                            let dependentCount = 1
+                            for (let i = idx - 1; i >= 0 && subQuestions[i].dependent_no_show; i--) {
+                              if (i > 0) dependentCount++
+                            }
+                            questionNumber = `${sectionNumber}.${subsectionNumber}.${parentIdx + 1}.${dependentCount}`
+                          } else {
+                            // Count only non-dependent questions up to this point
+                            const independentCount = subQuestions.slice(0, idx + 1).filter(q => !q.dependent_no_show).length
+                            questionNumber = `${sectionNumber}.${subsectionNumber}.${independentCount}`
+                          }
+
+                          return (
+                            <div key={question.id} className="group">
+                              <QuestionItem
+                                question={question}
+                                choices={choices}
+                                answer={localAnswers.get(question.id)}
+                                onAnswerChange={handleAnswerChange}
+                                onClarificationChange={handleClarificationChange}
+                                disabled={isReadOnly}
+                                sheetId={sheetId}
+                                rejection={getRejectionForQuestion(question.id)}
+                                questionNumber={questionNumber}
+                                listTableColumns={listTableColumns}
+                              />
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
                   ))}
