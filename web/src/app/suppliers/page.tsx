@@ -59,15 +59,15 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
   const suppliersWithStats: SupplierWithStats[] = companies.map(company => {
     // Count sheets assigned to this supplier company
     const companySheets = (sheets || []).filter(
-      s => s.assigned_to_company_id === company.id
+      s => s.requesting_company_id === company.id
     )
 
     const openTasks = companySheets.filter(
-      s => s.new_status === 'in_progress' || s.new_status === 'pending'
+      s => s.status === 'in_progress' || s.status === 'pending'
     ).length
 
     const completedTasks = companySheets.filter(
-      s => s.new_status === 'completed' || s.new_status === 'approved'
+      s => s.status === 'completed' || s.status === 'approved'
     ).length
 
     const primaryContact = (users || []).find(

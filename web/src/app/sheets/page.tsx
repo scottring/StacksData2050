@@ -38,13 +38,13 @@ import { createClient } from '@/lib/supabase/client'
 interface Sheet {
   id: string
   name: string
-  new_status: string | null
+  status: string | null
   company_id: string | null
-  assigned_to_company_id: string | null
+  requesting_company_id: string | null
   modified_at: string | null
   created_at: string | null
   company_name?: string
-  assigned_company_name?: string
+  requesting_company_name?: string
   answer_count?: number
 }
 
@@ -72,9 +72,9 @@ export default function SheetsPage() {
         .select(`
           id,
           name,
-          new_status,
+          status,
           company_id,
-          assigned_to_company_id,
+          requesting_company_id,
           modified_at,
           created_at
         `)
@@ -109,7 +109,7 @@ export default function SheetsPage() {
       const enrichedSheets = (sheetsData || []).map(sheet => ({
         ...sheet,
         company_name: sheet.company_id ? companyMap.get(sheet.company_id) : undefined,
-        assigned_company_name: sheet.assigned_to_company_id ? companyMap.get(sheet.assigned_to_company_id) : undefined,
+        requesting_company_name: sheet.requesting_company_id ? companyMap.get(sheet.requesting_company_id) : undefined,
         answer_count: countMap.get(sheet.id) || 0
       }))
 
@@ -122,7 +122,7 @@ export default function SheetsPage() {
   }, [])
 
   // Get unique statuses
-  const statuses = [...new Set(sheets.map(s => s.new_status).filter(Boolean))]
+  const statuses = [...new Set(sheets.map(s => s.status).filter(Boolean))]
 
   // Filter sheets
   const filteredSheets = sheets.filter(sheet => {
@@ -131,11 +131,11 @@ export default function SheetsPage() {
       sheet.company_name?.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesStatus = filterStatus === 'all' ||
-      sheet.new_status === filterStatus
+      sheet.status === filterStatus
 
     const matchesCompany = filterCompany === 'all' ||
       sheet.company_id === filterCompany ||
-      sheet.assigned_to_company_id === filterCompany
+      sheet.requesting_company_id === filterCompany
 
     return matchesSearch && matchesStatus && matchesCompany
   })
@@ -304,13 +304,13 @@ export default function SheetsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(sheet.new_status)}
+                      {getStatusBadge(sheet.status)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {sheet.company_name || '-'}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {sheet.assigned_company_name || '-'}
+                      {sheet.requesting_company_name || '-'}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{sheet.answer_count}</Badge>

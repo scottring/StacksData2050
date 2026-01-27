@@ -1750,7 +1750,7 @@ export type Database = {
       }
       sheets: {
         Row: {
-          assigned_to_company_id: string | null
+          requesting_company_id: string | null
           bubble_id: string | null
           company_id: string | null
           contact_profile_id: string | null
@@ -1768,7 +1768,7 @@ export type Database = {
           name: string
           name_lower_case: string | null
           new_name: boolean | null
-          new_status: string | null
+          status: string | null
           original_requestor_assoc_id: string | null
           prev_sheet_id: string | null
           requestor_email: string | null
@@ -1788,7 +1788,7 @@ export type Database = {
           version_lock: boolean | null
         }
         Insert: {
-          assigned_to_company_id?: string | null
+          requesting_company_id?: string | null
           bubble_id?: string | null
           company_id?: string | null
           contact_profile_id?: string | null
@@ -1806,7 +1806,7 @@ export type Database = {
           name: string
           name_lower_case?: string | null
           new_name?: boolean | null
-          new_status?: string | null
+          status?: string | null
           original_requestor_assoc_id?: string | null
           prev_sheet_id?: string | null
           requestor_email?: string | null
@@ -1826,7 +1826,7 @@ export type Database = {
           version_lock?: boolean | null
         }
         Update: {
-          assigned_to_company_id?: string | null
+          requesting_company_id?: string | null
           bubble_id?: string | null
           company_id?: string | null
           contact_profile_id?: string | null
@@ -1844,7 +1844,7 @@ export type Database = {
           name?: string
           name_lower_case?: string | null
           new_name?: boolean | null
-          new_status?: string | null
+          status?: string | null
           original_requestor_assoc_id?: string | null
           prev_sheet_id?: string | null
           requestor_email?: string | null
@@ -1879,8 +1879,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sheets_assigned_to_company_id_fkey"
-            columns: ["assigned_to_company_id"]
+            foreignKeyName: "sheets_requesting_company_id_fkey"
+            columns: ["requesting_company_id"]
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]

@@ -105,7 +105,7 @@ export default function SupplierDetailPage() {
       const { data: sheets } = await supabase
         .from('sheets')
         .select('*')
-        .eq('assigned_to_company_id', supplierId)
+        .eq('requesting_company_id', supplierId)
         .order('modified_at', { ascending: false })
 
       setDetails({
@@ -151,9 +151,9 @@ export default function SupplierDetailPage() {
 
   const { company, contacts, sheets } = details
   const primaryContact = contacts.find(c => c.is_company_main_contact) || contacts[0]
-  const completedSheets = sheets.filter(s => s.new_status === 'completed' || s.new_status === 'approved').length
-  const inProgressSheets = sheets.filter(s => s.new_status === 'in_progress').length
-  const pendingSheets = sheets.filter(s => s.new_status === 'pending').length
+  const completedSheets = sheets.filter(s => s.status === 'completed' || s.status === 'approved').length
+  const inProgressSheets = sheets.filter(s => s.status === 'in_progress').length
+  const pendingSheets = sheets.filter(s => s.status === 'pending').length
 
   return (
     <AppLayout title={company.name}>
@@ -287,7 +287,7 @@ export default function SupplierDetailPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            {getStatusBadge(sheet.new_status)}
+                            {getStatusBadge(sheet.status)}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {sheet.modified_at

@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     // Verify user has access to this sheet
     const { data: sheet } = await supabase
       .from('sheets')
-      .select('id, company_id, assigned_to_company_id, new_status')
+      .select('id, company_id, requesting_company_id, status')
       .eq('id', sheet_id)
       .single()
 
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     if (userData) {
       const hasAccess =
         sheet.company_id === userData.company_id ||
-        sheet.assigned_to_company_id === userData.company_id
+        sheet.requesting_company_id === userData.company_id
 
       if (!hasAccess) {
         return NextResponse.json(
@@ -237,11 +237,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Update sheet status if needed (pending -> in_progress)
-    if (sheet.new_status === 'pending' || sheet.new_status === 'draft') {
+    if (sheet.status === 'pending' || sheet.status === 'draft') {
       await supabase
         .from('sheets')
         .update({
-          new_status: 'in_progress',
+          status: 'in_progress',
           modified_at: now
         })
         .eq('id', sheet_id)

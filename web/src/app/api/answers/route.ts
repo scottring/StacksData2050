@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     // Verify user has access to this sheet (belongs to their company or assigned to their company)
     const { data: sheet } = await supabase
       .from('sheets')
-      .select('id, company_id, assigned_to_company_id')
+      .select('id, company_id, requesting_company_id')
       .eq('id', sheet_id)
       .single()
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     const hasAccess =
       sheet.company_id === userData.company_id ||
-      sheet.assigned_to_company_id === userData.company_id
+      sheet.requesting_company_id === userData.company_id
 
     if (!hasAccess) {
       return NextResponse.json(
@@ -262,7 +262,7 @@ export async function DELETE(request: NextRequest) {
     // Get the answer to verify ownership
     const { data: answer } = await supabase
       .from('answers')
-      .select('id, sheet_id, sheets!inner(company_id, assigned_to_company_id)')
+      .select('id, sheet_id, sheets!inner(company_id, requesting_company_id)')
       .eq('id', answerId)
       .single()
 
@@ -288,10 +288,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Verify access
-    const sheet = answer.sheets as unknown as { company_id: string | null; assigned_to_company_id: string | null }
+    const sheet = answer.sheets as unknown as { company_id: string | null; requesting_company_id: string | null }
     const hasAccess =
       sheet.company_id === userData.company_id ||
-      sheet.assigned_to_company_id === userData.company_id
+      sheet.requesting_company_id === userData.company_id
 
     if (!hasAccess) {
       return NextResponse.json(

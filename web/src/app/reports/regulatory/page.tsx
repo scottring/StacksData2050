@@ -62,7 +62,7 @@ export default function RegulatoryChangeImpact() {
       // Get sheets and their statuses for compliance calculation
       const { data: sheets } = await supabase
         .from('sheets')
-        .select('id, new_status, modified_at')
+        .select('id, status, modified_at')
 
       // Get questions per section
       const { data: questions } = await supabase
@@ -82,7 +82,7 @@ export default function RegulatoryChangeImpact() {
 
       const totalSheets = (sheets || []).length
       const completedSheets = (sheets || []).filter(
-        s => s.new_status === 'approved' || s.new_status === 'completed'
+        s => s.status === 'approved' || s.status === 'completed'
       ).length
 
       const areas: RegulatoryArea[] = (sections || []).map((section, idx) => {

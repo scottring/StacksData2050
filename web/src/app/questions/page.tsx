@@ -46,10 +46,10 @@ interface Question {
   id: string
   name: string | null
   content: string | null
-  question_type: string | null
+  response_type: string | null
   required: boolean | null
-  parent_section_id: string | null
-  parent_subsection_id: string | null
+  section_sort_number: number | null
+  subsection_id: string | null
   order_number: number | null
   created_at: string | null
 }
@@ -87,8 +87,8 @@ export default function QuestionsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [newQuestion, setNewQuestion] = useState({
     content: '',
-    question_type: 'text',
-    parent_section_id: '',
+    response_type: 'text',
+    section_sort_number: null,
     required: false,
   })
 
@@ -100,7 +100,7 @@ export default function QuestionsPage() {
     const supabase = createClient()
 
     // Find the highest order number in the selected section
-    const sectionQuestions = questions.filter(q => q.parent_section_id === newQuestion.parent_section_id)
+    const sectionQuestions = questions.filter(q => q.section_sort_number === newQuestion.section_sort_number)
     const maxOrder = sectionQuestions.reduce((max, q) => Math.max(max, q.order_number || 0), 0)
 
     const { data, error } = await supabase
@@ -108,8 +108,8 @@ export default function QuestionsPage() {
       .insert({
         content: newQuestion.content,
         name: newQuestion.content.substring(0, 100),
-        question_type: newQuestion.question_type,
-        parent_section_id: newQuestion.parent_section_id || null,
+        response_type: newQuestion.response_type,
+        section_sort_number: newQuestion.section_sort_number || null,
         required: newQuestion.required,
         order_number: maxOrder + 1,
         created_at: new Date().toISOString(),
@@ -137,8 +137,8 @@ export default function QuestionsPage() {
       setDialogOpen(false)
       setNewQuestion({
         content: '',
-        question_type: 'text',
-        parent_section_id: '',
+        response_type: 'text',
+        section_sort_number: null,
         required: false,
       })
     }, 1500)
@@ -151,11 +151,11 @@ export default function QuestionsPage() {
       // Fetch questions
       const { data: questionsData, error: questionsError } = await supabase
         .from('questions')
-        .select('id, name, content, question_type, required, parent_section_id, parent_subsection_id, order_number, created_at')
+        .select('id, name, content, response_type, required, section_sort_number, subsection_id, order_number, created_at')
         .order('order_number', { ascending: true })
 
       if (questionsError) {
-        console.error('Error fetching questions:', questionsError)
+        console.error('Error fetching questions:', JSON.stringify(questionsError, null, 2), 'Code:', questionsError?.code, 'Message:', questionsError?.message, 'Details:', questionsError?.details)
       }
 
       // Fetch sections for filtering
@@ -186,7 +186,7 @@ export default function QuestionsPage() {
   }, [])
 
   // Get unique question types
-  const questionTypes = [...new Set(questions.map(q => q.question_type).filter(Boolean))]
+  const questionTypes = [...new Set(questions.map(q => q.response_type).filter(Boolean))]
 
   // Get tags for a question
   const getQuestionTags = (questionId: string): Tag[] => {
@@ -197,9 +197,9 @@ export default function QuestionsPage() {
   }
 
   // Get section name
-  const getSectionName = (sectionId: string | null): string => {
-    if (!sectionId) return 'No Section'
-    const section = sections.find(s => s.id === sectionId)
+  const getSectionName = (sectionSortNumber: number | null): string => {
+    if (sectionSortNumber === null || sectionSortNumber === undefined) return 'No Section'
+    const section = sections.find(s => s.order_number === sectionSortNumber)
     return section?.name || 'Unknown'
   }
 
@@ -212,11 +212,11 @@ export default function QuestionsPage() {
 
     // Section filter
     const matchesSection = filterSection === 'all' ||
-      q.parent_section_id === filterSection
+      q.section_sort_number === (filterSection === "all" ? null : Number(filterSection))
 
     // Type filter
     const matchesType = filterType === 'all' ||
-      q.question_type === filterType
+      q.response_type === filterType
 
     // Tag filter
     const matchesTag = filterTag === 'all' ||
@@ -308,8 +308,8 @@ export default function QuestionsPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Question Type</label>
                         <Select
-                          value={newQuestion.question_type}
-                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, question_type: value }))}
+                          value={newQuestion.response_type}
+                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, response_type: value }))}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -328,15 +328,15 @@ export default function QuestionsPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Section</label>
                         <Select
-                          value={newQuestion.parent_section_id}
-                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, parent_section_id: value }))}
+                          value={newQuestion.section_sort_number ? String(newQuestion.section_sort_number) : ""}
+                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, section_sort_number: value ? Number(value) : null }))}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select section" />
                           </SelectTrigger>
                           <SelectContent>
                             {sections.map(section => (
-                              <SelectItem key={section.id} value={section.id}>
+                              <SelectItem key={section.id} value={String(section.order_number)}>
                                 {section.name}
                               </SelectItem>
                             ))}
@@ -403,7 +403,7 @@ export default function QuestionsPage() {
             <SelectContent>
               <SelectItem value="all">All Sections</SelectItem>
               {sections.map(section => (
-                <SelectItem key={section.id} value={section.id}>
+                <SelectItem key={section.id} value={String(section.order_number)}>
                   {section.name}
                 </SelectItem>
               ))}
@@ -503,12 +503,12 @@ export default function QuestionsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getTypeBadgeClass(question.question_type)}>
-                          {formatQuestionType(question.question_type)}
+                        <Badge className={getTypeBadgeClass(question.response_type)}>
+                          {formatQuestionType(question.response_type)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {getSectionName(question.parent_section_id)}
+                        {getSectionName(question.section_sort_number)}
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">

@@ -96,7 +96,7 @@ export default function ReportsPage() {
 
       // Fetch all stats in parallel
       const [sheetsResult, companiesResult, answersResult] = await Promise.all([
-        supabase.from('sheets').select('id, new_status'),
+        supabase.from('sheets').select('id, status'),
         supabase.from('companies').select('id'),
         supabase.from('answers').select('*', { count: 'exact', head: true }),
       ])
@@ -107,7 +107,7 @@ export default function ReportsPage() {
 
       const totalSheets = sheets.length
       const completedSheets = sheets.filter(
-        s => s.new_status === 'approved' || s.new_status === 'completed'
+        s => s.status === 'approved' || s.status === 'completed'
       ).length
       const completionRate = totalSheets > 0
         ? Math.round((completedSheets / totalSheets) * 100)

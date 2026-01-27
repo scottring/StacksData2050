@@ -30,10 +30,10 @@ import { createClient } from '@/lib/supabase/client'
 interface Sheet {
   id: string
   name: string
-  new_status: string | null
+  status: string | null
   modified_at: string | null
   company_id: string | null
-  assigned_to_company_id: string | null
+  requesting_company_id: string | null
 }
 
 interface Company {
@@ -75,12 +75,12 @@ export default function CustomerProductsPage() {
 
       const myCompanyId = userProfile.company_id
 
-      // Fetch sheets where I am the SUPPLIER (assigned_to_company_id = my company)
+      // Fetch sheets where I am the SUPPLIER (requesting_company_id = my company)
       // These are products I provide TO customers
       const { data: sheetsData } = await supabase
         .from('sheets')
         .select('*')
-        .eq('assigned_to_company_id', myCompanyId)
+        .eq('requesting_company_id', myCompanyId)
 
       if (!sheetsData || sheetsData.length === 0) {
         setLoading(false)
@@ -108,7 +108,7 @@ export default function CustomerProductsPage() {
         sampleSheets: uniqueSheets.slice(0, 5).map(s => ({
           name: s.name,
           company_id: s.company_id,
-          assigned_to: s.assigned_to_company_id
+          assigned_to: s.requesting_company_id
         }))
       })
 
@@ -208,9 +208,9 @@ export default function CustomerProductsPage() {
   // Calculate stats
   const stats = {
     total: products.length,
-    approved: products.filter(p => p.new_status === 'approved' || p.new_status === 'completed').length,
-    inProgress: products.filter(p => p.new_status === 'in_progress').length,
-    pending: products.filter(p => !p.new_status || p.new_status === 'pending').length
+    approved: products.filter(p => p.status === 'approved' || p.status === 'completed').length,
+    inProgress: products.filter(p => p.status === 'in_progress').length,
+    pending: products.filter(p => !p.status || p.status === 'pending').length
   }
 
   return (
@@ -353,7 +353,7 @@ export default function CustomerProductsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(product.new_status)}
+                      {getStatusBadge(product.status)}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatTimeAgo(product.modified_at)}

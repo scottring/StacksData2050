@@ -41,8 +41,8 @@ export default function OverdueSubmissionsReport() {
       // Get sheets that are still in draft/pending/in_progress status
       const { data: sheets } = await supabase
         .from('sheets')
-        .select('id, name, assigned_to_company_id, new_status, modified_at, created_at')
-        .in('new_status', ['draft', 'pending', 'in_progress'])
+        .select('id, name, requesting_company_id, status, modified_at, created_at')
+        .in('status', ['draft', 'pending', 'in_progress'])
         .order('modified_at', { ascending: true })
 
       const { data: companies } = await supabase
@@ -57,13 +57,13 @@ export default function OverdueSubmissionsReport() {
         const lastModified = new Date(sheet.modified_at || sheet.created_at)
         const diffTime = now.getTime() - lastModified.getTime()
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-        const company = companyMap.get(sheet.assigned_to_company_id)
+        const company = companyMap.get(sheet.requesting_company_id)
 
         return {
           id: sheet.id,
           name: sheet.name,
           companyName: company?.name || 'Unknown',
-          status: sheet.new_status || 'draft',
+          status: sheet.status || 'draft',
           modifiedAt: sheet.modified_at || sheet.created_at,
           daysOverdue: diffDays,
         }

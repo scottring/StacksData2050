@@ -13,7 +13,7 @@ export async function fetchComplianceStats(): Promise<ComplianceStats> {
     // Fetch total sheets with status info - MUST include 'name' for deduplication
     const { data: allSheets, error: sheetsError } = await supabase
       .from('sheets')
-      .select('id, name, new_status, modified_at, created_at, mark_as_archived')
+      .select('id, name, status, modified_at, created_at, mark_as_archived')
 
     if (sheetsError || !allSheets || allSheets.length === 0) {
       // Return demo stats for unauthenticated users or when queries fail
@@ -37,16 +37,16 @@ export async function fetchComplianceStats(): Promise<ComplianceStats> {
 
   // Calculate status-based metrics on deduplicated sheets
   const completeSheets = sheets.filter(s =>
-    s.new_status === 'Complete' ||
-    s.new_status === 'Approved' ||
-    s.new_status === 'Locked'
+    s.status === 'Complete' ||
+    s.status === 'Approved' ||
+    s.status === 'Locked'
   ).length
 
   const incompleteSheets = sheets.filter(s =>
-    !s.new_status ||
-    s.new_status === 'Draft' ||
-    s.new_status === 'In Progress' ||
-    s.new_status === 'Submitted'
+    !s.status ||
+    s.status === 'Draft' ||
+    s.status === 'In Progress' ||
+    s.status === 'Submitted'
   ).length
 
   // Calculate overdue sheets (sheets not modified in 90+ days and not complete)
@@ -56,7 +56,7 @@ export async function fetchComplianceStats(): Promise<ComplianceStats> {
   const overdueSheets = sheets.filter(s => {
     const lastModified = new Date(s.modified_at || s.created_at || '')
     const isStale = lastModified < ninetyDaysAgo
-    const isNotComplete = s.new_status !== 'Complete' && s.new_status !== 'Approved' && s.new_status !== 'Locked'
+    const isNotComplete = s.status !== 'Complete' && s.status !== 'Approved' && s.status !== 'Locked'
     return isStale && isNotComplete
   }).length
 
@@ -248,9 +248,9 @@ async function generateRegulatoryGaps(supabase: any, sheets: any[]): Promise<Reg
 
   // Gap 2: DPP data fields completion
   const incompleteSheetsCount = sheets.filter(s =>
-    s.new_status !== 'Complete' &&
-    s.new_status !== 'Approved' &&
-    s.new_status !== 'Locked'
+    s.status !== 'Complete' &&
+    s.status !== 'Approved' &&
+    s.status !== 'Locked'
   ).length
 
   if (incompleteSheetsCount > 0) {

@@ -49,18 +49,18 @@ export default function SupplierTrendsReport() {
 
       const { data: sheets } = await supabase
         .from('sheets')
-        .select('id, assigned_to_company_id, new_status, created_at, modified_at')
+        .select('id, requesting_company_id, status, created_at, modified_at')
 
       // Calculate trends for each supplier
       const supplierData: SupplierTrend[] = (companies || []).map(company => {
-        const companySheets = (sheets || []).filter(s => s.assigned_to_company_id === company.id)
+        const companySheets = (sheets || []).filter(s => s.requesting_company_id === company.id)
         const completed = companySheets.filter(s =>
-          s.new_status === 'approved' || s.new_status === 'completed'
+          s.status === 'approved' || s.status === 'completed'
         ).length
 
         // Calculate average response time (days between created and modified for completed)
         const completedSheets = companySheets.filter(s =>
-          s.new_status === 'approved' || s.new_status === 'completed'
+          s.status === 'approved' || s.status === 'completed'
         )
         let avgDays = 0
         if (completedSheets.length > 0) {

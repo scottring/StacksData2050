@@ -105,7 +105,7 @@ export default function CompanyDetailPage() {
       const stacksDataCompany = allCompanies.find((c: any) => c.name === 'Stacks Data')
       const sheets = (rawSheets || []).filter((s: any) => {
         // Exclude Stacks Data company sheets
-        if (stacksDataCompany && (s.company_id === stacksDataCompany.id || s.assigned_to_company_id === stacksDataCompany.id)) {
+        if (stacksDataCompany && (s.company_id === stacksDataCompany.id || s.requesting_company_id === stacksDataCompany.id)) {
           return false
         }
         // Exclude sheets with "test" in the name (case insensitive)
@@ -134,7 +134,7 @@ export default function CompanyDetailPage() {
       const customerSheets = sheets.filter((s: any) => s.company_id === companyId)
 
       // As supplier: sheets assigned TO this company
-      const supplierSheets = sheets.filter((s: any) => s.assigned_to_company_id === companyId)
+      const supplierSheets = sheets.filter((s: any) => s.requesting_company_id === companyId)
 
       const allCompanySheets = [...customerSheets, ...supplierSheets]
 
@@ -179,11 +179,11 @@ export default function CompanyDetailPage() {
       const uniqueSupplierSheets = Array.from(supplierSheetsByName.values())
 
       // Get suppliers (unique assigned_to companies) with deduplicated counts
-      const supplierIds = new Set(uniqueCustomerSheets.map((s: any) => s.assigned_to_company_id).filter(Boolean))
+      const supplierIds = new Set(uniqueCustomerSheets.map((s: any) => s.requesting_company_id).filter(Boolean))
       const suppliers = Array.from(supplierIds).map(id => ({
         id: id as string,
         name: (companyMap.get(id as string) || 'Unknown') as string,
-        sheetCount: uniqueCustomerSheets.filter((s: any) => s.assigned_to_company_id === id).length
+        sheetCount: uniqueCustomerSheets.filter((s: any) => s.requesting_company_id === id).length
       })).sort((a, b) => b.sheetCount - a.sheetCount)
 
       // Get customers (unique company_ids where this company is supplier) with deduplicated counts
@@ -208,7 +208,7 @@ export default function CompanyDetailPage() {
           modifiedAt: s.modified_at ? new Date(s.modified_at) : null,
           isCustomer: s.company_id === companyId,
           partnerName: (s.company_id === companyId
-            ? companyMap.get(s.assigned_to_company_id) || null
+            ? companyMap.get(s.requesting_company_id) || null
             : companyMap.get(s.company_id) || null) as string | null
         }))
 

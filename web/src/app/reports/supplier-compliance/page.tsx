@@ -49,16 +49,16 @@ export default function SupplierComplianceReport() {
 
       const { data: sheets } = await supabase
         .from('sheets')
-        .select('id, assigned_to_company_id, new_status')
+        .select('id, requesting_company_id, status')
 
       // Calculate compliance for each supplier
       const supplierData: SupplierCompliance[] = (companies || []).map(company => {
-        const companySheets = (sheets || []).filter(s => s.assigned_to_company_id === company.id)
+        const companySheets = (sheets || []).filter(s => s.requesting_company_id === company.id)
         const completed = companySheets.filter(s =>
-          s.new_status === 'approved' || s.new_status === 'completed'
+          s.status === 'approved' || s.status === 'completed'
         ).length
         const pending = companySheets.filter(s =>
-          s.new_status === 'draft' || s.new_status === 'pending' || s.new_status === 'in_progress'
+          s.status === 'draft' || s.status === 'pending' || s.status === 'in_progress'
         ).length
 
         return {

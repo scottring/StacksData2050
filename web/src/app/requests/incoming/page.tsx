@@ -25,7 +25,7 @@ interface IncomingRequest {
   sheet: {
     id: string
     name: string
-    new_status: string | null
+    status: string | null
   } | null
   owner_company: {
     id: string
@@ -73,7 +73,7 @@ export default function IncomingRequestsPage() {
           id,
           processed,
           created_at,
-          sheet:sheets(id, name, new_status),
+          sheet:sheets(id, name, status),
           owner_company:companies!requestor_id(id, name),
           request_tags(tag:tags(name))
         `)
@@ -99,7 +99,7 @@ export default function IncomingRequestsPage() {
 
   const pendingCount = requests.filter(r => !r.processed).length
   const processedCount = requests.filter(r => r.processed).length
-  const sheetStatusCount = requests.filter(r => r.sheet?.new_status === 'responded' || r.sheet?.new_status === 'approved').length
+  const sheetStatusCount = requests.filter(r => r.sheet?.status === 'responded' || r.sheet?.status === 'approved').length
 
   if (loading) {
     return (

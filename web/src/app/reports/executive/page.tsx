@@ -52,15 +52,15 @@ export default function ExecutiveDashboard() {
 
       const [companiesRes, sheetsRes, answersRes] = await Promise.all([
         supabase.from('companies').select('id', { count: 'exact', head: true }),
-        supabase.from('sheets').select('id, new_status'),
+        supabase.from('sheets').select('id, status'),
         supabase.from('answers').select('id', { count: 'exact', head: true }),
       ])
 
       const sheets = sheetsRes.data || []
-      const approved = sheets.filter(s => s.new_status === 'approved' || s.new_status === 'completed').length
-      const submitted = sheets.filter(s => s.new_status === 'submitted').length
-      const draft = sheets.filter(s => s.new_status === 'draft' || s.new_status === 'pending' || s.new_status === 'in_progress').length
-      const flagged = sheets.filter(s => s.new_status === 'flagged' || s.new_status === 'rejected').length
+      const approved = sheets.filter(s => s.status === 'approved' || s.status === 'completed').length
+      const submitted = sheets.filter(s => s.status === 'submitted').length
+      const draft = sheets.filter(s => s.status === 'draft' || s.status === 'pending' || s.status === 'in_progress').length
+      const flagged = sheets.filter(s => s.status === 'flagged' || s.status === 'rejected').length
 
       setStats({
         totalSuppliers: companiesRes.count || 0,

@@ -55,12 +55,12 @@ export default function CustomersPage() {
 
       const myCompanyId = userData.company_id
 
-      // Fetch sheets where I am the SUPPLIER (assigned_to_company_id = my company)
+      // Fetch sheets where I am the SUPPLIER (requesting_company_id = my company)
       // The requesting company (company_id) is my CUSTOMER
       const { data: sheets, error: sheetsError } = await supabase
         .from('sheets')
         .select('*')
-        .eq('assigned_to_company_id', myCompanyId)
+        .eq('requesting_company_id', myCompanyId)
 
       console.log('Customers page - Sheets query:', {
         myCompanyId,
@@ -69,7 +69,7 @@ export default function CustomersPage() {
         sampleSheets: sheets?.slice(0, 3).map(s => ({
           name: s.name,
           company_id: s.company_id,
-          assigned_to: s.assigned_to_company_id
+          assigned_to: s.requesting_company_id
         }))
       })
 
@@ -147,11 +147,11 @@ export default function CustomersPage() {
         const companySheets = Array.from(sheetsByName.values())
 
         const sheetsCompleted = companySheets.filter(
-          s => s.new_status === 'completed' || s.new_status === 'approved'
+          s => s.status === 'completed' || s.status === 'approved'
         ).length
 
         const sheetsPending = companySheets.filter(
-          s => s.new_status === 'in_progress' || s.new_status === 'pending' || !s.new_status
+          s => s.status === 'in_progress' || s.status === 'pending' || !s.status
         ).length
 
         // Find most recent activity

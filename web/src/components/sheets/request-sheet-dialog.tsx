@@ -165,9 +165,9 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
         .insert({
           name: formData.productName,
           company_id: userData.company_id,
-          assigned_to_company_id: supplierCompanyId,
+          requesting_company_id: supplierCompanyId,
           stack_id: null, // Not using stacks anymore - tags control questions
-          new_status: 'pending',
+          status: 'pending',
           created_by: user.id,
         })
         .select()

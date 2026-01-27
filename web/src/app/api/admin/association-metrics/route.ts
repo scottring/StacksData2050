@@ -47,7 +47,7 @@ export async function GET() {
 
       const { data, error } = await adminClient
         .from('sheets')
-        .select('id, name, new_status, company_id, assigned_to_company_id, created_at, modified_at')
+        .select('id, name, status, company_id, requesting_company_id, created_at, modified_at')
         .range(start, end)
 
       if (error) {

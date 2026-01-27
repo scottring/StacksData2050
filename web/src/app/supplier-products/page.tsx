@@ -57,7 +57,7 @@ interface Company {
 interface Sheet {
   id: string
   name: string
-  new_status: string | null
+  status: string | null
 }
 
 interface ProductWithDetails extends Product {
@@ -114,7 +114,7 @@ export default function ProductsPage() {
       // Fetch sheets
       const { data: sheetsData } = await supabase
         .from('sheets')
-        .select('id, name, new_status')
+        .select('id, name, status')
 
       const companyMap = new Map((companiesData || []).map(c => [c.id, c]))
       const sheetMap = new Map((sheetsData || []).map(s => [s.id, s]))
@@ -175,7 +175,7 @@ export default function ProductsPage() {
     if (product.processed || product.manufacturer_marked_as_provided) {
       return { label: 'Complete', icon: CheckCircle2, className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' }
     }
-    if (product.sheet?.new_status === 'in_progress') {
+    if (product.sheet?.status === 'in_progress') {
       return { label: 'In Progress', icon: Clock, className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }
     }
     return { label: 'Pending', icon: Clock, className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' }

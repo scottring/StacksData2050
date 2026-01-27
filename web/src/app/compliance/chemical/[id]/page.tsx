@@ -36,7 +36,7 @@ export default async function ChemicalDetailPage({
       sheets (
         id,
         name,
-        new_status,
+        status,
         created_at,
         companies!sheets_company_id_fkey (
           name
@@ -280,14 +280,14 @@ export default async function ChemicalDetailPage({
                     <TableCell>
                       <Badge
                         variant={
-                          sheet.new_status === 'approved'
+                          sheet.status === 'approved'
                             ? 'default'
-                            : sheet.new_status === 'submitted'
+                            : sheet.status === 'submitted'
                             ? 'secondary'
                             : 'outline'
                         }
                       >
-                        {sheet.new_status || 'draft'}
+                        {sheet.status || 'draft'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">

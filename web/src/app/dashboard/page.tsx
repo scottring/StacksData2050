@@ -220,7 +220,7 @@ function calculateComplianceStats(
   customerSheets: Array<{
     id: string
     name: string
-    new_status: string | null
+    status: string | null
     modified_at: string | null
     created_at?: string | null
   }>
@@ -237,16 +237,16 @@ function calculateComplianceStats(
 
   const totalSheets = uniqueSheets.length
   const completeSheets = uniqueSheets.filter(s =>
-    s.new_status === 'completed' || s.new_status === 'approved'
+    s.status === 'completed' || s.status === 'approved'
   ).length
   const incompleteSheets = uniqueSheets.filter(s =>
-    s.new_status === 'in_progress' || s.new_status === 'pending' || !s.new_status
+    s.status === 'in_progress' || s.status === 'pending' || !s.status
   ).length
 
   // Calculate overdue sheets (created > 30 days ago, not complete) - use uniqueSheets
   const now = new Date()
   const overdueSheets = uniqueSheets.filter(s => {
-    if (s.new_status === 'completed' || s.new_status === 'approved') return false
+    if (s.status === 'completed' || s.status === 'approved') return false
     const createdDate = s.created_at ? new Date(s.created_at) : new Date(s.modified_at || '')
     const daysOld = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
     return daysOld > 30
@@ -374,7 +374,7 @@ export default function DashboardPage() {
     const stacksDataCompany = companies.find((c: any) => c.name === 'Stacks Data')
     const sheets = rawSheets.filter((s: any) => {
       // Exclude Stacks Data company sheets
-      if (stacksDataCompany && (s.company_id === stacksDataCompany.id || s.assigned_to_company_id === stacksDataCompany.id)) {
+      if (stacksDataCompany && (s.company_id === stacksDataCompany.id || s.requesting_company_id === stacksDataCompany.id)) {
         return false
       }
       // Exclude sheets with "test" in the name (case insensitive)
@@ -388,7 +388,7 @@ export default function DashboardPage() {
       totalRawSheets: rawSheets.length,
       totalFilteredSheets: sheets.length,
       totalCompanies: companies.length,
-      sampleStatuses: sheets.slice(0, 5).map((s: any) => s.new_status)
+      sampleStatuses: sheets.slice(0, 5).map((s: any) => s.status)
     })
 
     // NOTE: All sheets from Bubble migration have NULL status
@@ -582,7 +582,7 @@ export default function DashboardPage() {
         const end = start + batchSize - 1
         const { data: batch } = await supabase
           .from('sheets')
-          .select('id, name, new_status, company_id, assigned_to_company_id, modified_at, created_at')
+          .select('id, name, status, company_id, requesting_company_id, modified_at, created_at')
           .range(start, end)
 
         if (batch) {
@@ -593,7 +593,7 @@ export default function DashboardPage() {
       console.log(`✓ Dashboard fetched ${allSheets.length} sheets in ${totalBatches} batch(es)`)
 
       // As Supplier: sheets assigned TO my company
-      const rawSupplierSheets = (allSheets || []).filter(s => s.assigned_to_company_id === companyId)
+      const rawSupplierSheets = (allSheets || []).filter(s => s.requesting_company_id === companyId)
 
       // CRITICAL: Deduplicate supplier sheets by name, keeping most recent
       const supplierSheetsByName = new Map<string, any>()
@@ -626,14 +626,14 @@ export default function DashboardPage() {
       // Supplier metrics: Use activity-based calculations
       // Completed = sheets with completed/approved status OR maintained in last 90 days
       const supplierCompletedTasks = supplierSheets.filter(s => {
-        const isStatusComplete = s.new_status === 'completed' || s.new_status === 'approved'
+        const isStatusComplete = s.status === 'completed' || s.status === 'approved'
         const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
         return isStatusComplete || isActivelyMaintained
       }).length
 
       // Open tasks = sheets with in_progress/pending status OR modified in last 30 days but not in 90
       const supplierOpenTasks = supplierSheets.filter(s => {
-        const isInProgress = s.new_status === 'in_progress' || s.new_status === 'pending'
+        const isInProgress = s.status === 'in_progress' || s.status === 'pending'
         const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
         const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
         // Count as "open" if recently modified but not yet in the 90-day "completed" window
@@ -645,28 +645,28 @@ export default function DashboardPage() {
       // Products are "compliant" if they've been actively maintained (modified in last 90 days)
       // OR if they have completed/approved status
       const customerCompliantProducts = customerSheets.filter(s => {
-        const isStatusComplete = s.new_status === 'completed' || s.new_status === 'approved'
+        const isStatusComplete = s.status === 'completed' || s.status === 'approved'
         const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
         return isStatusComplete || isActivelyMaintained
       }).length
 
       // Pending reviews = sheets with in_progress status OR modified in last 30 days (actively being worked)
       const customerPendingReviews = customerSheets.filter(s => {
-        const isInProgress = s.new_status === 'in_progress'
+        const isInProgress = s.status === 'in_progress'
         const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
         return isInProgress || isRecentlyModified
       }).length
 
-      // Count unique suppliers (assigned_to_company_id)
-      const supplierIds = new Set(customerSheets.map(s => s.assigned_to_company_id).filter(Boolean))
+      // Count unique suppliers (requesting_company_id)
+      const supplierIds = new Set(customerSheets.map(s => s.requesting_company_id).filter(Boolean))
       const customerTotalSuppliers = supplierIds.size
 
       // Count verified suppliers (all their sheets are actively maintained OR have completed status)
       let verifiedCount = 0
       supplierIds.forEach(supplierId => {
-        const supplierCustomerSheets = customerSheets.filter(s => s.assigned_to_company_id === supplierId)
+        const supplierCustomerSheets = customerSheets.filter(s => s.requesting_company_id === supplierId)
         const allCompliant = supplierCustomerSheets.every(s => {
-          const isStatusComplete = s.new_status === 'completed' || s.new_status === 'approved'
+          const isStatusComplete = s.status === 'completed' || s.status === 'approved'
           const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
           return isStatusComplete || isActivelyMaintained
         })
@@ -677,8 +677,8 @@ export default function DashboardPage() {
       let activeCount = 0
       supplierIds.forEach(supplierId => {
         const hasActive = customerSheets.some(s => {
-          if (s.assigned_to_company_id !== supplierId) return false
-          const isInProgress = s.new_status === 'in_progress' || s.new_status === 'pending'
+          if (s.requesting_company_id !== supplierId) return false
+          const isInProgress = s.status === 'in_progress' || s.status === 'pending'
           const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
           return isInProgress || isRecentlyModified
         })
@@ -705,8 +705,8 @@ export default function DashboardPage() {
         .map(s => ({
           id: s.id,
           name: s.name,
-          status: s.new_status,
-          companyName: companyMap.get(s.company_id === companyId ? s.assigned_to_company_id : s.company_id) || 'Unknown',
+          status: s.status,
+          companyName: companyMap.get(s.company_id === companyId ? s.requesting_company_id : s.company_id) || 'Unknown',
           modifiedAt: s.modified_at
         }))
 

@@ -51,6 +51,7 @@ interface SimpleSheetEditorProps {
   companyName: string
   answers: ViewAnswer[]
   choices: Choice[]
+  questionSectionMap: Record<string, { sectionName: string; subsectionName: string }>
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -72,6 +73,7 @@ export function SimpleSheetEditor({
   companyName,
   answers,
   choices,
+  questionSectionMap,
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -158,6 +160,36 @@ export function SimpleSheetEditor({
       return (qa.question_order || 0) - (qb.question_order || 0)
     })
   }, [questionMap])
+
+  // Create lookup for section names based on questions in each section group
+  const sectionNames = useMemo(() => {
+    const names = new Map<number, string>();
+    sortedQuestions.forEach(([questionId, q]) => {
+      const sectionNum = q.section_sort_number ?? 0;
+      if (!names.has(sectionNum)) {
+        const info = questionSectionMap[questionId];
+        if (info?.sectionName) {
+          names.set(sectionNum, info.sectionName);
+        }
+      }
+    });
+    return names;
+  }, [sortedQuestions, questionSectionMap]);
+
+  // Create lookup for subsection names
+  const subsectionNames = useMemo(() => {
+    const names = new Map<string, string>(); // key: "sectionNum-subsectionNum"
+    sortedQuestions.forEach(([questionId, q]) => {
+      const key = `${q.section_sort_number ?? 0}-${q.subsection_sort_number ?? 0}`;
+      if (!names.has(key)) {
+        const info = questionSectionMap[questionId];
+        if (info?.subsectionName) {
+          names.set(key, info.subsectionName);
+        }
+      }
+    });
+    return names;
+  }, [sortedQuestions, questionSectionMap]);
 
   const handleValueChange = (questionId: string, value: any, type: string, answerId?: string) => {
     setLocalValues(prev => {
@@ -485,9 +517,55 @@ export function SimpleSheetEditor({
           {sortedQuestions.length} questions with answers
         </div>
 
-        {/* Questions */}
-        <div className="space-y-4">
-          {sortedQuestions.map(([questionId, q]) => {
+        {/* Questions grouped by Section/Subsection */}
+        <div className="space-y-6">
+          {(() => {
+            // Group questions by section, then subsection
+            const sections = new Map();
+            
+            sortedQuestions.forEach(([questionId, q]) => {
+              const sectionNum = q.section_sort_number ?? 0;
+              const subsectionNum = q.subsection_sort_number ?? 0;
+              
+              if (!sections.has(sectionNum)) {
+                sections.set(sectionNum, new Map());
+              }
+              const sectionMap = sections.get(sectionNum);
+              if (!sectionMap.has(subsectionNum)) {
+                sectionMap.set(subsectionNum, []);
+              }
+              sectionMap.get(subsectionNum).push([questionId, q]);
+            });
+            
+            // Sort sections by number
+            const sortedSections = Array.from(sections.entries()).sort((a, b) => a[0] - b[0]);
+            
+            return sortedSections.map(([sectionNum, subsections]) => (
+              <div key={sectionNum} className="space-y-4">
+                {/* Section Header */}
+                <div className="sticky top-0 bg-background z-10 py-3 border-b border-primary/20">
+                  <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
+                    <span className="bg-primary text-primary-foreground px-2 py-0.5 rounded text-sm">{sectionNum}</span>
+                    {sectionNames.get(sectionNum) || `Section ${sectionNum}`}
+                  </h2>
+                </div>
+                
+                {/* Subsections */}
+                {Array.from(subsections.entries())
+                  .sort((a, b) => a[0] - b[0])
+                  .map(([subsectionNum, questions]) => (
+                    <div key={subsectionNum} className="space-y-3">
+                      {/* Subsection Header */}
+                      {subsectionNum > 0 && (
+                        <h3 className="text-md font-medium text-muted-foreground border-l-4 border-primary/30 pl-3 py-1 bg-muted/30 rounded-r">
+                          <span className="font-semibold">{sectionNum}.{subsectionNum}</span>{" "}
+                          {subsectionNames.get(`${sectionNum}-${subsectionNum}`) || ""}
+                        </h3>
+                      )}
+                      
+                      {/* Questions in this subsection */}
+                      <div className="space-y-4 pl-2">
+                      {questions.map(([questionId, q]) => {
             const questionNumber = q.section_sort_number && q.subsection_sort_number && q.question_order
               ? `${q.section_sort_number}.${q.subsection_sort_number}.${q.question_order}`
               : null
@@ -528,7 +606,13 @@ export function SimpleSheetEditor({
                 </CardContent>
               </Card>
             )
-          })}
+                      })}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ));
+          })()}
         </div>
 
         {sortedQuestions.length === 0 && (

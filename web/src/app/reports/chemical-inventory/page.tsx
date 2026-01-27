@@ -60,7 +60,7 @@ export default function ChemicalInventoryReport() {
       // Get related sheets and companies
       const { data: sheets } = await supabase
         .from('sheets')
-        .select('id, name, assigned_to_company_id')
+        .select('id, name, requesting_company_id')
 
       const { data: companies } = await supabase
         .from('companies')
@@ -98,7 +98,7 @@ export default function ChemicalInventoryReport() {
 
         const column = columnMap.get(answer.list_table_column_id)
         const sheet = sheetMap.get(answer.sheet_id)
-        const company = sheet ? companyMap.get(sheet.assigned_to_company_id) : null
+        const company = sheet ? companyMap.get(sheet.requesting_company_id) : null
 
         const columnName = column?.name?.toLowerCase() || ''
         const key = `${answer.sheet_id}-${answer.text_value}`

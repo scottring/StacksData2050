@@ -77,9 +77,9 @@ interface AnswerRejection {
 interface Sheet {
   id: string
   name: string
-  new_status: string | null
+  status: string | null
   company_id: string | null
-  assigned_to_company_id: string | null
+  requesting_company_id: string | null
   modified_at: string | null
 }
 
@@ -239,7 +239,7 @@ export default function ReviewPage() {
       // Update sheet status to approved
       await supabase
         .from('sheets')
-        .update({ new_status: 'approved', modified_at: new Date().toISOString() })
+        .update({ status: 'approved', modified_at: new Date().toISOString() })
         .eq('id', sheetId)
 
       // Create sheet_status record
@@ -270,7 +270,7 @@ export default function ReviewPage() {
       // Update sheet status to flagged
       await supabase
         .from('sheets')
-        .update({ new_status: 'flagged', modified_at: new Date().toISOString() })
+        .update({ status: 'flagged', modified_at: new Date().toISOString() })
         .eq('id', sheetId)
 
       // Create sheet_status record with observations
