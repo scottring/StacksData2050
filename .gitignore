@@ -25,3 +25,4 @@ npm-debug.log*
 
 # Claude
 .claude/
+fresh-import/bubble-export/answer.json
