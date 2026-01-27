@@ -12,13 +12,17 @@ export interface Question {
   question_type: string | null
   required: boolean | null
   order_number: number | null
-  parent_section_id: string | null
-  parent_subsection_id: string | null
-  clarification: string | null
-  dependent_no_show: boolean | null
-  section_sort_number: number | null
-  section_name_sort: string | null
-  list_table_id: string | null
+  parent_section_id?: string | null
+  parent_subsection_id?: string | null
+  subsection_id?: string | null  // Local DB uses this
+  clarification?: string | null
+  dependent_no_show?: boolean | null
+  section_sort_number?: number | null
+  section_name_sort?: string | null
+  subsection_sort_number?: number | null
+  list_table_id?: string | null
+  originating_question_id?: string | null
+  response_type?: string | null
 }
 
 export interface Choice {
@@ -30,15 +34,18 @@ export interface Choice {
 
 export interface Answer {
   id: string
-  parent_question_id: string | null
+  question_id?: string | null  // Current schema
+  parent_question_id?: string | null  // Legacy compatibility
   text_value: string | null
   text_area_value: string | null
   number_value: number | null
   boolean_value: boolean | null
   date_value: string | null
   choice_id: string | null
-  sheet_id: string | null
+  sheet_id?: string | null
   clarification: string | null
+  list_table_row_id?: string | null
+  list_table_column_id?: string | null
 }
 
 export interface ListTableColumn {
@@ -102,6 +109,19 @@ export function QuestionInput({
     case 'single_choice':
     case 'Select one':
     case 'Select one Radio':
+      // If answer has text_value but no choice_id, show as read-only text
+      // This handles imported data where choices didn't match
+      if (answer?.text_value && !answer?.choice_id) {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-2 text-sm bg-muted rounded-md border border-input">
+              {answer.text_value}
+            </span>
+            <span className="text-xs text-muted-foreground">(imported value)</span>
+          </div>
+        )
+      }
+
       return (
         <select
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"

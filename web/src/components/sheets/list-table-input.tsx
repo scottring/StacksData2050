@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Trash2 } from 'lucide-react'
+import { InlineCASLookup } from './cas-lookup'
 
 export interface ListTableRow {
   id: string
@@ -99,8 +100,15 @@ export function ListTableInput({
                   key={row.id}
                   className={index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}
                 >
-                  {columns.map(col => {
+                  {columns.map((col, colIndex) => {
                     const cellValue = row.values[col.key] || ''
+                    // Use CAS lookup for CAS Number column
+                    const isCASColumn = (
+                      col.label.toLowerCase().includes('cas number') ||
+                      col.label.toLowerCase().includes('cas registry') ||
+                      col.key.toLowerCase().includes('cas')
+                    )
+
                     return (
                     <td key={col.key} className="px-2 py-1.5">
                       {col.choices && col.choices.length > 0 ? (
@@ -117,6 +125,18 @@ export function ListTableInput({
                             </option>
                           ))}
                         </select>
+                      ) : isCASColumn ? (
+                        <InlineCASLookup
+                          value={cellValue}
+                          onChange={(value) => updateCell(row.id, col.key, value)}
+                          onChemicalFound={(data) => {
+                            // Auto-fill the chemical name in the first column if empty
+                            const chemicalNameKey = columns[0]?.key
+                            if (chemicalNameKey && !row.values[chemicalNameKey]) {
+                              updateCell(row.id, chemicalNameKey, data.name)
+                            }
+                          }}
+                        />
                       ) : (
                         <Input
                           value={cellValue}

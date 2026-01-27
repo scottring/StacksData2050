@@ -1,30 +1,20 @@
-import { supabase } from './src/migration/supabase-client.js'
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
 
-async function checkSheetsSchema() {
-  console.log('=== Checking Sheets Table Schema ===\n')
+dotenv.config()
 
-  const { data: sample, error } = await supabase
-    .from('sheets')
-    .select('*')
-    .limit(1)
-    .single()
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+
+async function main() {
+  const { data, error } = await supabase.from('sheets').select('*').limit(1)
 
   if (error) {
-    console.log(`Error: ${error.message}`)
-    return
-  }
-
-  if (sample) {
-    console.log('Available fields in sheets table:\n')
-    Object.keys(sample).sort().forEach(field => {
-      const value = sample[field]
-      const type = value === null ? 'null' : typeof value
-      console.log(`  ${field}: ${type}`)
-    })
-
-    console.log('\n=== Sample Sheet Data ===\n')
-    console.log(JSON.stringify(sample, null, 2))
+    console.error('Error:', error)
+  } else if (data && data.length > 0) {
+    console.log('Sheets table fields:', Object.keys(data[0]))
+  } else {
+    console.log('No sheets found')
   }
 }
 
-checkSheetsSchema()
+main()

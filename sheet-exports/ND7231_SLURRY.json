@@ -1,0 +1,3680 @@
+{
+  "sheet_name": "ND7231_SLURRY",
+  "bubble_id": "1671007026235x542610754152693760",
+  "supabase_id": "fbd7bce8-4fe2-4c75-b4ed-4f62767a996b",
+  "total_answers": 408,
+  "answers": [
+    {
+      "question": "Product Description or Chemical Characterization ",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Calcium carbonate/kaolin mineral blend"
+    },
+    {
+      "question": "Product Code/Reference",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": " ND7231 SLURRY"
+    },
+    {
+      "question": "Function in Application",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Board coating"
+    },
+    {
+      "question": "Producer",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "IMERYS Minéraux Belgique SA"
+    },
+    {
+      "question": "Production sites",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Usine de Lixhe (Vise)"
+    },
+    {
+      "question": "Add disclaimer (optional)",
+      "question_number": "1.1.338",
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The information in this questionnaire is supplied to the best of our knowledge at the time of issue and is intended for guidance purposes only. Imerys and/or its affiliates shall not be liable for any damages resulting from the information in this questionnaire or its use."
+    },
+    {
+      "question": "2012/481/EU: Commission Decision of 16 August 2012 establishing the ecological criteria for the award of the EU Ecolabel for printed paper:\t\t\t",
+      "question_number": "2.1.1",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "2014/256/EU: Commission Decision of 2 May 2014 establishing the ecological criteria for the award of the EU Ecolabel for converted paper products:\t\t\t",
+      "question_number": "2.1.2",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Commission Decision (EU) 2019/70 - ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper:\t\t\t",
+      "question_number": "2.1.3",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Commission Decision (EU) 2019/70 - ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper:\t\t\t",
+      "question_number": "2.1.4",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Paper Products - Chemical Module",
+      "question_number": "2.2.5",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Tissue Paper - Supplementary Module",
+      "question_number": "2.2.6",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Grease-proof paper - Supplementary Module",
+      "question_number": "2.2.7",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Packaging for Liquid Foods",
+      "question_number": "2.2.8",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "Disposables for Food",
+      "question_number": "2.2.9",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ-5. Sanitary paper products made of recycled paper",
+      "question_number": "2.3.11",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "DE-UZ 14a - Recycled paper",
+      "question_number": "2.3.12",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "DE-UZ 14b - Finished products made from recovered paper for office and school demand\t\t\t",
+      "question_number": "2.3.13",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ 56 - Recycled cardboard\t\t\t",
+      "question_number": "2.3.14",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ 72 - Printing and publication papers",
+      "question_number": "2.3.15",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "According to Regulation (EU) No. 528/2012 does the product contain biocidal active substances either intentionally added or non-intentionally via other raw materials?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 1,
+      "row_id": "1675177691808x154859046648414200",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1675177691808x154859046648414200",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1675177691808x154859046648414200",
+      "answer": "203-856-5"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1675177691808x154859046648414200",
+      "answer": "< 150"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Units",
+      "column_order": 5,
+      "row_id": "1675177691808x154859046648414200",
+      "answer": "mg/kg"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 1,
+      "row_id": "1675177809848x633016648830812200",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1675177809848x633016648830812200",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1675177809848x633016648830812200",
+      "answer": "< 10"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Units",
+      "column_order": 5,
+      "row_id": "1675177809848x633016648830812200",
+      "answer": "mg/kg"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 1,
+      "row_id": "1675177822293x745678711261233200",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1675177822293x745678711261233200",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1675177822293x745678711261233200",
+      "answer": "< 5"
+    },
+    {
+      "question": "If yes, please specify the substance and concentration in product",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Units",
+      "column_order": 5,
+      "row_id": "1675177822293x745678711261233200",
+      "answer": "mg/kg"
+    },
+    {
+      "question": "Are the biocidal active substances used for in-can preservation (PT 6)?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances used as slimicides (PT 12)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances used as Preservatives for liquid-cooling and processing systems (PT 11)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 11?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Please specify general limitations which may apply to the product (e.g. dosage limitation): (Enter n/a if not applicable)",
+      "question_number": null,
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product may be used for production of food contact materials or articles, presuming that these materials or articles are manufactured under good manufacturing practices and in accordance with the information communicated in this online questionnaire."
+    },
+    {
+      "question": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of article 3 and article 17 of the Framework Regulation (EC) No 1935/2004?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178124259x421279170828435460",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178124259x421279170828435460",
+      "answer": "A.II"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178124259x421279170828435460",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675178124259x421279170828435460",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178135385x299587580548874240",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178135385x299587580548874240",
+      "answer": "A.II"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178135385x299587580548874240",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675178135385x299587580548874240",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178145081x182549903852175360",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178145081x182549903852175360",
+      "answer": "B.II.4"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178145081x182549903852175360",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178152800x633082190544764900",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178152800x633082190544764900",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178152800x633082190544764900",
+      "answer": "Zinc chloride"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675178152800x633082190544764900",
+      "answer": "Zinc chloride is added to the raw kaolin ingredient as a processing aid (corrosion inhibitor) early in the processing stages of the product, at a trace level. The majority of this inhibitor is consumed during processing."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178161256x545400878812889100",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178161256x545400878812889100",
+      "answer": "B.II.1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178161256x545400878812889100",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178169135x885253573890539500",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178169135x885253573890539500",
+      "answer": "B.VII.b.8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178169135x885253573890539500",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178169135x885253573890539500",
+      "answer": "max. 2.5 % based on dry fibres weight. No more than 2 mg glutaraldehyde must be detectable in 1 kg of finished product"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178178783x964388113589731300",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178178783x964388113589731300",
+      "answer": "B.V.12"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178178783x964388113589731300",
+      "answer": "Sodium polyacrylate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178178783x964388113589731300",
+      "answer": "max. 0.5 %"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178189015x875263765460811800",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178189015x875263765460811800",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178189015x875263765460811800",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675178189015x875263765460811800",
+      "answer": "This material is not reasonably\nexpected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178202026x683690674671321100",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178202026x683690674671321100",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178202026x683690674671321100",
+      "answer": "max. 1.1% based on dry paper"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178227585x528472425688465400",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178227585x528472425688465400",
+      "answer": "B.VII.b.18; B.VIII.6"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178227585x528472425688465400",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178227585x528472425688465400",
+      "answer": "max. 10 μg/dm2 detectable in the extract of finished product; inputs from other uses have to fulfill the criteria of the appropriate restriction, total content in extract of finished product max. 80 μg/dm2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178238329x304984393367420900",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178238329x304984393367420900",
+      "answer": "B.VII.b.19; B.VIII.7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178238329x304984393367420900",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178238329x304984393367420900",
+      "answer": "max. 1 μg/dm2 detectable in extract of finished product; inputs from other uses have to fulfill the criteria of the appropriate restriction, total content in extract of finished product max 80 μg/dm2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178251060x597616054168191000",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675178251060x597616054168191000",
+      "answer": "B.VII.b.1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178251060x597616054168191000",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178251060x597616054168191000",
+      "answer": "max. 0.1 %, based on dry fibres weight"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675178263415x245955959476715500",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1675178263415x245955959476715500",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675178263415x245955959476715500",
+      "answer": "Max 0.1 % of active ingredient based on dry paper"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179476321x906650707747668000",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179476321x906650707747668000",
+      "answer": "I.B.5"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179476321x906650707747668000",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675179476321x906650707747668000",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179485332x237636156933799940",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179485332x237636156933799940",
+      "answer": "I.B.2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179485332x237636156933799940",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675179485332x237636156933799940",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179492528x529844520611741700",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179492528x529844520611741700",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179811323x961429976684953600",
+      "answer": "7646-85-7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179811323x961429976684953600",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179811323x961429976684953600",
+      "answer": "Zinc chloride"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675179811323x961429976684953600",
+      "answer": "Zinc chloride is added to the raw kaolin ingredient as a processing aid (corrosion inhibitor) early in the processing stages of the product, at a trace level. The majority of this inhibitor is consumed during processing."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179820997x332201905382228000",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179820997x332201905382228000",
+      "answer": "III.D.2.A;III.A.2.d;III.C.2.a"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179820997x332201905382228000",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179870409x470074632279949300",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179870409x470074632279949300",
+      "answer": "B.VII.b.8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179870409x470074632279949300",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179877139x644661666297151500",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179877139x644661666297151500",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179877139x644661666297151500",
+      "answer": "Sodium polyacrylate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179889928x839572056530485200",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179889928x839572056530485200",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179889928x839572056530485200",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675179889928x839572056530485200",
+      "answer": "This material is not reasonably\nexpected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179895645x361651856280911900",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179895645x361651856280911900",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179895645x361651856280911900",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179901784x648180101359075300",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179901784x648180101359075300",
+      "answer": "II.A.b.5"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179901784x648180101359075300",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 6,
+      "row_id": "1675179901784x648180101359075300",
+      "answer": "not detectable in hot water extract of the finished articles (detection limit of analysis method 10 μg/dm2)"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179907839x852721745202774000",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179907839x852721745202774000",
+      "answer": "II.A.b.9"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179907839x852721745202774000",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 6,
+      "row_id": "1675179907839x852721745202774000",
+      "answer": "not detectable in the hot water extract of the finished articles (detection limit of analysis method 1 μg/dm2)"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179916342x439316371549716500",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179916342x439316371549716500",
+      "answer": "B.VII.b.1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179916342x439316371549716500",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 6,
+      "row_id": "1675179916342x439316371549716500",
+      "answer": "max. 0.1 %, based on dry fibres weight"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675179926181x296173415496417300",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675179926181x296173415496417300",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 5,
+      "row_id": "1675179926181x296173415496417300",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180427844x963706910490492900",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180427844x963706910490492900",
+      "answer": "I.B.6"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180427844x963706910490492900",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675180427844x963706910490492900",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180436839x850503773422878700",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180436839x850503773422878700",
+      "answer": "I.B.2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180436839x850503773422878700",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675180436839x850503773422878700",
+      "answer": "functional ingredient"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180443511x516524970720362500",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180443511x516524970720362500",
+      "answer": "II.B.7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180443511x516524970720362500",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180451647x709950129532829700",
+      "answer": "7646-85-7"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180451647x709950129532829700",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180451647x709950129532829700",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180458403x483614645538783200",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180458403x483614645538783200",
+      "answer": "II.B.1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180458403x483614645538783200",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180465156x155746164041318400",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180465156x155746164041318400",
+      "answer": "II.G.2.e"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180465156x155746164041318400",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180465156x155746164041318400",
+      "answer": "max. 2.5 % based on the dry fibre weight. No more than 2 mg glutaraldehyde must be detectable in 1 kg of finished product"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180471683x544424334053605400",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180471683x544424334053605400",
+      "answer": "II.E.9"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180471683x544424334053605400",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180471683x544424334053605400",
+      "answer": "max. 0.5 %"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180478402x614099710426218500",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180478402x614099710426218500",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180478402x614099710426218500",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 7,
+      "row_id": "1675180478402x614099710426218500",
+      "answer": "Note that this material is not reasonably expected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180484860x440302007238000640",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180484860x440302007238000640",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180484860x440302007238000640",
+      "answer": "Max. 1.1% of commercial product based on dry fibres"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180491441x277144367610200060",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180491441x277144367610200060",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180491441x277144367610200060",
+      "answer": "max. 10 μg/dm2, hot water extract of final product; inputs from other uses have to fulfill the criteria of the appropriate restriction, total content in extract of finished product max 80 μg/dm2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180497980x982744097015726100",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180497980x982744097015726100",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180497980x982744097015726100",
+      "answer": "max. 1 μg/dm2, hot water extract of final product; inputs from other uses have to fulfill the criteria of the appropriate restriction, total content in extract of finished product max 80 μg/dm2."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180504571x304007326494097400",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1675180504571x304007326494097400",
+      "answer": "II.A.b.2"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180504571x304007326494097400",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180504571x304007326494097400",
+      "answer": null
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1675180512418x413413190175555600",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical Name",
+      "column_order": 5,
+      "row_id": "1675180512418x413413190175555600",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 6,
+      "row_id": "1675180512418x413413190175555600",
+      "answer": "Max. 0.5 % of active ingredient based on dry paper"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with the French Decree No. 2008/1469 of 30 December 2008 „on materials and articles intended to contact with food“? ",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 as amended?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675182849113x856468020316078100",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1675182849113x856468020316078100",
+      "answer": "acrylic acid (Group Restriction No 22)"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675182858494x768482681548439600",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1675182858494x768482681548439600",
+      "answer": "Article 6.3(a)"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1675182858494x768482681548439600",
+      "answer": "E 500"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1675182858494x768482681548439600",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675182858494x768482681548439600",
+      "answer": "Salts of atuhorised acids"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675182867774x488126976677380100",
+      "answer": "7664-93-9"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1675182867774x488126976677380100",
+      "answer": "Article 6.3(a)"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1675182867774x488126976677380100",
+      "answer": "E 513"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1675182867774x488126976677380100",
+      "answer": "Sulphuric acid"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675182867774x488126976677380100",
+      "answer": "Salts of atuhorised acids"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675182876422x561765741076152300",
+      "answer": "No CAS numbers assigned"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1675182876422x561765741076152300",
+      "answer": "Annex II"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1675182876422x561765741076152300",
+      "answer": "Trace ppm levels of metal elements listed in Annex II"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675182876422x561765741076152300",
+      "answer": "the compliance of the SML should be checked in the plastic material"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239469610x529861114076856300",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1675239469610x529861114076856300",
+      "answer": "21"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1675239469610x529861114076856300",
+      "answer": "E 170"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1675239469610x529861114076856300",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675239469610x529861114076856300",
+      "answer": "Article 6.3(a) Salts of authorised acids"
+    },
+    {
+      "question": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239931190x901854831994470400",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239931190x901854831994470400",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239931190x901854831994470400",
+      "answer": "21 CFR 176.170 explicitly includes GRAS substances"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675239931190x901854831994470400",
+      "answer": "Kaolin is GRAS (21 CFR 186.1256)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239943185x954923166371676200",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239943185x954923166371676200",
+      "answer": "Sodium polyacrylate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239943185x954923166371676200",
+      "answer": "For use only:\n1. As a thickening agent for natural rubber latex coatings, provided it is used at a level not to exceed 2 percent by weight of coating solids.\n2. As a pigment dispersant in coatings at a level not to exceed 0.25 percent by weight of pigment"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239953156x969503714770681900",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239953156x969503714770681900",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239953156x969503714770681900",
+      "answer": "21 CFR 176.170 explicitly includes GRAS substances"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675239953156x969503714770681900",
+      "answer": "21 CFR 184.1742 GRAS"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239964208x349837530646446100",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239964208x349837530646446100",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239964208x349837530646446100",
+      "answer": "21 CFR 176.170 explicitly includes GRAS substances"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675239964208x349837530646446100",
+      "answer": "21 CFR 182.1125 GRAS"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239975252x351968084924039200",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239975252x351968084924039200",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239975252x351968084924039200",
+      "answer": "For use only as an antimicrobial agent in pigment and filler slurries used in the manufacture of paper and paperboard at levels not to exceed 300 parts per million by weight of the slurry solids."
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239985030x187151579117256700",
+      "answer": "7646-85-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239985030x187151579117256700",
+      "answer": "Zinc chloride"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675239985030x187151579117256700",
+      "answer": "This materials is not reasonably expected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675239996150x310267079882965000",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675239996150x310267079882965000",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675239996150x310267079882965000",
+      "answer": "This materials is not reasonably expected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240288659x159405463063232500",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240288659x159405463063232500",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675240288659x159405463063232500",
+      "answer": "Calcium carbonate is GRAS (21 CFR 184.1409)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240341819x193518610270650370",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240341819x193518610270650370",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions on food types and/or conditions of use",
+      "column_order": 6,
+      "row_id": "1675240341819x193518610270650370",
+      "answer": "Mineral filler: Food types: I, II, III, IVA, IVB, V, VIB, VIIA, VIIB, VIII, IX - Not for use in contact with infant formula and human milk - Conditions of use: C through G"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675240341819x193518610270650370",
+      "answer": "* Coating pigment: max. 0.25% of dry polymer by weight of pigment\n* Mineral filler: max. 0.5% of dry polymer by weight in the filler"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240376320x654590907724070900",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240376320x654590907724070900",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675240376320x654590907724070900",
+      "answer": " for use only as preservative in paper coating compositions and limited to use at a level not to exceed 0.01\nmg/in2 (0.0016 mg/cm2) of the finished paper and paperboard"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240412378x626334728368685000",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240412378x626334728368685000",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675240412378x626334728368685000",
+      "answer": "as antimicrobial agent: 1. in coating formulations and in additives for use in manufacture of paper and paperboard at a level not to exceed 150 mg/kg in the coating formulations and additives; 2. for polymer latex emulsions in paper coatings at a level not to exceed 250 mg/kg"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240445665x673219136998867000",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240445665x673219136998867000",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675240445665x673219136998867000",
+      "answer": "21 CFR 176.170 explicitly includes GRAS substances"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675240445665x673219136998867000",
+      "answer": "21 CFR 184.1366 GRAS"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675240494976x829785836967690200",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675240494976x829785836967690200",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions on food types and/or conditions of use",
+      "column_order": 6,
+      "row_id": "1675240494976x829785836967690200",
+      "answer": "Coating pigment : all types of food -\nConditions of Use A through H - Not for use in contact with infant formula and human milk"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675240494976x829785836967690200",
+      "answer": "Coating pigment: max. 1.25% of active content by weight of solid pigment"
+    },
+    {
+      "question": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry foods”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242048646x491935583914426400",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242048646x491935583914426400",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242048646x491935583914426400",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242070607x245814133385330700",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242070607x245814133385330700",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242070607x245814133385330700",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242086799x343650398607507460",
+      "answer": null
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242086799x343650398607507460",
+      "answer": "Sodium polyacrylate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242086799x343650398607507460",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242114560x587187567439380500",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242114560x587187567439380500",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242114560x587187567439380500",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242129699x993157296611917800",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242129699x993157296611917800",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242129699x993157296611917800",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242142479x275621593826197500",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242142479x275621593826197500",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242142479x275621593826197500",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242154605x433725068055412740",
+      "answer": "7646-85-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242154605x433725068055412740",
+      "answer": "Zinc chloride"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242154605x433725068055412740",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242166664x465671146955079700",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242166664x465671146955079700",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242166664x465671146955079700",
+      "answer": "This materials is not reasonably expected to be present in the delivered product"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242184977x897088817246502900",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242184977x897088817246502900",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675242184977x897088817246502900",
+      "answer": "No limitations"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242197213x648087932873998300",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242197213x648087932873998300",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675242197213x648087932873998300",
+      "answer": "for use only as preservative in paper coating compositions and limited to use at a level not to exceed 0.02 mg/in2 (0.0031 mg/cm2)...of finished paper and paperboard"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242208087x731989068797182000",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242208087x731989068797182000",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1675242208087x731989068797182000",
+      "answer": "as antimicrobial agent: 1. in coating formulations and in additives for use in manufacture of paper and paperboard at a level not to exceed 150 mg/kg in the coating formulations and additives; 2. for polymer latex emulsions in paper coatings at a level not to exceed 250 mg/kg"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242219500x177664703863193600",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242219500x177664703863193600",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242219500x177664703863193600",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675242231535x284481425722572800",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (Chemical) Name",
+      "column_order": 5,
+      "row_id": "1675242231535x284481425722572800",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1675242231535x284481425722572800",
+      "answer": "included in 21 CFR 176.170"
+    },
+    {
+      "question": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "21 CFR § 176.300 “Slimicides”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "Does the product have a Food Contact Notification (FCN) in effect?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB4806.8-2016 as amended?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243109377x943828180928823300",
+      "answer": "1332-58-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243109377x943828180928823300",
+      "answer": "FCA0779"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243109377x943828180928823300",
+      "answer": "Kaolin"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243140695x570132282713047040",
+      "answer": "471-34-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243140695x570132282713047040",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243140695x570132282713047040",
+      "answer": "Calcium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675243140695x570132282713047040",
+      "answer": "Note that calcium carbonate is listed as a food additive in GB 2760 so may be used in Food Contact Materials"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243157442x498286761542942700",
+      "answer": "No CAS numbers assigned"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243157442x498286761542942700",
+      "answer": "Table C.1 (special limitation of metallic elements)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243157442x498286761542942700",
+      "answer": "Trace ppm levels of metal elements listed in Appendix C"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675243157442x498286761542942700",
+      "answer": "the compliance of the SML should be checked in the finished food contact product"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243172218x316264018727141400",
+      "answer": "497-19-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243172218x316264018727141400",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243172218x316264018727141400",
+      "answer": "Sodium carbonate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675243172218x316264018727141400",
+      "answer": "Note that sodium carbonate is listed as a food additive in GB 2760 so may be used in Food Contact Materials"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243190999x437997900732563460",
+      "answer": "10043-01-3"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243190999x437997900732563460",
+      "answer": "FCA0998"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243190999x437997900732563460",
+      "answer": "Aluminium Sulfate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243206217x125033239286906880",
+      "answer": "111-30-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243206217x125033239286906880",
+      "answer": "FCA1189"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243206217x125033239286906880",
+      "answer": "Glutaraldehyde"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675243206217x125033239286906880",
+      "answer": "max. 0.03 %"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243233515x698124110818181100",
+      "answer": "7664-93-9"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243233515x698124110818181100",
+      "answer": "FCA0995"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243233515x698124110818181100",
+      "answer": "Sulphuric acid"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "FCA0202"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "Sodium polyacrylate"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "max. 0.5 %"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675243253980x981933103340847100",
+      "answer": "SML(T) acrylic acid (Group 22)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243267196x843351263270666200",
+      "answer": "7646-85-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243267196x843351263270666200",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243267196x843351263270666200",
+      "answer": "zinc chloride"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675243267196x843351263270666200",
+      "answer": "Zinc chloride is added to the raw kaolin as a processing aid (corrosion inhibitor) early in the procssing of the product, at a trace level.\nThe majority of this inhibitor is consumed during processing."
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675243281469x129265190002491400",
+      "answer": "7775-14-6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675243281469x129265190002491400",
+      "answer": "Not Listed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675243281469x129265190002491400",
+      "answer": "Sodium dithionite"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675243281469x129265190002491400",
+      "answer": "Sodium dithionite is added to the raw kaolin as a processing aid to remove iron\ndecolourants. This chemical is very reactive and is entirely eliminated in downstream processes via natural aeration and dewatering, and is not detectable in the final product."
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675244657067x251970796500549630",
+      "answer": "Not Disclosed"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675244657067x251970796500549630",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675244657067x251970796500549630",
+      "answer": "Polycarboxylate in aqueous solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675244657067x251970796500549630",
+      "answer": "max. 1.1% of commercial product"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675244657067x251970796500549630",
+      "answer": "SML(T) acrylic acid (Group 22)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675244688133x324371788069077000",
+      "answer": "2634-33-5"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675244688133x324371788069077000",
+      "answer": "FCA0041"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675244688133x324371788069077000",
+      "answer": "1.2,2"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675244688133x324371788069077000",
+      "answer": "BIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675244688133x324371788069077000",
+      "answer": "max. 0.16 mg/dm2"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675244704015x933016285775921200",
+      "answer": "2682-20-4"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675244704015x933016285775921200",
+      "answer": "FCA0277"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675244704015x933016285775921200",
+      "answer": "0.5"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675244704015x933016285775921200",
+      "answer": "MIT"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675244704015x933016285775921200",
+      "answer": "max. 0.005 %"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675244720948x398474072088641540",
+      "answer": "7722-84-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1675244720948x398474072088641540",
+      "answer": "FCA0814"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675244720948x398474072088641540",
+      "answer": "Hydrogen peroxide"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1675244781526x151646004562100220",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1675244781526x151646004562100220",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1675244781526x151646004562100220",
+      "answer": "Anionic polymeric dispersant in solution"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1675244781526x151646004562100220",
+      "answer": "max. 0.5 % of active ingredient"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1675244781526x151646004562100220",
+      "answer": "SML(T) acrylic acid (Group 22)"
+    },
+    {
+      "question": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not intentionally added and reasonably not expected to be present above declaration limit"
+    },
+    {
+      "question": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes, US-SDS or separate declaration is available on request."
+    },
+    {
+      "question": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1671008162401x382934989564018700",
+      "answer": "Quartz"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1671008162401x382934989564018700",
+      "answer": "14808-60-7"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1671008162401x382934989564018700",
+      "answer": "238-878-4"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1671008162401x382934989564018700",
+      "answer": "less than 1% fine fraction"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Units",
+      "column_order": 5,
+      "row_id": "1671008162401x382934989564018700",
+      "answer": "%"
+    },
+    {
+      "question": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not evaluated"
+    },
+    {
+      "question": "Does the delivered product and/or its production site or line have a Kosher certification?",
+      "question_number": "6.1.1",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Does the delivered product and/or its production site or line have a Halal certification?",
+      "question_number": "6.1.3",
+      "response_type": "Select one",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product? ",
+      "question_number": "6.1.5",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.2.7",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+      "question_number": "6.3.9",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+      "question_number": "6.4.10",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.5.12",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.5.14",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are nanomaterials as defined by EC Recommendation 2011/696/EU intentionally added to the product? ",
+      "question_number": "6.6.16",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+      "question_number": "6.7.18",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+      "question_number": "6.8.20",
+      "response_type": "Dropdown",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "If yes, please provide details regarding the content of MOAH (Mineral Oil Aromatic Hydrocarbons, C16-35) and PAH (Polyaromatic Hydrocarbons):",
+      "question_number": "6.8.23",
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Non-intentionally added"
+    },
+    {
+      "question": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+      "question_number": "6.9.24",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+      "question_number": "6.10.26",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not intentionally added."
+    }
+  ]
+}

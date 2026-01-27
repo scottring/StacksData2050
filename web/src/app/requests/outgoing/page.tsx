@@ -1,0 +1,249 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { AppLayout } from '@/components/layout/app-layout'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { RequestStatusBadge } from '@/components/requests/request-status-badge'
+import { Search, Loader2, FileText, Plus } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
+
+interface OutgoingRequest {
+  id: string
+  processed: boolean
+  created_at: string
+  sheet: {
+    id: string
+    name: string
+    new_status: string | null
+  } | null
+  reader_company: {
+    id: string
+    name: string
+  } | null
+  request_tags: Array<{
+    tag: {
+      name: string
+    }
+  }>
+}
+
+export default function OutgoingRequestsPage() {
+  const router = useRouter()
+  const [requests, setRequests] = useState<OutgoingRequest[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false)
+
+  useEffect(() => {
+    async function fetchRequests() {
+      const supabase = createClient()
+
+      // Get current user's company
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      if (!userData?.company_id) {
+        setLoading(false)
+        return
+      }
+
+      // Fetch requests where we are the customer (requestor_id)
+      const { data: requestData, error } = await supabase
+        .from('requests')
+        .select(`
+          id,
+          processed,
+          created_at,
+          sheet:sheets(id, name, new_status),
+          reader_company:companies!requesting_from_id(id, name),
+          request_tags(tag:tags(name))
+        `)
+        .eq('requestor_id', userData.company_id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching outgoing requests:', error)
+        console.error('Error details:', JSON.stringify(error, null, 2))
+      }
+
+      setRequests((requestData as any) || [])
+      setLoading(false)
+    }
+
+    fetchRequests()
+  }, [requestDialogOpen]) // Refresh when dialog closes
+
+  const filteredRequests = requests.filter(r =>
+    r.sheet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.reader_company?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const pendingCount = requests.filter(r => !r.processed).length
+  const processedCount = requests.filter(r => r.processed).length
+  const sheetStatusCount = requests.filter(r => r.sheet?.new_status === 'responded' || r.sheet?.new_status === 'approved').length
+
+  if (loading) {
+    return (
+      <AppLayout title="Outgoing Requests">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span>Loading requests...</span>
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
+  return (
+    <AppLayout title="Outgoing Requests">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold">Outgoing Requests</h1>
+            <p className="text-muted-foreground mt-1">
+              Product data requests you've sent to suppliers
+            </p>
+          </div>
+          <Button onClick={() => setRequestDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Request
+          </Button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">Total Requests</div>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="mt-2 text-2xl font-bold">{requests.length}</div>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">Pending</div>
+              <Badge variant="outline">{pendingCount}</Badge>
+            </div>
+            <div className="mt-2 text-2xl font-bold">{pendingCount}</div>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">Processed</div>
+              <Badge variant="outline">{processedCount}</Badge>
+            </div>
+            <div className="mt-2 text-2xl font-bold">{processedCount}</div>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">Completed</div>
+              <Badge variant="outline">{sheetStatusCount}</Badge>
+            </div>
+            <div className="mt-2 text-2xl font-bold">{sheetStatusCount}</div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search requests..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+
+        {/* Table */}
+        <div className="rounded-lg border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>To Supplier</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="w-[100px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRequests.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                    {searchQuery ? 'No requests found matching your search' : 'No outgoing requests yet. Click "New Request" to get started.'}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredRequests.map((request) => (
+                  <TableRow
+                    key={request.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => router.push(`/sheets/${request.sheet?.id}`)}
+                  >
+                    <TableCell className="font-medium">{request.sheet?.name || 'Untitled'}</TableCell>
+                    <TableCell>{request.reader_company?.name || 'Unknown'}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 flex-wrap">
+                        {request.request_tags?.map((rt, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {rt.tag.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {request.processed ? (
+                        <Badge variant="secondary">Processed</Badge>
+                      ) : (
+                        <Badge variant="outline">Pending</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(request.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">View</Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Request Dialog */}
+      <RequestSheetDialog
+        open={requestDialogOpen}
+        onOpenChange={setRequestDialogOpen}
+      />
+    </AppLayout>
+  )
+}

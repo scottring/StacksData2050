@@ -1,40 +1,51 @@
-import { supabase } from './src/migration/supabase-client.js'
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-async function checkAllSections() {
-  console.log('=== All Sections in Database ===\n')
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
-  const { data: sections, count } = await supabase
-    .from('sections')
-    .select('id, name, section_number, order_number', { count: 'exact' })
-    .order('order_number')
+async function check() {
+  const sheetId = '0e21cabb-84f4-43a6-8e77-614e9941a734'
 
-  console.log(`Total sections: ${count}\n`)
+  const { data: answers } = await supabase
+    .from('answers')
+    .select('parent_question_id, choice_id, text_value, list_table_row_id')
+    .eq('sheet_id', sheetId)
 
-  if (sections) {
-    for (const s of sections.slice(0, 50)) {
-      const num = s.section_number || '(no number)'
-      console.log(`${num}: ${s.name}`)
-    }
-  }
-
-  // Also check for questions that might be related to 4.3.4 or 4.3.5
-  console.log('\n=== Checking for questions with "4.3" or "4.4" in number ===\n')
+  const questionIds = [...new Set(answers?.map(a => a.parent_question_id).filter(Boolean))]
 
   const { data: questions } = await supabase
     .from('questions')
-    .select('question_number, question_text')
-    .or('question_number.like.%4.3%,question_number.like.%4.4%')
-    .order('question_number')
-    .limit(30)
+    .select('id, name, parent_section_id')
+    .in('id', questionIds)
 
-  if (questions && questions.length > 0) {
-    for (const q of questions) {
-      const text = q.question_text ? q.question_text.substring(0, 60) : '(no text)'
-      console.log(`${q.question_number}: ${text}`)
-    }
-  } else {
-    console.log('No questions found with 4.3 or 4.4 in number')
+  const { data: sections } = await supabase
+    .from('sections')
+    .select('id, name, order_number')
+    .order('order_number')
+
+  console.log('=== IMPORTED ANSWERS BY SECTION ===')
+  console.log('Total answers:', answers?.length)
+  console.log()
+
+  for (const section of sections || []) {
+    const sectionQuestions = questions?.filter(q => q.parent_section_id === section.id) || []
+    const sectionQIds = sectionQuestions.map(q => q.id)
+    const sectionAnswers = answers?.filter(a => sectionQIds.includes(a.parent_question_id!)) || []
+
+    if (sectionAnswers.length === 0) continue
+
+    const withChoice = sectionAnswers.filter(a => a.choice_id).length
+    const withText = sectionAnswers.filter(a => a.text_value && !a.choice_id).length
+    const listTableRows = sectionAnswers.filter(a => a.list_table_row_id).length
+
+    console.log(`Section ${section.order_number}: ${section.name}`)
+    console.log(`  Questions with answers: ${sectionQuestions.length}`)
+    console.log(`  - With choice_id (dropdown): ${withChoice}`)
+    console.log(`  - With text_value only: ${withText}`)
+    console.log(`  - List table cells: ${listTableRows}`)
+    console.log()
   }
 }
 
-checkAllSections()
+check().catch(console.error)

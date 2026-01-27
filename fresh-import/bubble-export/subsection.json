@@ -1,0 +1,1003 @@
+[
+  {
+    "Name": "Invisible subsection #1",
+    "Show Tittle and Group": false,
+    "Modified Date": "2021-04-21T03:11:42.683Z",
+    "_id": "1618947494256x470802087510540300",
+    "Created Date": "2021-04-20T19:38:20.312Z"
+  },
+  {
+    "Name": "Invisible #1 TEST 1",
+    "Parent_Section": "1617051883015x339360383238144000",
+    "Show Tittle and Group": false,
+    "Modified Date": "2021-04-21T04:43:11.883Z",
+    "Created Date": "2021-04-20T19:47:43.625Z",
+    "_id": "1618948058478x183333057663598600"
+  },
+  {
+    "Modified Date": "2021-05-18T13:36:49.153Z",
+    "Name": "Invisible subsection #1",
+    "Created Date": "2021-04-20T19:50:12.917Z",
+    "_id": "1618948208027x770360973842448400",
+    "Show Tittle and Group": false
+  },
+  {
+    "Created Date": "2021-04-20T19:50:20.594Z",
+    "Show Tittle and Group": false,
+    "Name": "Invisible subsection #1",
+    "Modified Date": "2021-04-21T21:00:01.456Z",
+    "_id": "1618948215718x684802249469460500"
+  },
+  {
+    "Modified Date": "2021-04-21T03:19:08.421Z",
+    "_id": "1618975141260x878957570506096600",
+    "Show Tittle and Group": false,
+    "Created Date": "2021-04-21T03:19:08.376Z",
+    "Name": "Automatic #1"
+  },
+  {
+    "Show Tittle and Group": false,
+    "Created Date": "2021-04-21T04:34:26.975Z",
+    "Parent_Section": "1617051883015x339360383238144000",
+    "_id": "1618979660247x508363224069439500",
+    "Name": "Subsection test 2 ",
+    "Modified Date": "2021-07-16T04:06:41.686Z"
+  },
+  {
+    "_id": "1619000068938x430610858366205950",
+    "Show Tittle and Group": true,
+    "Parent_Section": "1617051883015x339360383238144000",
+    "Created Date": "2021-04-21T10:14:25.396Z",
+    "Name": "Product",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-07-16T04:12:09.427Z",
+    "listOfQuestions": [
+      "1619621325168x638528879039348700",
+      "1619621372505x846593549490716700",
+      "1619621454948x378957201355571200",
+      "1619621490579x669219526109560800",
+      "1619621541276x684844897419395100"
+    ]
+  },
+  {
+    "Parent_Section": "1619235043617x661143577780289500",
+    "Created Date": "2021-04-24T03:30:45.937Z",
+    "Modified Date": "2021-04-24T03:48:28.472Z",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1619235125313x429690422406152200",
+      "1619235797989x149918667769380860"
+    ],
+    "Name": "Sub-section for company not in the association",
+    "_id": "1619235043617x138047375031664640"
+  },
+  {
+    "Name": "Blue Angel: Does the product comply with applicable basic award criteria for different product groups under Blue Angel - The German Ecolabel, in their current versions?",
+    "_id": "1619633983071x812786779965358100",
+    "Created Date": "2021-04-28T18:19:43.400Z",
+    "Help": "Blauer Engel (Blue Angel)\n\nfor which specific criteria exists for different paper types:\n- DE-UZ 5 - Sanitary paper products made of recycled paper\n- DE-UZ 14a - Recycled paper\n- DE-UZ 14b - Finished products made from recovered paper for office and school demand\n- DE-UZ 56 - Recycled cardboard \n- DE-UZ 72 - Printing and publication papers\n\nSimilar to the other ecolabels the different award criteria specify limitations or eventual exclusions of substances/mixtures used in production of different paper types. One of the main differencies to the other Ecolabels is the demand to use BfR XXXVI compliant chemical auxiliaries as well as restrictions on MOSH/MOAH for most of the paper types. \n\nThe different award criteria are covered by respective Annexes including applicant and supplier declarations.\n\nSpecific and detailed infomration as well as User Manuals and Declarations can be found under this link:\"\nhttps://www.blauer-engel.de/en/companies/basic-award-criteria",
+    "listOfQuestions": [
+      "1626102952650x371078978227666940",
+      "1626102925283x622296060494610400",
+      "1626102875342x712097337373098000",
+      "1626102501586x526758862548369400",
+      "1682450213040x957334719003623400"
+    ],
+    "Parent_Section": "1617069659217x956109532887253000",
+    "Show Tittle and Group": true,
+    "Modified Date": "2023-04-25T19:17:34.327Z",
+    "Order": 3,
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Modified Date": "2021-04-28T21:55:36.716Z",
+    "Created Date": "2021-04-28T21:55:36.671Z",
+    "Name": "Automatic #1",
+    "Show Tittle and Group": false,
+    "_id": "1619646934293x758163087876423700"
+  },
+  {
+    "Name": "Test Subsection",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-06-01T04:40:48.675Z",
+    "_id": "1621576925379x653037494900097000",
+    "Created Date": "2021-05-21T06:02:08.769Z"
+  },
+  {
+    "Name": "Automatic #1",
+    "_id": "1621985727410x222412204248399870",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-08-18T12:29:02.417Z",
+    "Created Date": "2021-05-25T23:35:28.290Z",
+    "Parent_Section": "1621985727410x439037096115830800",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Show Tittle and Group": false,
+    "Modified Date": "2021-06-19T03:24:22.441Z",
+    "_id": "1622954076082x305158564470063100",
+    "Name": "Automatic #1",
+    "Created Date": "2021-06-06T04:34:40.935Z"
+  },
+  {
+    "Modified Date": "2021-07-12T14:42:42.767Z",
+    "Parent_Section": "1617069659217x956109532887253000",
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "General Information",
+    "Show Tittle and Group": true,
+    "_id": "1623957596972x779385135857401900",
+    "Created Date": "2021-06-17T19:19:58.167Z"
+  },
+  {
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-07-12T12:54:02.941Z",
+    "Order": 2,
+    "Created Date": "2021-06-19T03:21:04.782Z",
+    "Name": "Subsection 1 Order 2",
+    "_id": "1624072860991x666533608337440800"
+  },
+  {
+    "Created Date": "2021-06-19T03:21:29.818Z",
+    "Modified Date": "2021-06-19T03:29:23.341Z",
+    "_id": "1624072886621x618181803869208600",
+    "Order": 1,
+    "Name": "Sub section 2 order 1",
+    "Show Tittle and Group": true
+  },
+  {
+    "Modified Date": "2023-04-25T19:09:10.787Z",
+    "Order": 1,
+    "listOfQuestions": [
+      "1617069680795x998643986173526000",
+      "1619622455814x417229750019817500",
+      "1619623188374x546767029957558300",
+      "1619624170183x762144571524907000",
+      "1682445736427x610075389819879400"
+    ],
+    "Name": "Ecolabels: Does the product meet the restrictions for hazardous substances for the following EU Ecolabel criteria?",
+    "Parent_Section": "1617069659217x956109532887253000",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Help": "In Europe several Ecolabel schemes are relevant for paper products and the raw materials and chemical auxiliaries used during production.\n\n\"The EU Ecolabel \n\nfor which specific criteria exists for different paper types:\n- Commission Decision (EU) 2019/70 - especially ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper. \n- Commission Decision (EU) 2019/70 - especially ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper.\n- 2012/481/EU: Commission Decision of 16 August 2012 establishing the ecological criteria for the award of the EU Ecolabel for printed paper. \n- 2014/256/EU: Commission Decision of 2 May 2014 establishing the ecological criteria for the award of the EU Ecolabel for converted paper products. \n\nAn EU Ecolabel is awarded for products if these meet the requirements set up as criteria in EU Commission Decisions covering the different applications. An EU Ecolabel is awarded for products if these meet the requirements set up as criteria in EU Commission Decisions covering the different applications.\n\nThe process to prepare for the EU Ecolabel award is described in the User manual for an application/paper type including required details on the different criteria for the product manufacturer as well as raw material suppliers concerning excluded or limited substances and mixtures. \n\nAll relevant information for the different EU Ecolabels are available through following link (Legislations, User Manuals, Declarations):\n\n\"http://ec.europa.eu/environment/ecolabel/products-groups-and-criteria.html\n\"\n\"Commission Decision (EU) 2019/70 - ANNEX I (Graphics Paper), ANNEX II (Tissue Paper)\n\nCriterion 4 (in each respective ANNEX) and it's sub-criteria specify limitations or eventual exclusions of substances/mixtures used in paper production (including water treatment in paper production), for graphics and tissue paper. Criterion 4 for graphics paper is slightly different from Criterion 4 for tissue paper!\n\nInformation as demanded in the respective applicable declaration form have to be given. However, a company specific declaration can be used as well.\nMore information can be found in the User Manual (Link below):\"\n\"https://ec.europa.eu/environment/ecolabel/documents/UM_032019.zip\n\"\n\"Part B of the user manual includes detailed information on product assessment and verification and Part D the relevant declaration forms for the raw material suppliers:\n• Declaration 1 – Cleaning \n• Declaration 2 – Deinking\n• Declaration 3 – Biocides\n• Declaration 4 – Dyes\n• Declaration 5 – Lotions\n• Declaration 6 – All other chemicals\nThere is also a Combined Declaration available.\n\nLimitations for the material in question as demanded in the respective declaration form have to be given. However, a company specific declaration can be used as well.\n\nSimilar criteria for limitation or eventual exclusion of materials meeting the criteria for classification with hazard classes or categories apply also for following EU Ecolabels.\n\nCommission Decision 2012/481/EU - Printed Paper\n\nMore information can be found in the User Manual (Link below):\nhttps://ec.europa.eu/environment/ecolabel/documents/User_Manual_for_Printed_Paper_November2017.pdf\nCommission Decision 2014/256/EU - Converted Paper\n\nMore information can be found in the User Manual (Link below):\n\"https://ec.europa.eu/environment/ecolabel/documents/User_manual_converted_paper.pdf.",
+    "_id": "1626100227219x754871618292678700",
+    "Created Date": "2021-07-12T14:30:28.266Z"
+  },
+  {
+    "_id": "1626100504074x511626490221428740",
+    "Parent_Section": "1617069659217x956109532887253000",
+    "Name": "Nordic Ecolabel: Does the product meet the criteria of Nordic Ecolabel according to the chemical module for paper chemicals and/or any of the supplementary modules in their current versions?",
+    "Created Date": "2021-07-12T14:35:04.314Z",
+    "Order": 2,
+    "Help": "The Nordic Swan Ecolabel is an official ecolabel for the Nordic Countries Denmark, Iceland, Finland, Norway and Sweden.\n\nThe criteria according to the Nordic Ecolabelling Paper Products – Chemical Module (currently v2.6, but under revision) cover the chemical requirements next to further quality and regulatory requirements through following declarations:\n• Declaration 1, Cleaning agents and dispersants\n• Declaration 2, De-inking chemicals\n• Declaration 3,  Biocides/slimicides\n• Declaration 4, Coating agents, retention agents, flocculants and wet strength agents\n• Declaration 5, Wet strength agents\n• Declaration 6, Foam inhibitors and defoamers\n• Declaration 7, Dyes\n• Declaration 8, Adhesives\n• Declaration 9, GMO in Starch products\n• Declaration regarding chemicals from the pulp- and paper manufacturer.\n\nThe chemical module includes as appendices the different declaration forms:",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2022-06-29T13:36:25.727Z",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1619634435694x275434400776192000",
+      "1619638587403x496721535091867650",
+      "1619638800567x474660305440866300",
+      "1619638997051x666626079211126800",
+      "1619639151339x950601845945401300"
+    ]
+  },
+  {
+    "Created Date": "2021-07-12T17:57:11.340Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": false,
+    "Name": "Automatic #1",
+    "Modified Date": "2021-07-14T20:13:18.099Z",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "_id": "1626112630352x872239098760527900"
+  },
+  {
+    "Modified Date": "2022-06-28T23:31:19.097Z",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "listOfQuestions": [
+      "1626173190332x708066882492825600",
+      "1626116701206x626240791925489700"
+    ],
+    "Help": "Expert judgement of the manufacturer of the respective product\n\nThis question is raised to ensure that the producer has no concern to use the product in food contact applications in general. Constituents transferred to the food do not endanger human health, or change the food itself. This applies to additives and other treatment agents, polymeric binders and pigments as well as to processing aids like cleaners and pump oils. If there is a threshold above which the product cannot be used for food contact by producers expert judgement please indicate this.\n",
+    "Created Date": "2021-07-12T19:01:21.778Z",
+    "_id": "1626116481496x987942395448131600",
+    "Name": "General Information",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true
+  },
+  {
+    "Name": "European Union - Framework Regulation",
+    "Created By": "1614702014952x666788632482890900",
+    "Help": "National Legislation in EU\n\nNo specific EU measure under the frame work regulation exists currently for paper and board, nor substances permitted for use in paper and board are compiled in an union list. \nTherefore, reference is taken to substances permitted for use in paper and board in a number of national lists. \nNon-exhaustive examples of national legislation containing such lists include the German BfR Recommendation XXXVI Paper and board for food contact, the Netherlands “Warenwet Hoofstuk II- Papier en Karton”, the Swiss Ordinance SR 817.023.21 (especially Annex 10 for printing inks), the French Decree 2008/1469 and the Italian Decree 21.03.1973. \n\nRestrictions and Limitations:\nSeveral restrictions relevant for the product under consideration can be mentioned in the respective regulations/recommendations. In addition, there may be restrictions due to self assessment.\nRestrictions can apply to intentionally added substances but also to impurities, degradation products or contaminations.\n\nResulting limitations can refer to a food contact substance/end application itself as well as product content in pulp and/or paper and board, migration/extraction from the respective food contact substance, paper thickness, surface to volume ratio, use conditions (T/t) and food types.",
+    "listOfQuestions": [
+      "1626116844842x485480729141313540"
+    ],
+    "Created Date": "2021-07-12T19:06:42.914Z",
+    "Modified Date": "2022-06-28T19:52:42.320Z",
+    "Show Tittle and Group": true,
+    "_id": "1626116802616x904467235254566900",
+    "Parent_Section": "1626112630352x609386985619980300"
+  },
+  {
+    "_id": "1626117082942x613188737337393200",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Modified Date": "2022-06-28T20:01:58.036Z",
+    "Name": "European Union - National Regulation - Germany: Does the product comply with the requirements of the following BfR (Federal Institute for Risk Assessment) recommendations below?",
+    "Created By": "1614702014952x666788632482890900",
+    "listOfQuestions": [
+      "1626190804002x533327665093410800",
+      "1626191731089x430854087087226900",
+      "1626190988704x872732496729735200",
+      "1626189547256x231570893582893060"
+    ],
+    "Help": "National Legislation in EU\n\nNo specific EU measure under the frame work regulation exists currently for paper and board, nor substances permitted for use in paper and board are compiled in an union list. \nTherefore, reference is taken to substances permitted for use in paper and board in a number of national lists. \nNon-exhaustive examples of national legislation containing such lists include the German BfR Recommendation XXXVI Paper and board for food contact, the Netherlands “Warenwet Hoofstuk II- Papier en Karton”, the Swiss Ordinance SR 817.023.21 (especially Annex 10 for printing inks), the French Decree 2008/1469 and the Italian Decree 21.03.1973. \n\nRestrictions and Limitations:\nSeveral restrictions relevant for the product under consideration can be mentioned in the respective regulations/recommendations. In addition, there may be restrictions due to self assessment.\n\nRestrictions can apply to intentionally added substances but also to impurities, degradation products or contaminations.\n\nResulting limitations can refer to a food contact substance/end application itself as well as product content in pulp and/or paper and board, migration/extraction from the respective food contact substance, paper thickness, surface to volume ratio, use conditions (T/t) and food types.",
+    "Show Tittle and Group": true,
+    "Created Date": "2021-07-12T19:11:23.344Z"
+  },
+  {
+    "_id": "1626124690970x607169031071334400",
+    "Name": "The Netherlands",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "listOfQuestions": [
+      "1626124371585x622092321730068500",
+      "1626186975944x398439409590206460"
+    ],
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-07-13T17:46:54.626Z",
+    "Created Date": "2021-07-12T21:18:11.728Z",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Modified Date": "2021-07-16T19:49:38.064Z",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Show Tittle and Group": true,
+    "Name": "Switzerland",
+    "Created By": "1614702014952x666788632482890900",
+    "Created Date": "2021-07-13T18:02:01.913Z",
+    "listOfQuestions": [
+      "1626199238888x857552667199144000",
+      "1626199386647x332938577726930940"
+    ],
+    "_id": "1626199321053x510148436604223500"
+  },
+  {
+    "listOfQuestions": [
+      "1626199514075x367942783088984060",
+      "1626199767668x353782540432048100"
+    ],
+    "Created Date": "2021-07-13T18:07:54.163Z",
+    "Name": "Italy",
+    "Modified Date": "2021-07-13T18:19:35.382Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "_id": "1626199673691x413829996587515900",
+    "Parent_Section": "1626112630352x609386985619980300"
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2023-09-25T20:21:10.279Z",
+    "Name": "France",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1626199960415x465505069086801900",
+      "1626199948585x800521151492653000",
+      "1682545915273x562222831746416640",
+      "1695673228718x347930832668721150"
+    ],
+    "_id": "1626200040380x408841375660113900",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Created Date": "2021-07-13T18:14:00.723Z"
+  },
+  {
+    "Created Date": "2021-07-13T18:23:08.498Z",
+    "listOfQuestions": [
+      "1629108443462x342700861930340350"
+    ],
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-09-01T09:34:40.791Z",
+    "Name": "Other relevant national legislations in Europe",
+    "Show Tittle and Group": true,
+    "Parent_Section": "1626112630352x609386985619980300",
+    "_id": "1626200588208x767490048310378500"
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "European Union - Plastics & Dual Use Additives",
+    "listOfQuestions": [
+      "1626200941043x617934114828582900",
+      "1626200648716x756674962034262000",
+      "1682551815162x701163624175239200",
+      "1682551983966x953610704385212400"
+    ],
+    "Modified Date": "2024-01-02T22:29:10.037Z",
+    "_id": "1626200822339x406757049679478800",
+    "Created Date": "2021-07-13T18:27:02.927Z",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Show Tittle and Group": true
+  },
+  {
+    "Created Date": "2021-07-13T18:39:42.008Z",
+    "listOfQuestions": [
+      "1626201431213x202308079100362750",
+      "1626202392689x808406702438481900",
+      "1626202385060x964235397163647000",
+      "1626471319413x343736217293553660",
+      "1626202376224x500832081724309500",
+      "1626202388723x225268112809000960",
+      "1626202381383x585478737659166700"
+    ],
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "USA - Can the product be used for the manufacture of Food Contact Articles in compliance with the U.S. Federal Food Drug and Cosmetic Act and all applicable “Food Additive Regulations” 21CFR part 170-199, especially the following ones?",
+    "Modified Date": "2021-09-01T10:58:54.301Z",
+    "_id": "1626201581740x499141029114675200"
+  },
+  {
+    "Parent_Section": "1626112630352x609386985619980300",
+    "listOfQuestions": [
+      "1626268794752x990927635819003900",
+      "1629081012593x397152215354310660"
+    ],
+    "Name": "China - Does the product comply with the requirements of the Chinese Food Contact Materials Hygiene Standards specified below?",
+    "Created By": "1614702014952x666788632482890900",
+    "_id": "1626268831121x242520875523899400",
+    "Modified Date": "2021-08-27T14:42:54.856Z",
+    "Show Tittle and Group": true,
+    "Created Date": "2021-07-14T13:20:32.067Z"
+  },
+  {
+    "Show Tittle and Group": false,
+    "Modified Date": "2021-07-15T00:35:17.330Z",
+    "Name": "Automatic #1",
+    "_id": "1626309316054x854879852497993700",
+    "Created Date": "2021-07-15T00:35:17.281Z",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Name": "South America: Does the product comply with the requirements of the respective MERCOSUR GMC Resolutions and respective national implementations in Brasil, Paraguay and Uruguay, specified below?",
+    "listOfQuestions": [
+      "1626380401114x269186611915522050",
+      "1626381997320x241467692268912640",
+      "1626381398503x555247315050823700",
+      "1626381403610x584125201333092400",
+      "1626380865557x931036523986944000",
+      "1626381544713x400490379180245000",
+      "1629081406335x462738299312668700",
+      "1626382042073x730998571745148900",
+      "1706785894811x593708428803440600",
+      "1706786241248x216683898241548300",
+      "1706786747257x647077064802828300",
+      "1706787302742x100646906055884800",
+      "1708342567959x828451788436275200",
+      "1708342948019x395006415960801300",
+      "1708343616770x314933288244871200"
+    ],
+    "Created By": "1614702014952x666788632482890900",
+    "_id": "1626380433861x116189465862471680",
+    "Show Tittle and Group": true,
+    "Parent_Section": "1626112630352x609386985619980300",
+    "Modified Date": "2024-02-19T11:53:37.434Z",
+    "Created Date": "2021-07-15T20:20:34.609Z"
+  },
+  {
+    "Parent_Section": "1626383147372x100407906965127170",
+    "_id": "1626383333394x146235908306763780",
+    "listOfQuestions": [
+      "1626383300285x541189284342530050",
+      "1626383661302x565230740605501440",
+      "1626383607568x922116530507350000",
+      "1626383844731x976444081634279400",
+      "1626383848249x655768875997331500",
+      "1626383615230x403509945349701600",
+      "1626383852041x425714308332388350",
+      "1626383858971x147106792661319680",
+      "1626383622042x484961083907112960",
+      "1626383862960x863904472285052900",
+      "1626383866797x766318835196493800",
+      "1626383629312x526305258346905600",
+      "1626383870983x876632795875377200",
+      "1626383632963x288540109843726340",
+      "1626383875343x201535573779283970",
+      "1626383636667x161847961977880580",
+      "1626383884744x476174594803761150",
+      "1626383855644x495425354258972700",
+      "1686238515743x142361429497085950",
+      "1686238973065x238874039901487100",
+      "1700145049820x746878204809314300",
+      "1700145829772x830782518949576700",
+      "1761757409105x732057573025120300",
+      "1761757527435x955503095670112300",
+      "1761760641985x856146097874403300",
+      "1761760773478x472023719785529340"
+    ],
+    "Name": "PIDSL",
+    "Created Date": "2021-07-15T21:08:53.735Z",
+    "Show Tittle and Group": true,
+    "Modified Date": "2025-10-29T18:00:06.909Z",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Name": "One subsection test",
+    "Created Date": "2021-07-16T04:07:47.063Z",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-08-01T03:43:16.647Z",
+    "Order": 1,
+    "_id": "1626408466375x309803183201058800"
+  },
+  {
+    "Order": 2,
+    "_id": "1626408497086x513972160256278500",
+    "Name": "Two Subsection Test",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-08-01T03:52:35.111Z",
+    "Created Date": "2021-07-16T04:08:17.550Z"
+  },
+  {
+    "Order": 3,
+    "Modified Date": "2021-08-01T03:52:35.170Z",
+    "Show Tittle and Group": true,
+    "_id": "1626408519800x155213052228403200",
+    "Created Date": "2021-07-16T04:08:40.051Z",
+    "Name": "Three subsection test"
+  },
+  {
+    "Modified Date": "2021-07-16T15:06:39.575Z",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Created Date": "2021-07-16T15:06:39.530Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": false,
+    "Name": "Automatic #1",
+    "_id": "1626447998463x268120360104493060"
+  },
+  {
+    "Created Date": "2021-07-16T15:07:39.386Z",
+    "Modified Date": "2021-10-25T11:57:43.126Z",
+    "Name": "Kosher and Halal Certification",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Order": 1,
+    "_id": "1626448058683x950284869328437200",
+    "listOfQuestions": [
+      "1626448173877x504973931805409300",
+      "1626448101716x522774716660842500",
+      "1626480412846x791534007930060800",
+      "1635162771594x111073630276026370",
+      "1635163037876x940214230929113100"
+    ]
+  },
+  {
+    "Name": "Animal Origin",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-09-01T12:18:59.519Z",
+    "Created Date": "2021-07-17T00:21:02.578Z",
+    "Show Tittle and Group": true,
+    "Order": 2,
+    "listOfQuestions": [
+      "1626481478313x330373050311639040",
+      "1626481556741x365026947091136500"
+    ],
+    "_id": "1626481261775x513608963256483840"
+  },
+  {
+    "Modified Date": "2021-09-01T12:34:01.268Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Created Date": "2021-07-17T00:21:28.473Z",
+    "Name": "BSE/TSE",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Order": 3,
+    "_id": "1626481288187x819133130106732500",
+    "listOfQuestions": [
+      "1626481672716x481238196044955650"
+    ],
+    "Show Tittle and Group": true
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "_id": "1626481301085x450141686948692000",
+    "listOfQuestions": [
+      "1626481886973x671318618467205100"
+    ],
+    "Name": "Ethanol",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Modified Date": "2021-09-01T12:14:02.427Z",
+    "Created Date": "2021-07-17T00:21:41.426Z",
+    "Order": 4,
+    "Show Tittle and Group": true
+  },
+  {
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-10-21T01:36:50.948Z",
+    "Order": 5,
+    "Name": "Allergens",
+    "Created By": "1614702014952x666788632482890900",
+    "_id": "1626481311730x417885391340699650",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "listOfQuestions": [
+      "1626482319180x968685284853809200",
+      "1626482387053x471603047450804200",
+      "1634140423088x249376945720000500"
+    ],
+    "Created Date": "2021-07-17T00:21:52.092Z"
+  },
+  {
+    "Name": "Nanomaterials",
+    "Created Date": "2021-07-17T00:22:11.870Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Order": 6,
+    "Modified Date": "2021-09-01T12:53:08.208Z",
+    "_id": "1626481331526x991101307775615000",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1626482841903x892265448749662200",
+      "1626482956037x890649510332858400"
+    ]
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Modified Date": "2021-09-01T19:58:11.392Z",
+    "Show Tittle and Group": true,
+    "Order": 7,
+    "Created Date": "2021-07-17T00:22:29.454Z",
+    "_id": "1626481349112x389130271634751500",
+    "listOfQuestions": [
+      "1626482991292x530446354806210600",
+      "1626483125459x464156448701546500"
+    ],
+    "Name": "GMO"
+  },
+  {
+    "_id": "1626481360185x241179182328971260",
+    "Name": "Mineral Oil Hydrocarbons",
+    "Created By": "1614702014952x666788632482890900",
+    "listOfQuestions": [
+      "1630526932420x882981471942344700",
+      "1626483240019x635862078743904300",
+      "1626483270778x261931222969352200"
+    ],
+    "Order": 8,
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-10-25T12:52:35.442Z",
+    "Created Date": "2021-07-17T00:22:40.484Z",
+    "Parent_Section": "1626447998463x341538437764743200"
+  },
+  {
+    "listOfQuestions": [
+      "1626483441866x296240333670318100",
+      "1626483324447x323417408953122800"
+    ],
+    "_id": "1626481376843x729940367477833700",
+    "Created Date": "2021-07-17T00:22:57.494Z",
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Order": 9,
+    "Name": "Conflict minerals",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-09-01T19:58:44.074Z"
+  },
+  {
+    "Order": 10,
+    "listOfQuestions": [
+      "1626483498134x813429069980106800"
+    ],
+    "Parent_Section": "1626447998463x341538437764743200",
+    "Modified Date": "2022-06-29T00:19:44.790Z",
+    "Show Tittle and Group": true,
+    "Name": "Palm oil",
+    "_id": "1626481393019x261571270158843900",
+    "Created Date": "2021-07-17T00:23:13.346Z",
+    "Help": "There is a public call for Sustainable Palm Oil from consumers in pulp and paper industry. \n\nThe Roundtable on Sustainable Palm Oil (RSPO) was established in 2004 with the objective of promoting the growth and use of such sustainable oil palm products through credible global standards and engagement of stakeholders. Around 800 Members form different sectors of the palm oil industry (oil palm producers, palm oil processors or traders, consumer goods manufacturers, retailers, banks and investors, environmental or nature conservation NGOs and social or developmental NGOs) are engaged together. The principles aim to ensure that the farming of palm oil products is compatible with the protection of rain forest and biodiversity within the rain forest. \nThe use of certified sustainable sources for palm oil is an integral part of a sustainable business strategy. \n\nWith “certified supplier” we refer to companies whose operations have been certified against either the RSPO Supply Chain Certification Standard or against the RSPO Principles and Criteria Standard.\n\nhttps://rspo.org/members/all\n\nWith “certified material” we refer exclusively to materials that meet the criteria of RSPO Certified Volume (CSPO). (identity preserved or segregated or mass-balanced)\n\nShould your company be a RSPO certificate holder for the product as supplied, feel free to upload a copy of the certificate as an additional document.\nShould you apply any other risk assessment methodology we encourage you to either describe it in the comment field or to upload an additional document about it.",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Modified Date": "2021-07-27T02:55:37.892Z",
+    "Created Date": "2021-07-27T02:55:37.847Z",
+    "_id": "1627354533206x341279448276402200",
+    "Name": "Automatic #1",
+    "Show Tittle and Group": false
+  },
+  {
+    "Name": "Automatic #1",
+    "Created Date": "2021-07-27T03:02:16.533Z",
+    "_id": "1627354932211x546344335224340500",
+    "Show Tittle and Group": false,
+    "Modified Date": "2021-07-27T03:02:16.577Z"
+  },
+  {
+    "_id": "1627355056834x910812601296355300",
+    "Show Tittle and Group": false,
+    "Created Date": "2021-07-27T03:04:21.192Z",
+    "Name": "Automatic #1",
+    "Modified Date": "2021-07-29T03:29:36.302Z"
+  },
+  {
+    "Modified Date": "2021-07-27T03:05:25.544Z",
+    "Name": "Automatic #1",
+    "Show Tittle and Group": false,
+    "Created Date": "2021-07-27T03:05:25.499Z",
+    "_id": "1627355121257x474686140824682500"
+  },
+  {
+    "_id": "1627529302423x643556006371524600",
+    "Show Tittle and Group": true,
+    "Name": "Subsection A",
+    "Order": 1,
+    "Created Date": "2021-07-29T03:28:28.902Z",
+    "Modified Date": "2021-07-29T03:29:36.446Z"
+  },
+  {
+    "Name": "Subsection B",
+    "Order": 2,
+    "_id": "1627529333351x105516671868862460",
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-07-29T03:29:40.164Z",
+    "Created Date": "2021-07-29T03:28:59.276Z"
+  },
+  {
+    "Name": "Automatic #1",
+    "_id": "1627581015435x677575071407800300",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-07-29T17:50:17.746Z",
+    "Parent_Section": "1627581015435x212556541701128200",
+    "Created Date": "2021-07-29T17:50:17.702Z",
+    "Show Tittle and Group": false
+  },
+  {
+    "_id": "1628885649016x475758932807909400",
+    "Created Date": "2021-08-13T20:14:10.832Z",
+    "Name": "Automatic #1",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-08-13T20:14:10.881Z",
+    "Show Tittle and Group": true
+  },
+  {
+    "Modified Date": "2021-08-13T21:14:24.458Z",
+    "Created Date": "2021-08-13T20:15:01.335Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Order": 1,
+    "Show Tittle and Group": true,
+    "_id": "1628885700487x662379654026625000",
+    "listOfQuestions": [
+      "1628888498511x463439327749996540",
+      "1628889253595x319670546082037760"
+    ],
+    "Name": "General Section"
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Order": 2,
+    "Modified Date": "2021-08-13T21:09:08.393Z",
+    "_id": "1628885727319x552635691191238660",
+    "Name": "PIDSL List",
+    "Created Date": "2021-08-13T20:15:27.604Z"
+  },
+  {
+    "Created Date": "2021-08-18T00:31:50.770Z",
+    "_id": "1629246709069x835026173326262300",
+    "Show Tittle and Group": true,
+    "Name": "Automatic #1",
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-08-18T00:31:50.818Z"
+  },
+  {
+    "Name": "Automatic #1",
+    "Show Tittle and Group": true,
+    "Created Date": "2021-08-18T04:12:49.816Z",
+    "_id": "1629259968198x530449013714452500",
+    "Created By": "1614702014952x666788632482890900",
+    "listOfQuestions": [
+      "1629259995551x806153118993612800"
+    ],
+    "Modified Date": "2021-08-18T04:14:40.280Z"
+  },
+  {
+    "Show Tittle and Group": true,
+    "Name": "NEW: Invisible subsection #2",
+    "Created Date": "2021-08-18T11:13:26.250Z",
+    "Modified Date": "2021-08-18T11:13:26.295Z",
+    "_id": "1629285205402x315316012595281900",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Created Date": "2021-08-18T12:14:33.097Z",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1621985785314x409047933516775400",
+      "1621985947370x515150303537922050",
+      "1629228186397x376271944859254800",
+      "1621986483500x603202081932705800",
+      "1626116356221x511754218555834400",
+      "1621986578624x711412660436992000",
+      "1621986546899x807355772183511000",
+      "1626116261396x973304674592751600",
+      "1626116336068x489286111663226900",
+      "1626116201015x776129854998839300"
+    ],
+    "Modified Date": "2021-08-18T12:29:25.317Z",
+    "Parent_Section": "1621985727410x439037096115830800",
+    "_id": "1629288872286x476960495462776800",
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "Biocides"
+  },
+  {
+    "_id": "1629318510669x462533929365667800",
+    "Modified Date": "2021-08-30T19:47:00.146Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "PIDSL List",
+    "listOfQuestions": [
+      "1630352801797x983056497458020400"
+    ],
+    "Created Date": "2021-08-18T20:28:32.331Z",
+    "Parent_Section": "1626383147372x100407906965127170",
+    "Show Tittle and Group": true
+  },
+  {
+    "Show Tittle and Group": true,
+    "Modified Date": "2021-08-20T01:52:44.488Z",
+    "Created Date": "2021-08-20T01:52:44.443Z",
+    "_id": "1629424363020x126903808128974850",
+    "Parent_Section": "1629424363020x672078382143897600",
+    "Name": "Automatic #1"
+  },
+  {
+    "Parent_Section": "1629424363020x672078382143897600",
+    "Order": 1,
+    "_id": "1629424427443x910748977943806000",
+    "Name": "Subsection Test 1",
+    "Modified Date": "2021-09-03T05:34:48.663Z",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1629424402107x598877715167445000",
+      "1629424414538x783733277348331500",
+      "1629425035397x344314113172176900",
+      "1629863865059x163568574824185860",
+      "1629863913453x763450964846837800",
+      "1629863982302x946480703281561600",
+      "1629866815324x171083121429315600",
+      "1630647150099x746885452882509800",
+      "1630647212152x560323734526754800",
+      "1630647281869x164097648720347140"
+    ],
+    "Created Date": "2021-08-20T01:53:48.272Z"
+  },
+  {
+    "Parent_Section": "1631198768025x233388970771742700",
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Modified Date": "2021-09-09T14:46:09.280Z",
+    "Created Date": "2021-09-09T14:46:09.235Z",
+    "_id": "1631198768025x177657384519335940",
+    "Name": "Automatic #1"
+  },
+  {
+    "_id": "1631277029312x150721317360893950",
+    "Created By": "1614702014952x666788632482890900",
+    "Parent_Section": "1631277029312x622404680447164400",
+    "Created Date": "2021-09-10T12:30:30.504Z",
+    "Name": "Automatic #1",
+    "Modified Date": "2021-09-10T12:30:30.549Z",
+    "Show Tittle and Group": true
+  },
+  {
+    "_id": "1635937565071x282613731919134720",
+    "Created Date": "2021-11-03T11:06:06.472Z",
+    "Parent_Section": "1635937565071x422513499414986750",
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "Automatic #1",
+    "Modified Date": "2021-11-03T11:06:06.517Z"
+  },
+  {
+    "Created Date": "2021-11-03T11:08:55.700Z",
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "Additional Documentation",
+    "listOfQuestions": [
+      "1635937762163x704194888497365000",
+      "1656021577201x944921928976302100",
+      "1696336650479x803608403551191000",
+      "1697807388346x765695115901009900",
+      "1698148851221x506855226492321800"
+    ],
+    "Parent_Section": "1635937565071x422513499414986750",
+    "Modified Date": "2023-10-24T12:00:52.504Z",
+    "_id": "1635937734909x522797505943175200"
+  },
+  {
+    "listOfQuestions": [
+      "1644491804137x515224054314827800"
+    ],
+    "_id": "1645024231929x227931376040542200",
+    "Modified Date": "2022-02-16T15:18:03.346Z",
+    "Name": "Disclaimer",
+    "Parent_Section": "1617051883015x339360383238144000",
+    "Created Date": "2022-02-16T15:10:33.253Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Order": 1
+  },
+  {
+    "listOfQuestions": [
+      "1682552569934x286461405716807680",
+      "1682552716919x861298121098920000"
+    ],
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Parent_Section": "1626112630352x609386985619980300",
+    "_id": "1682552449465x935414671949692900",
+    "Modified Date": "2023-04-26T23:46:17.530Z",
+    "Created Date": "2023-04-26T23:40:50.282Z",
+    "Name": "NEW: JapanDoes the product comply with the requirements of the respective Food and Sanitation Act, specified below?\t\t\t"
+  },
+  {
+    "Name": "Automatic #1",
+    "_id": "1686928712571x693552229270421500",
+    "Modified Date": "2023-06-16T15:18:35.571Z",
+    "Show Tittle and Group": true,
+    "Created By": "1614702014952x666788632482890900",
+    "Created Date": "2023-06-16T15:18:35.518Z"
+  },
+  {
+    "Created By": "1614702014952x666788632482890900",
+    "Show Tittle and Group": true,
+    "Created Date": "2023-06-16T15:18:36.947Z",
+    "listOfQuestions": [
+      "1686928921078x707700552594358300",
+      "1686929265877x496913071403171840",
+      "1686929418263x512293661403250700",
+      "1686929527333x770966729508257800"
+    ],
+    "Parent_Section": "1686928716348x586804191977537500",
+    "Name": "Automatic #1",
+    "Modified Date": "2023-06-16T15:32:18.513Z",
+    "_id": "1686928716348x247651411708870660"
+  },
+  {
+    "Name": "Automatic #1",
+    "Created By": "1614702014952x666788632482890900",
+    "Created Date": "2023-06-16T15:19:03.099Z",
+    "_id": "1686928742411x332380179002556400",
+    "Modified Date": "2023-06-16T15:19:03.126Z",
+    "Show Tittle and Group": true,
+    "Parent_Section": "1686928742411x943934955846369300"
+  },
+  {
+    "Show Tittle and Group": true,
+    "Created Date": "2023-06-16T15:20:32.537Z",
+    "Created By": "1614702014952x666788632482890900",
+    "Name": "Automatic #1",
+    "_id": "1686928831866x966328247199989800",
+    "Modified Date": "2023-06-16T15:20:32.587Z",
+    "Parent_Section": "1686928831866x738874511727263700"
+  },
+  {
+    "Name": "Automatic #1",
+    "Created Date": "2023-06-16T15:21:20.611Z",
+    "Modified Date": "2023-06-16T15:21:20.678Z",
+    "Show Tittle and Group": true,
+    "_id": "1686928879768x765752299699044400",
+    "Parent_Section": "1686928879768x386228898648555500",
+    "Created By": "1614702014952x666788632482890900"
+  },
+  {
+    "Modified Date": "2023-06-16T15:43:24.278Z",
+    "Name": "General Experience",
+    "Created By": "1614702014952x666788632482890900",
+    "_id": "1686930132322x379368127542591500",
+    "Parent_Section": "1686928716348x586804191977537500",
+    "Show Tittle and Group": true,
+    "Created Date": "2023-06-16T15:42:14.856Z"
+  },
+  {
+    "Name": "Rename new subsection",
+    "Parent_Section": "1698847697736x225107278118256640",
+    "Show Tittle and Group": true,
+    "listOfQuestions": [
+      "1698847697736x406700393050406900"
+    ],
+    "Created Date": "2023-11-01T14:08:20.306Z",
+    "Modified Date": "2023-11-01T14:08:20.382Z",
+    "_id": "1698847697736x669210980129701900",
+    "Created By": "1632528807111x150697183304296700",
+    "Order": 1
+  },
+  {
+    "listOfQuestions": [
+      "1698847785165x816151857754275800",
+      "1698847895218x172632313764249600",
+      "1699277550084x975454888415461400",
+      "1699452996852x141947641387548670",
+      "1699533897912x725212207665643500",
+      "1702552435119x152105353235660800"
+    ],
+    "Parent_Section": "1698847697736x225107278118256640",
+    "Show Tittle and Group": true,
+    "Order": 1.0000000000005,
+    "Created By": "1632528807111x150697183304296700",
+    "Created Date": "2023-11-01T14:09:45.960Z",
+    "Name": "subsection kaisa",
+    "Modified Date": "2023-12-14T11:13:55.957Z",
+    "_id": "1698847785165x897137718879846400"
+  },
+  {
+    "Order": 1,
+    "Created Date": "2023-12-07T06:24:05.430Z",
+    "_id": "1701930244660x464271348673806340",
+    "Show Tittle and Group": true,
+    "Name": "Rename new subsection",
+    "Created By": "1632776026974x574952115622172400",
+    "Parent_Section": "1701930244660x464052185621332000",
+    "Modified Date": "2023-12-07T06:24:05.515Z",
+    "listOfQuestions": [
+      "1701930244660x266651268595056640"
+    ]
+  },
+  {
+    "Modified Date": "2023-12-14T11:23:31.998Z",
+    "Created By": "1632528807111x150697183304296700",
+    "Parent_Section": "1702553010799x364258594030878700",
+    "Show Tittle and Group": true,
+    "Order": 1,
+    "Name": "Rename new subsection",
+    "listOfQuestions": [
+      "1702553010799x200654265312608260"
+    ],
+    "Created Date": "2023-12-14T11:23:31.968Z",
+    "_id": "1702553010799x753622925852278800"
+  },
+  {
+    "Parent_Section": "1711639834734x394232096007913500",
+    "Created By": "1632776026974x574952115622172400",
+    "Show Tittle and Group": true,
+    "Created Date": "2024-03-28T15:30:34.424Z",
+    "Name": "DM 21",
+    "listOfQuestions": [
+      "1711639834734x295942797475446800"
+    ],
+    "Modified Date": "2024-03-28T15:31:26.772Z",
+    "Order": 1,
+    "_id": "1711639834734x179607573297365000"
+  },
+  {
+    "Order": 1,
+    "_id": "1732521950100x351258471545176060",
+    "listOfQuestions": [
+      "1732521950100x507348735222087700"
+    ],
+    "Created By": "1632528807111x150697183304296700",
+    "Modified Date": "2024-11-25T08:05:51.360Z",
+    "Parent_Section": "1732521950100x217790271253643260",
+    "Show Tittle and Group": true,
+    "Name": "Rename new subsection",
+    "Created Date": "2024-11-25T08:05:51.248Z"
+  },
+  {
+    "Name": "Rename new subsection",
+    "Modified Date": "2024-11-25T08:07:42.786Z",
+    "Show Tittle and Group": true,
+    "Created Date": "2024-11-25T08:07:42.736Z",
+    "listOfQuestions": [
+      "1732522061825x595613588780744700"
+    ],
+    "Created By": "1632528807111x150697183304296700",
+    "Order": 1,
+    "Parent_Section": "1732522061825x165553911507189760",
+    "_id": "1732522061825x624551506053431300"
+  },
+  {
+    "Created Date": "2024-11-28T11:40:10.037Z",
+    "Order": 1,
+    "listOfQuestions": [
+      "1732794008621x272915946078470140"
+    ],
+    "Name": "Rename new subsection",
+    "Parent_Section": "1732794008621x103770630728450050",
+    "Show Tittle and Group": true,
+    "Created By": "1632528807111x150697183304296700",
+    "Modified Date": "2024-11-28T11:40:10.068Z",
+    "_id": "1732794008621x809113274307051500"
+  }
+]

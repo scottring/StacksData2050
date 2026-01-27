@@ -1,0 +1,3442 @@
+[
+  {
+    "id": "71de99d8-5e99-4873-83d5-b687e4165878",
+    "name": "Add disclaimer (optional)",
+    "content": "Add disclaimer (optional)",
+    "responseType": "Multiple text lines",
+    "sectionNumber": 1,
+    "subsectionNumber": 1,
+    "orderNumber": 338,
+    "fullNumber": "1.1.338",
+    "normalized": "add disclaimer optional",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "General",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "73e96a7d-9074-4296-90b6-ceb0539c77f0",
+    "name": "Product Description or Chemical Characterization ",
+    "content": "Product Description or Chemical Characterization ",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1.1",
+    "normalized": "product description or chemical characterization",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "13ac4376-35f4-4047-bb68-50be5e771b31",
+    "name": "Product Code/Reference",
+    "content": "Product Code/Reference",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 2,
+    "fullNumber": "1.2",
+    "normalized": "product code reference",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "90ef0528-f74d-4f81-ba27-fb1fe4d19eed",
+    "name": "Function in Application",
+    "content": "Function in Application",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 3,
+    "fullNumber": "1.3",
+    "normalized": "function in application",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "e742a77c-86ef-49b3-9618-94a539e5b190",
+    "name": "Producer",
+    "content": "Producer",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 4,
+    "fullNumber": "1.4",
+    "normalized": "producer",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "General",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f5b2e21f-7319-4fa6-9e84-82b5d411acdf",
+    "name": "Production sites",
+    "content": "Production sites",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 5,
+    "fullNumber": "1.5",
+    "normalized": "production sites",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "General",
+      "Biocides",
+      "Food Contact",
+      "PIDSL",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "38296cb2-e6f2-4540-a539-dcdcbf9469e5",
+    "name": "This is a question for non association company",
+    "content": "This is a question for non association company",
+    "responseType": "Single text line",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 25,
+    "fullNumber": "1.25",
+    "normalized": "this is a question for non association company",
+    "tags": []
+  },
+  {
+    "id": "1a6d9e3f-f130-4c4e-8264-545cfc273e40",
+    "name": "What option would you take?",
+    "content": "What option would you take?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 1,
+    "subsectionNumber": null,
+    "orderNumber": 26,
+    "fullNumber": "1.26",
+    "normalized": "what option would you take",
+    "tags": []
+  },
+  {
+    "id": "2c21ccdb-6f9c-441d-8521-ebfb88a87b1e",
+    "name": "2012/481/EU: Commission Decision of 16 August 2012 establishing the ecological criteria for the award of the EU Ecolabel for printed paper:\t\t\t",
+    "content": "2012/481/EU: Commission Decision of 16 August 2012 establishing the ecological criteria for the award of the EU Ecolabel for printed paper:\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 1,
+    "orderNumber": 1,
+    "fullNumber": "2.1.1",
+    "normalized": "2012 481 eu commission decision of 16 august 2012 establishing the ecological criteria for the award of the eu ecolabel for printed paper",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels"
+    ]
+  },
+  {
+    "id": "51487a58-83ee-4d9c-b15f-2f8db9cc6513",
+    "name": "2014/256/EU: Commission Decision of 2 May 2014 establishing the ecological criteria for the award of the EU Ecolabel for converted paper products:\t\t\t",
+    "content": "2014/256/EU: Commission Decision of 2 May 2014 establishing the ecological criteria for the award of the EU Ecolabel for converted paper products:\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 1,
+    "orderNumber": 2,
+    "fullNumber": "2.1.2",
+    "normalized": "2014 256 eu commission decision of 2 may 2014 establishing the ecological criteria for the award of the eu ecolabel for converted paper products",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels"
+    ]
+  },
+  {
+    "id": "c7dc6edb-91ac-4f3f-a291-646a742404d0",
+    "name": "Commission Decision (EU) 2019/70 - ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper:\t\t\t",
+    "content": "Commission Decision (EU) 2019/70 - ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper:\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 1,
+    "orderNumber": 3,
+    "fullNumber": "2.1.3",
+    "normalized": "commission decision eu 2019 70 annex i of 11 january 2019 establishing the eu ecolabel criteria for graphic paper",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "20205775-9497-43cf-8c21-f092998823c3",
+    "name": "Commission Decision (EU) 2019/70 - ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper:\t\t\t",
+    "content": "Commission Decision (EU) 2019/70 - ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper:\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 1,
+    "orderNumber": 4,
+    "fullNumber": "2.1.4",
+    "normalized": "commission decision eu 2019 70 annex ii of 11 january 2019 establishing the eu ecolabel criteria for tissue paper",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "5fb7a0b4-6181-4a29-9628-0c030c6d7fd5",
+    "name": "Paper Products - Chemical Module",
+    "content": "Paper Products - Chemical Module",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 2,
+    "orderNumber": 5,
+    "fullNumber": "2.2.5",
+    "normalized": "paper products chemical module",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "34531d15-bc7d-4ca9-8276-778e36ae7c88",
+    "name": "Tissue Paper - Supplementary Module",
+    "content": "Tissue Paper - Supplementary Module",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 2,
+    "orderNumber": 6,
+    "fullNumber": "2.2.6",
+    "normalized": "tissue paper supplementary module",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "1a2a64bc-054a-4764-9e5b-a199a5c6f9b0",
+    "name": "Grease-proof paper - Supplementary Module",
+    "content": "Grease-proof paper - Supplementary Module",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 2,
+    "orderNumber": 7,
+    "fullNumber": "2.2.7",
+    "normalized": "grease proof paper supplementary module",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b95a1dda-d719-407c-9118-f2f05324c3af",
+    "name": "Packaging for Liquid Foods",
+    "content": "Packaging for Liquid Foods",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 2,
+    "orderNumber": 8,
+    "fullNumber": "2.2.8",
+    "normalized": "packaging for liquid foods",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "25c9ef6e-f065-40c4-a8d9-54bbe6d03730",
+    "name": "Disposables for Food",
+    "content": "Disposables for Food",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 2,
+    "orderNumber": 9,
+    "fullNumber": "2.2.9",
+    "normalized": "disposables for food",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f59e6b7d-fb9c-4d99-bde4-4abb032df426",
+    "name": "DE-UZ-5. Sanitary paper products made of recycled paper",
+    "content": "DE-UZ-5. Sanitary paper products made of recycled paper",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 3,
+    "orderNumber": 11,
+    "fullNumber": "2.3.11",
+    "normalized": "de uz 5 sanitary paper products made of recycled paper",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "54d5ef44-904f-46e7-8e87-871c6e917410",
+    "name": "DE-UZ 14a - Recycled paper",
+    "content": "DE-UZ 14a - Recycled paper",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 3,
+    "orderNumber": 12,
+    "fullNumber": "2.3.12",
+    "normalized": "de uz 14a recycled paper",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "5f0726f0-4fb4-4106-848c-d53a7e525b51",
+    "name": "DE-UZ 14b - Finished products made from recovered paper for office and school demand\t\t\t",
+    "content": "DE-UZ 14b - Finished products made from recovered paper for office and school demand\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 3,
+    "orderNumber": 13,
+    "fullNumber": "2.3.13",
+    "normalized": "de uz 14b finished products made from recovered paper for office and school demand",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c4091d45-de4b-4ed9-8dcb-39f2147852ee",
+    "name": "DE-UZ 56 - Recycled cardboard\t\t\t",
+    "content": "DE-UZ 56 - Recycled cardboard\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 3,
+    "orderNumber": 14,
+    "fullNumber": "2.3.14",
+    "normalized": "de uz 56 recycled cardboard",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "de58ea93-de7e-4bfb-8684-49f16b0910e7",
+    "name": "DE-UZ 72 - Printing and publication papers",
+    "content": "DE-UZ 72 - Printing and publication papers",
+    "responseType": "Select one Radio",
+    "sectionNumber": 2,
+    "subsectionNumber": 3,
+    "orderNumber": 15,
+    "fullNumber": "2.3.15",
+    "normalized": "de uz 72 printing and publication papers",
+    "tags": [
+      "HQ 2.0.1",
+      "Ecolabels",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "79dc438f-fbb6-432e-b64b-a7097cd61b9f",
+    "name": "According to Regulation (EU) No. 528/2012 does the product contain biocidal active substances either intentionally added or non-intentionally via other raw materials?\t",
+    "content": "According to Regulation (EU) No. 528/2012 does the product contain biocidal active substances either intentionally added or non-intentionally via other raw materials?\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "3.1",
+    "normalized": "according to regulation eu no 528 2012 does the product contain biocidal active substances either intentionally added or non intentionally via other raw materials",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "6ba260e3-6dfb-47fd-8675-85356c56088b",
+    "name": "If yes, please specify the substance and concentration in product",
+    "content": "If yes, please specify the substance and concentration in product",
+    "responseType": "List table",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 2,
+    "fullNumber": "3.2",
+    "normalized": "if yes please specify the substance and concentration in product",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "f8788a62-d0bf-4e7e-9eb4-8de85fea961e",
+    "name": "Are the biocidal active substances used for in-can preservation (PT 6)?\t",
+    "content": "Are the biocidal active substances used for in-can preservation (PT 6)?\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 3,
+    "fullNumber": "3.3",
+    "normalized": "are the biocidal active substances used for in can preservation pt 6",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "59f10cb3-dbe3-48df-bccf-dc45078ee8c7",
+    "name": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 6?",
+    "content": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 6?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 4,
+    "fullNumber": "3.4",
+    "normalized": "are the biocidal active substances listed in the article 95 list published by echa with the respective producer under pt 6",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "1d91efe4-e89c-4c41-846f-75ca30943177",
+    "name": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+    "content": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 5,
+    "fullNumber": "3.5",
+    "normalized": "only applicable for eu suppliers is the supplier of the active substance listed as an approved supplier in the article 95 list for respective active substance",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "7b4e26f6-cd15-4217-b9ca-4a7e3290998a",
+    "name": "Are the biocidal active substances used as slimicides (PT 12)?",
+    "content": "Are the biocidal active substances used as slimicides (PT 12)?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 6,
+    "fullNumber": "3.6",
+    "normalized": "are the biocidal active substances used as slimicides pt 12",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "2d332233-c8a8-4769-8f00-6840e50abf12",
+    "name": "Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance?",
+    "content": "Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 8,
+    "fullNumber": "3.8",
+    "normalized": "only applicable for eu suppliers is the supplier of the active substance listed as an approved supplier in the article 95 list for respective active substance",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "dfcf48c2-3626-4368-85ae-6d02232778d6",
+    "name": "Are the biocidal active substances used as Preservatives for liquid-cooling and processing systems (PT 11)?",
+    "content": "Are the biocidal active substances used as Preservatives for liquid-cooling and processing systems (PT 11)?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 9,
+    "fullNumber": "3.9",
+    "normalized": "are the biocidal active substances used as preservatives for liquid cooling and processing systems pt 11",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "63f41e99-b640-4691-95a7-c1c59c5998f3",
+    "name": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 11?",
+    "content": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 11?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 10,
+    "fullNumber": "3.10",
+    "normalized": "are the biocidal active substances listed in the article 95 list published by echa with the respective producer under pt 11",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides"
+    ]
+  },
+  {
+    "id": "73b56921-4fa9-4655-bcfd-971ee6e53707",
+    "name": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+    "content": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 3,
+    "subsectionNumber": null,
+    "orderNumber": 11,
+    "fullNumber": "3.11",
+    "normalized": "only applicable for eu suppliers is the supplier of the active substance listed as an approved supplier in the article 95 list for respective active substance",
+    "tags": [
+      "HQ 2.0.1",
+      "Biocides",
+      "HQ2.1",
+      "Biocides-2.1"
+    ]
+  },
+  {
+    "id": "bf4bad40-d44a-49c4-9891-855c99937265",
+    "name": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+    "content": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "4.1",
+    "normalized": "can the product be used for production of food contact articles from paper and paperboard incl incidental food contact",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "466900f0-f7fc-4b95-b8b3-22ad8ad6391d",
+    "name": "Please specify general limitations which may apply to the product (e.g. dosage limitation): (Enter n/a if not applicable)",
+    "content": "Please specify general limitations which may apply to the product (e.g. dosage limitation): (Enter n/a if not applicable)",
+    "responseType": "Multiple text lines",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 2,
+    "fullNumber": "4.2",
+    "normalized": "please specify general limitations which may apply to the product e g dosage limitation enter n a if not applicable",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "ac83b165-a67c-4a9e-8811-1314bbb1b446",
+    "name": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of article 3 and article 17 of the Framework Regulation (EC) No 1935/2004?",
+    "content": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of article 3 and article 17 of the Framework Regulation (EC) No 1935/2004?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 3,
+    "fullNumber": "4.3",
+    "normalized": "can the product be used for the production of articles from paper and paperboard which comply with the requirements of article 3 and article 17 of the framework regulation ec no 1935 2004",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "49169de7-593a-4ce0-b096-c6f3d0bcf66e",
+    "name": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version",
+    "content": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 4,
+    "fullNumber": "4.4",
+    "normalized": "bfr federal institute for risk assessment recommendation xiv polymer dispersions in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "39ca7781-7886-4fb2-ab73-c9c8f44ab647",
+    "name": "If yes, please provide details for components with restrictions: (XIV)",
+    "content": "If yes, please provide details for components with restrictions: (XIV)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 5,
+    "fullNumber": "4.5",
+    "normalized": "if yes please provide details for components with restrictions xiv",
+    "tags": [
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "87db1708-5add-473a-a52a-6dbb2073f17b",
+    "name": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.\t\t\t",
+    "content": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 6,
+    "fullNumber": "4.6",
+    "normalized": "bfr federal institute for risk assessment recommendation xxxvi paper and board for food contact in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "ccd80e90-464e-4f76-a19c-e4dac087e3f0",
+    "name": "If yes, please provide details for components with restrictions: (XXXVI)",
+    "content": "If yes, please provide details for components with restrictions: (XXXVI)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 7,
+    "fullNumber": "4.7",
+    "normalized": "if yes please provide details for components with restrictions xxxvi",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "bd8c6d60-1cb5-411b-bee6-264f1dde9221",
+    "name": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+    "content": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 8,
+    "fullNumber": "4.8",
+    "normalized": "bfr federal institute for risk assessment recommendation xxxvi 1 cooking papers hot filter papers and filter layers in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "d5b0561d-64bf-4fa3-a5b7-b1f459861142",
+    "name": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+    "content": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 9,
+    "fullNumber": "4.9",
+    "normalized": "if yes please provide details for components with restrictions xxxvi 1",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "3b2167ea-fe3d-4743-a440-e1bf05381f53",
+    "name": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.\t\t\t",
+    "content": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 10,
+    "fullNumber": "4.10",
+    "normalized": "bfr federal institute for risk assessment recommendation xxxvi 2 paper and paperboard for baking purposes in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8d7f1f4b-278c-4047-8f9c-3f8bfab4c10e",
+    "name": "If yes, please provide details for components with restrictions (XXXVI/2):",
+    "content": "If yes, please provide details for components with restrictions (XXXVI/2):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 11,
+    "fullNumber": "4.11",
+    "normalized": "if yes please provide details for components with restrictions xxxvi 2",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "fc26fe6f-fd26-420a-a642-cf340cac6dc7",
+    "name": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+    "content": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 12,
+    "fullNumber": "4.12",
+    "normalized": "bfr federal institute for risk assessment recommendation xxxvi 3 absorber pads based on cellulosic fibres for food packaging in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "080248a3-c616-404e-a9c1-486c69390778",
+    "name": "If yes, please provide details for components with restrictions (XXXVI/3)",
+    "content": "If yes, please provide details for components with restrictions (XXXVI/3)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 13,
+    "fullNumber": "4.13",
+    "normalized": "if yes please provide details for components with restrictions xxxvi 3",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "3796bad9-5177-486e-8261-17ff10dbf268",
+    "name": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+    "content": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 14,
+    "fullNumber": "4.14",
+    "normalized": "other bfr federal institute for risk assessment recommendations including relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "353cd2e2-e199-4f95-be7b-312f65ab02c3",
+    "name": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+    "content": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 15,
+    "fullNumber": "4.15",
+    "normalized": "does the product comply with the requirements of commodities act packaging and consumer articles regulation warenwetregeling verpakkingen en gebruiksartikelen as amended hoofdstuk ii papier en karton paper and paperboard",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "006cb760-7e6c-4234-9b2f-abd3a9831c67",
+    "name": "If yes, please provide details for components with restrictions (Hoof II)",
+    "content": "If yes, please provide details for components with restrictions (Hoof II)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 16,
+    "fullNumber": "4.16",
+    "normalized": "if yes please provide details for components with restrictions hoof ii",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "76f292c5-3e2a-41b2-8d41-95fa4eacdcd9",
+    "name": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+    "content": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 17,
+    "fullNumber": "4.17",
+    "normalized": "does the product comply with the requirements of commodities act packaging and consumer articles regulation warenwetregeling verpakkingen en gebruiksartikelen as amended hoofdstuk x deklagen coatings",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f6e4c711-e522-4d29-81e7-8e72cd9d98a7",
+    "name": "If yes, please provide details for components with restrictions (Hoof X)",
+    "content": "If yes, please provide details for components with restrictions (Hoof X)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 18,
+    "fullNumber": "4.18",
+    "normalized": "if yes please provide details for components with restrictions hoof x",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "85c1f337-120f-4b0b-9722-918be9d7d64a",
+    "name": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+    "content": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 19,
+    "fullNumber": "4.19",
+    "normalized": "does the product comply with sr 817 023 21 ordinance of the edi on articles and materials for food contact of 01 may 2017 especially annex 10 authorized substances for the manufacture of printing inks",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "073ef63f-5313-433e-9a43-bfe3b3bfef17",
+    "name": "If yes, please give all relevant restrictions, as well as all limitations given in column 7-9:\t\n*Include \"use\" from column 5 and classification (A or B) from column 6.\t\n\t",
+    "content": "If yes, please give all relevant restrictions, as well as all limitations given in column 7-9:\t\n*Include \"use\" from column 5 and classification (A or B) from column 6.\t\n\t",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 20,
+    "fullNumber": "4.20",
+    "normalized": "if yes please give all relevant restrictions as well as all limitations given in column 7 9 include use from column 5 and classification a or b from column 6",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "6828cad3-24f3-4be4-8e50-548d9c073f67",
+    "name": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+    "content": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 21,
+    "fullNumber": "4.21",
+    "normalized": "does the product comply with the ministerial decree of 21 march 1973 as amended concerning hygiene requirements for packages containers and tools destined to come into contact with food or substances for personal use",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "1b4b24ea-87f1-4faf-b984-d7c641157862",
+    "name": "If yes, please provide details for components with restrictions (italy)",
+    "content": "If yes, please provide details for components with restrictions (italy)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 22,
+    "fullNumber": "4.22",
+    "normalized": "if yes please provide details for components with restrictions italy",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f11a4307-1f74-43d3-9033-84a8249b96e5",
+    "name": "Does the product comply with the French Decree No. 2008/1469 of 30 December 2008 „on materials and articles intended to contact with food“? ",
+    "content": "Does the product comply with the French Decree No. 2008/1469 of 30 December 2008 „on materials and articles intended to contact with food“? ",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 23,
+    "fullNumber": "4.23",
+    "normalized": "does the product comply with the french decree no 2008 1469 of 30 december 2008 on materials and articles intended to contact with food",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact"
+    ]
+  },
+  {
+    "id": "b1bd93bd-5a56-44e4-8ad7-143bd4ecb964",
+    "name": "If yes, please provide details for components with restrictions (France)",
+    "content": "If yes, please provide details for components with restrictions (France)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 24,
+    "fullNumber": "4.24",
+    "normalized": "if yes please provide details for components with restrictions france",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c63ed42f-d271-42a0-9b76-f36ce0f25c7d",
+    "name": "Please give detailed information on the respective directive and include all relevant restrictions:",
+    "content": "Please give detailed information on the respective directive and include all relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 25,
+    "fullNumber": "4.25",
+    "normalized": "please give detailed information on the respective directive and include all relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "07127a50-42e6-4203-9ee8-dc0fb9c81750",
+    "name": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 as amended?",
+    "content": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 as amended?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 26,
+    "fullNumber": "4.26",
+    "normalized": "are components used in the manufacture of the product which are listed with specific limits in the eu regulation on plastics materials and articles eu 10 2011 as amended",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "08f30c0c-52ab-4343-a4fe-b2ba5e17fc79",
+    "name": "If yes, please provide FCM No. and all relevant restrictions:",
+    "content": "If yes, please provide FCM No. and all relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 27,
+    "fullNumber": "4.27",
+    "normalized": "if yes please provide fcm no and all relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "fd71d475-aea8-4ebd-b0a3-ee418afd6338",
+    "name": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+    "content": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 28,
+    "fullNumber": "4.28",
+    "normalized": "can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 cfr 176 170 components of paper and paperboard in contact with aqueous and fatty foods",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "23776426-ae2a-4642-9ec2-9c5e28edb0e4",
+    "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+    "content": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 29,
+    "fullNumber": "4.29",
+    "normalized": "if yes please give all relevant restrictions usa 21 cfr 176 170",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "d9aeb851-426c-4671-ad33-2473265ee68a",
+    "name": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry foods”?",
+    "content": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry foods”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 30,
+    "fullNumber": "4.30",
+    "normalized": "can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 cfr 176 180 components of paper and paperboard in contact with dry foods",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8d141c79-816a-4b5d-8894-56085d93efd9",
+    "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+    "content": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 31,
+    "fullNumber": "4.31",
+    "normalized": "if yes please give all relevant restrictions usa 21 cfr 176 180",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c12489ba-a7d8-4421-9f53-40a830a00e90",
+    "name": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+    "content": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 32,
+    "fullNumber": "4.32",
+    "normalized": "21 cfr 175 105 adhesives provided that the respective use conditions described in 175 105 are met",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "09530b6e-6b15-4e1e-92b4-22303cdf1c66",
+    "name": "If yes, please give all relevant restrictions (USA 175.105):",
+    "content": "If yes, please give all relevant restrictions (USA 175.105):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 33,
+    "fullNumber": "4.33",
+    "normalized": "if yes please give all relevant restrictions usa 175 105",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "6d857018-f523-477a-9014-db88bb2777b2",
+    "name": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+    "content": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 34,
+    "fullNumber": "4.34",
+    "normalized": "21 cfr 175 300 resinous and polymeric coatings",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c34a0eb4-99a9-4885-acd7-5c8a8dd84efc",
+    "name": "If yes, please give all relevant restrictions (USA 175.300):",
+    "content": "If yes, please give all relevant restrictions (USA 175.300):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 35,
+    "fullNumber": "4.35",
+    "normalized": "if yes please give all relevant restrictions usa 175 300",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "523cf3d8-9471-48f0-aea7-0ef4c3de7b08",
+    "name": "21 CFR § 176.300 “Slimicides”?",
+    "content": "21 CFR § 176.300 “Slimicides”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 36,
+    "fullNumber": "4.36",
+    "normalized": "21 cfr 176 300 slimicides",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "a8439b37-d492-4625-85d7-63e4c30e0c2c",
+    "name": "If yes, please give all relevant restrictions (USA Slimicides 176.300\"):",
+    "content": "If yes, please give all relevant restrictions (USA Slimicides 176.300\"):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 37,
+    "fullNumber": "4.37",
+    "normalized": "if yes please give all relevant restrictions usa slimicides 176 300",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "2c37b32d-22c3-436d-922e-0398ccc8b851",
+    "name": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+    "content": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 38,
+    "fullNumber": "4.38",
+    "normalized": "21 cfr 176 200 defoaming agents used in coatings",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c40cd2e8-ac57-4f53-b6f2-227da7d3e2de",
+    "name": "If yes, please give all relevant restrictions (176.200):",
+    "content": "If yes, please give all relevant restrictions (176.200):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 39,
+    "fullNumber": "4.39",
+    "normalized": "if yes please give all relevant restrictions 176 200",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "18adf139-3891-4a48-9a16-8ba495147c0f",
+    "name": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+    "content": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 40,
+    "fullNumber": "4.40",
+    "normalized": "21 cfr 176 210 defoaming agents used in the manufacture of paper and paperboard",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "fa7bced3-a908-4702-9a58-d2e12dad7b68",
+    "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.210)",
+    "content": "If yes, please give all relevant restrictions: (USA 21 CFR 176.210)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 41,
+    "fullNumber": "4.41",
+    "normalized": "if yes please give all relevant restrictions usa 21 cfr 176 210",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "a494e521-15d4-4018-a89d-706834085814",
+    "name": "Does the product have a Food Contact Notification (FCN) in effect?",
+    "content": "Does the product have a Food Contact Notification (FCN) in effect?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 42,
+    "fullNumber": "4.42",
+    "normalized": "does the product have a food contact notification fcn in effect",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "ca09a67b-cf36-46e3-9d48-c29e1a5fd5ba",
+    "name": "If yes, please give all relevant restrictions (USA FCN):",
+    "content": "If yes, please give all relevant restrictions (USA FCN):",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 43,
+    "fullNumber": "4.43",
+    "normalized": "if yes please give all relevant restrictions usa fcn",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "fbe658d1-5eb0-402e-ae89-9d107dcae188",
+    "name": "Other 21 CFR chapters including all relevant limitations?",
+    "content": "Other 21 CFR chapters including all relevant limitations?",
+    "responseType": "Multiple text lines",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 44,
+    "fullNumber": "4.44",
+    "normalized": "other 21 cfr chapters including all relevant limitations",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "67ee96ea-b33f-4208-ae55-386ca7080718",
+    "name": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+    "content": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 45,
+    "fullNumber": "4.45",
+    "normalized": "is the product in accordance with the national food safety standard general safety requirements of food contact materials and articles gb 4806 1 2016 as amended",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "4a0c1c02-87e0-4177-adab-af071208e1a8",
+    "name": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB4806.8-2016 as amended?\t\t\t",
+    "content": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB4806.8-2016 as amended?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 47,
+    "fullNumber": "4.47",
+    "normalized": "does your product fulfill the requirements of the national food safety standard papers paperboard materials and its articles for food contact gb4806 8 2016 as amended",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "7f618779-daca-4818-98e6-bcb7e3a4017d",
+    "name": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?\t\t\t",
+    "content": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 48,
+    "fullNumber": "4.48",
+    "normalized": "does your product comply with the requirements for food contact paper and board materials and their products according to the national standard of the people s republic of china gb9685 2016 standard for uses of additives in food contact materials and articles issued oct 19th 2016 as amended",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "462f1213-b2f3-4c62-a510-b1aaa32a5fc8",
+    "name": "If yes, please give all relevant restrictions (GB9685)\n",
+    "content": "If yes, please give all relevant restrictions (GB9685)\n",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 49,
+    "fullNumber": "4.49",
+    "normalized": "if yes please give all relevant restrictions gb9685",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "d5b883ae-d257-4f70-b6dc-375327577035",
+    "name": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+    "content": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 50,
+    "fullNumber": "4.50",
+    "normalized": "other standard gb for resin or any positive listing for resin by moh announcement which applies to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "65df3f99-e9fd-4122-b040-2c74cc9e32f0",
+    "name": "If yes, please give all relevant restrictions (other)",
+    "content": "If yes, please give all relevant restrictions (other)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 51,
+    "fullNumber": "4.51",
+    "normalized": "if yes please give all relevant restrictions other",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "00c7c0ee-0dac-4f03-b0c2-d0662ffa933e",
+    "name": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+    "content": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 52,
+    "fullNumber": "4.52",
+    "normalized": "can the product be used for the production of articles from paper and paperboard which comply with the requirements of mercosur gmc res no 03 92",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b5adc0b1-0391-4093-89f4-81224ec825a7",
+    "name": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+    "content": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 53,
+    "fullNumber": "4.53",
+    "normalized": "mercosur gmc res no 39 19 technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "920c8b14-aa85-4aea-9933-95083844914b",
+    "name": "(39-19) If yes, please give all relevant restrictions:",
+    "content": "(39-19) If yes, please give all relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 54,
+    "fullNumber": "4.54",
+    "normalized": "39 19 if yes please give all relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "11df92fb-8258-4750-90f6-93e48188b730",
+    "name": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+    "content": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 55,
+    "fullNumber": "4.55",
+    "normalized": "mercosur gmc res no 40 15 technical regulations on materials packages and cellulosic equipment destined to be in contact with foods in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "fb0a5888-779b-4fc4-b6b3-58b1367f55b0",
+    "name": "(40-15) If yes, please give all relevant restrictions:",
+    "content": "(40-15) If yes, please give all relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 56,
+    "fullNumber": "4.56",
+    "normalized": "40 15 if yes please give all relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "71152eba-f738-4b50-8fc4-78bb1724bae8",
+    "name": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+    "content": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 57,
+    "fullNumber": "4.57",
+    "normalized": "mercosur gmc res no 41 15 technical regulations on cellulosic materials for hot cooking and filtration in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f547d63c-97e9-4ff1-809e-cc621f1b6d20",
+    "name": "If yes, please give all relevant restrictions: (41/15) ",
+    "content": "If yes, please give all relevant restrictions: (41/15) ",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 58,
+    "fullNumber": "4.58",
+    "normalized": "if yes please give all relevant restrictions 41 15",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "9344bd5f-171e-4806-a999-56c8548c278c",
+    "name": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?\t\t\t",
+    "content": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 59,
+    "fullNumber": "4.59",
+    "normalized": "mercosur gmc res no 42 15 technical regulations on materials containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8f657b22-ca41-4651-8bc6-34d50409952f",
+    "name": "(MERC42/15) If yes, please give all relevant restrictions:",
+    "content": "(MERC42/15) If yes, please give all relevant restrictions:",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 60,
+    "fullNumber": "4.60",
+    "normalized": "merc42 15 if yes please give all relevant restrictions",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "dae03351-83f6-406d-a5c0-14c0755df605",
+    "name": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+    "content": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 61,
+    "fullNumber": "4.61",
+    "normalized": "mercosur gmc res no 02 12 technical regulation on the positive list of monomers other starting substances and authorized polymers for plastic equipment in contact with food in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "51a8aa66-75ec-46b6-9571-86172cb5b4ef",
+    "name": "If yes, please give all relevant restrictions: (02/12)",
+    "content": "If yes, please give all relevant restrictions: (02/12)",
+    "responseType": "List table",
+    "sectionNumber": 4,
+    "subsectionNumber": null,
+    "orderNumber": 62,
+    "fullNumber": "4.62",
+    "normalized": "if yes please give all relevant restrictions 02 12",
+    "tags": [
+      "HQ 2.0.1",
+      "Food Contact",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "de8c706a-04ec-45e9-8907-2f3ca0ac3a43",
+    "name": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+    "content": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "5.1",
+    "normalized": "does the product contain substances classified as carcinogenic c mutagenic m or reprotoxic r according to annex vi of the clp regulation ec no 1272 2008 as amended in concentrations exceeding 0 1 w w or a specific concentration limit",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "16504b37-795d-44d3-a561-e6b8c7aac7c0",
+    "name": "Please provide details of the substance identity and concentration",
+    "content": "Please provide details of the substance identity and concentration",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 2,
+    "fullNumber": "5.2",
+    "normalized": "please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f69db08a-5434-4c14-bd07-a750fb3b6eca",
+    "name": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+    "content": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 3,
+    "fullNumber": "5.3",
+    "normalized": "does the product contain svhc substances listed in the candidate list of substances of very high concern for authorization article 59 list on the echa homepage in concentrations exceeding 0 1 w w",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "2e99573b-930d-487a-81a9-7f1714b8d2eb",
+    "name": "Please provide details of the substance identity and concentration (SVHC)",
+    "content": "Please provide details of the substance identity and concentration (SVHC)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 4,
+    "fullNumber": "5.4",
+    "normalized": "please provide details of the substance identity and concentration svhc",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "3a2359ad-e918-417a-ba99-fdeb24ccdcb0",
+    "name": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "content": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 5,
+    "fullNumber": "5.5",
+    "normalized": "does the product contain substances subject to authorisation according to annex xiv of the reach regulation ec no 1907 2006 as amended in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "acc714c6-dd2f-42cb-a66d-22bb1e981838",
+    "name": "If yes, please provide details of the substance identity and concentration (Annex XIV)",
+    "content": "If yes, please provide details of the substance identity and concentration (Annex XIV)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 6,
+    "fullNumber": "5.6",
+    "normalized": "if yes please provide details of the substance identity and concentration annex xiv",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8a19fcae-f5f8-4781-b95b-7ecbaeaa3370",
+    "name": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "content": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 7,
+    "fullNumber": "5.7",
+    "normalized": "does the product contain substances subject to restrictions according to annex xvii of the reach regulation ec no 1907 2006 as amended in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "0a62d06f-1fb7-467b-8de5-331caada3dd9",
+    "name": "If yes, please provide details of the substance identity and concentration (Annex XVII)",
+    "content": "If yes, please provide details of the substance identity and concentration (Annex XVII)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 8,
+    "fullNumber": "5.8",
+    "normalized": "if yes please provide details of the substance identity and concentration annex xvii",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "82ae3b9f-665f-4287-a500-e903cefad14a",
+    "name": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 11,
+    "fullNumber": "5.11",
+    "normalized": "does the product contain priority substances listed in the water framework directive 2000 60 ec or the directive on environmental quality standards directive 2008 105 ec in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "97d2a85f-d99c-483b-9f88-2dc7e0b7c972",
+    "name": "If yes, please provide details of the substance identity and concentration (2000/60.EC)",
+    "content": "If yes, please provide details of the substance identity and concentration (2000/60.EC)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 12,
+    "fullNumber": "5.12",
+    "normalized": "if yes please provide details of the substance identity and concentration 2000 60 ec",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b063ca55-9337-4c3c-9822-076b0541fe0d",
+    "name": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "content": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 13,
+    "fullNumber": "5.13",
+    "normalized": "does the product contain persistent organic pollutants pop in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "133ae6fa-8ff5-4ccb-9a8b-e1dc31defa5b",
+    "name": "If yes, please provide details of the substance identity and concentration (POP)",
+    "content": "If yes, please provide details of the substance identity and concentration (POP)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 14,
+    "fullNumber": "5.14",
+    "normalized": "if yes please provide details of the substance identity and concentration pop",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "e5693181-7cfd-4e37-9cce-93c2b2377d35",
+    "name": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+    "content": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 19,
+    "fullNumber": "5.19",
+    "normalized": "does the product contain more than 100 ppm as sum of lead cadmium mercury and hexavalent chromium therefore the product can not be used in packaging material with regard to coneg and directive 94 62 ec on packaging and packaging waste",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "cfd9e24f-924a-4846-abbb-81b7dd6385ec",
+    "name": "If yes, please provide details of the substance identity and concentration (CONEG)",
+    "content": "If yes, please provide details of the substance identity and concentration (CONEG)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 20,
+    "fullNumber": "5.20",
+    "normalized": "if yes please provide details of the substance identity and concentration coneg",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "04f50090-1f4d-43ff-a504-37979ed2e5e8",
+    "name": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t",
+    "content": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 21,
+    "fullNumber": "5.21",
+    "normalized": "does the product contain elements restricted by standard en 71 3 or organic contaminants as restricted by standard en 71 9 in its current version",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "5b7500bb-177f-4f0d-8238-fa84c4359579",
+    "name": "If yes, please provide details of the substance identity and concentration (71-3)",
+    "content": "If yes, please provide details of the substance identity and concentration (71-3)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 22,
+    "fullNumber": "5.22",
+    "normalized": "if yes please provide details of the substance identity and concentration 71 3",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "14cc42ef-cfd0-45f7-859b-b600d8d356fa",
+    "name": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+    "content": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 23,
+    "fullNumber": "5.23",
+    "normalized": "does the product contain substances included in the california proposition 65 list safe drinking water and toxic enforcement act of 1986",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "dc6f92cd-9d6e-4b89-87c5-8bd4e056b012",
+    "name": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+    "content": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 24,
+    "fullNumber": "5.24",
+    "normalized": "if yes please provide details of the substance identity and concentration drinking water",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "cb5d256c-1689-4ea8-8ad1-d7f802130018",
+    "name": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+    "content": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 27,
+    "fullNumber": "5.27",
+    "normalized": "does the product contain substances listed in the pidsl list in concentrations exceeding the declarable limit",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "e707c362-6e95-439f-b261-dd70420d54ba",
+    "name": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+    "content": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 28,
+    "fullNumber": "5.28",
+    "normalized": "if yes please provide details of the substance identity and concentration pidsl",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "adc94412-0058-4a31-acec-c1185f47ae1f",
+    "name": "If yes, please provide details of the substance identity and concentration (CoRAP)",
+    "content": "If yes, please provide details of the substance identity and concentration (CoRAP)",
+    "responseType": "List table",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 223,
+    "fullNumber": "5.223",
+    "normalized": "if yes please provide details of the substance identity and concentration corap",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "002d2564-f9fa-4c80-a734-ec0a5b9dba4b",
+    "name": "Click here and then press the button to open PIDSL List. NOTE: if you don't have any changes to make in the PIDSL table, please click the \"open PIDSL table button\" and type \"no changes\" in any open comments box.",
+    "content": "Click here and then press the button to open PIDSL List. NOTE: if you don't have any changes to make in the PIDSL table, please click the \"open PIDSL table button\" and type \"no changes\" in any open comments box.",
+    "responseType": "PIDSL List",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 270,
+    "fullNumber": "5.270",
+    "normalized": "click here and then press the button to open pidsl list note if you don t have any changes to make in the pidsl table please click the open pidsl table button and type no changes in any open comments box",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "e3eb7872-f202-41d9-a102-bdbd55cb94cd",
+    "name": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "content": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 5,
+    "subsectionNumber": null,
+    "orderNumber": 9800,
+    "fullNumber": "5.9800",
+    "normalized": "does the product contain substances subject to community rolling action plan corap in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL"
+    ]
+  },
+  {
+    "id": "713d6e56-8d0e-422c-bd8d-58ccef9f97c6",
+    "name": "Does the delivered product and/or its production site or line have a Kosher certification?",
+    "content": "Does the delivered product and/or its production site or line have a Kosher certification?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 1,
+    "fullNumber": "6.1.1",
+    "normalized": "does the delivered product and or its production site or line have a kosher certification",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "85d6ee19-1923-4945-ad5b-69d0bd9d5975",
+    "name": "If yes, please attach the certificate and specify an expiration date!",
+    "content": "If yes, please attach the certificate and specify an expiration date!",
+    "responseType": "File document",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 2,
+    "fullNumber": "6.1.2",
+    "normalized": "if yes please attach the certificate and specify an expiration date",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "2d6f1126-b3a9-4e1d-abe1-db8ff0068373",
+    "name": "Does the delivered product and/or its production site or line have a Halal certification?",
+    "content": "Does the delivered product and/or its production site or line have a Halal certification?",
+    "responseType": "Select one",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 3,
+    "fullNumber": "6.1.3",
+    "normalized": "does the delivered product and or its production site or line have a halal certification",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "35b03916-101c-4653-b2cd-094b1b6dc067",
+    "name": "If yes, please attach the certificate (Halal)!",
+    "content": "If yes, please attach the certificate (Halal)!",
+    "responseType": "File document",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 4,
+    "fullNumber": "6.1.4",
+    "normalized": "if yes please attach the certificate halal",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "4e7c381b-aef5-43d5-91fe-f32127eced32",
+    "name": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product? ",
+    "content": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product? ",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 5,
+    "fullNumber": "6.1.5",
+    "normalized": "are substances prohibited during passover chametz and kitniyot intentionally added to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f8827fa9-2e90-434b-abc8-4c92d2f368c9",
+    "name": "If yes, please provide details on the substance identity and concentration (ch-ki)",
+    "content": "If yes, please provide details on the substance identity and concentration (ch-ki)",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 1,
+    "orderNumber": 6,
+    "fullNumber": "6.1.6",
+    "normalized": "if yes please provide details on the substance identity and concentration ch ki",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "915647fc-55f0-451b-b18e-4f373f8e58a2",
+    "name": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+    "content": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 2,
+    "orderNumber": 7,
+    "fullNumber": "6.2.7",
+    "normalized": "are substances of animal origin including dairy and dairy based ingredients intentionally added to the product or known contaminants in the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "87e06592-83b9-4c08-b3f6-c963d7adb134",
+    "name": "If yes, please provide details on the substance identity and concentration:",
+    "content": "If yes, please provide details on the substance identity and concentration:",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 2,
+    "orderNumber": 8,
+    "fullNumber": "6.2.8",
+    "normalized": "if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b5e9dcb3-5c76-4bc8-9e0f-bead9afb1386",
+    "name": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+    "content": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 3,
+    "orderNumber": 9,
+    "fullNumber": "6.3.9",
+    "normalized": "is there a concern that the product contains bse bovine spongiform encephalopathy or tse transmissible spongiform encephalopathies specified risk material as defined in the decision 97 534 ec emea 410 01 and current eu legislation",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f0c03e1f-7b06-4db3-aa7d-67fc7a916956",
+    "name": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+    "content": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 4,
+    "orderNumber": 10,
+    "fullNumber": "6.4.10",
+    "normalized": "is ethanol cas 64 17 5 intentionally added to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "ece6faff-e3eb-459b-a6ca-1ccfa0ad5a48",
+    "name": "If yes, is the ethanol derived from plant (wheat, grape, …) source?",
+    "content": "If yes, is the ethanol derived from plant (wheat, grape, …) source?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 4,
+    "orderNumber": 11,
+    "fullNumber": "6.4.11",
+    "normalized": "if yes is the ethanol derived from plant wheat grape source",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "415e927b-4def-4520-972b-e16e545e3c52",
+    "name": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+    "content": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 5,
+    "orderNumber": 12,
+    "fullNumber": "6.5.12",
+    "normalized": "are food allergens as defined by regulation eu no 1169 2011 intentionally added to the product or known contaminants in the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "9d741d26-f2b4-49bc-bb1a-2430e028692b",
+    "name": "If yes, please provide details on the substance identity and concentration:",
+    "content": "If yes, please provide details on the substance identity and concentration:",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 5,
+    "orderNumber": 13,
+    "fullNumber": "6.5.13",
+    "normalized": "if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "29959184-c072-4367-a86f-ca209a13f051",
+    "name": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+    "content": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 5,
+    "orderNumber": 14,
+    "fullNumber": "6.5.14",
+    "normalized": "are food allergens as defined by us food allergen labeling and consumer protection act of 2004 intentionally added to the product or known contaminants in the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "4acfc59e-2b78-4869-b656-83d70b811e34",
+    "name": "If yes, please provide details on the substance identity and concentration",
+    "content": "If yes, please provide details on the substance identity and concentration",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 5,
+    "orderNumber": 15,
+    "fullNumber": "6.5.15",
+    "normalized": "if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "369dc117-d7f0-4d37-bf64-a1de44850dac",
+    "name": "Are nanomaterials as defined by EC Recommendation 2011/696/EU intentionally added to the product? ",
+    "content": "Are nanomaterials as defined by EC Recommendation 2011/696/EU intentionally added to the product? ",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 6,
+    "orderNumber": 16,
+    "fullNumber": "6.6.16",
+    "normalized": "are nanomaterials as defined by ec recommendation 2011 696 eu intentionally added to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "db9c35fb-daf2-42f0-808d-a95079e4ab0e",
+    "name": "Nano - If yes, please provide details on the substance identity and concentration",
+    "content": "Nano - If yes, please provide details on the substance identity and concentration",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 6,
+    "orderNumber": 17,
+    "fullNumber": "6.6.17",
+    "normalized": "nano if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "88327abd-4a11-422e-bb95-c1311e7a846d",
+    "name": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+    "content": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 7,
+    "orderNumber": 18,
+    "fullNumber": "6.7.18",
+    "normalized": "are gmos or substances produced from gmo but no longer containing gmo as defined by regulation eu no 1829 2003 and amendments intentionally added to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "3b120f03-70f5-434e-a576-6e1a5e2b4326",
+    "name": "GMO - If yes, please provide details on the substance identity and concentration",
+    "content": "GMO - If yes, please provide details on the substance identity and concentration",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 7,
+    "orderNumber": 19,
+    "fullNumber": "6.7.19",
+    "normalized": "gmo if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f87aafab-316b-4280-8231-2efbc50691d0",
+    "name": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+    "content": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+    "responseType": "Dropdown",
+    "sectionNumber": 6,
+    "subsectionNumber": 8,
+    "orderNumber": 20,
+    "fullNumber": "6.8.20",
+    "normalized": "does the product contain mineral oil hydrocarbons moh",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "f05a2d21-c33a-41c3-91d3-7b307c516e9d",
+    "name": "If yes, please specify type and grade, e.g. White Mineral Oil - food grade, - cosmetic grade, etc., and the maximum concentration:",
+    "content": "If yes, please specify type and grade, e.g. White Mineral Oil - food grade, - cosmetic grade, etc., and the maximum concentration:",
+    "responseType": "Multiple text lines",
+    "sectionNumber": 6,
+    "subsectionNumber": 8,
+    "orderNumber": 21,
+    "fullNumber": "6.8.21",
+    "normalized": "if yes please specify type and grade e g white mineral oil food grade cosmetic grade etc and the maximum concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "3702e651-7bdb-4b27-b5d2-9dc6a7b0ffce",
+    "name": "If yes, please provide details regarding the content of MOAH (Mineral Oil Aromatic Hydrocarbons, C16-35) and PAH (Polyaromatic Hydrocarbons):",
+    "content": "If yes, please provide details regarding the content of MOAH (Mineral Oil Aromatic Hydrocarbons, C16-35) and PAH (Polyaromatic Hydrocarbons):",
+    "responseType": "Multiple text lines",
+    "sectionNumber": 6,
+    "subsectionNumber": 8,
+    "orderNumber": 23,
+    "fullNumber": "6.8.23",
+    "normalized": "if yes please provide details regarding the content of moah mineral oil aromatic hydrocarbons c16 35 and pah polyaromatic hydrocarbons",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "84da7a05-b64e-4e5f-a8a8-88d1d40579df",
+    "name": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+    "content": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 9,
+    "orderNumber": 24,
+    "fullNumber": "6.9.24",
+    "normalized": "are conflict minerals regulated by the dodd frank act or regulation eu 2017 821 intentionally added to the product or are conflict minerals used during the production of the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "0ba28d43-e29f-402e-87f7-5d9dd3b09aa5",
+    "name": "If yes, please provide details on the substance identity and concentration",
+    "content": "If yes, please provide details on the substance identity and concentration",
+    "responseType": "List table",
+    "sectionNumber": 6,
+    "subsectionNumber": 9,
+    "orderNumber": 25,
+    "fullNumber": "6.9.25",
+    "normalized": "if yes please provide details on the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "43330b25-5172-4dbc-bed4-d2bab6ed62ab",
+    "name": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+    "content": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 6,
+    "subsectionNumber": 10,
+    "orderNumber": 26,
+    "fullNumber": "6.10.26",
+    "normalized": "are palm oil or palm kernel oil or components derived from palm oil or palm kernel oil intentionally added to the product",
+    "tags": [
+      "HQ 2.0.1",
+      "Additional Reqs",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "6cb19469-7530-43da-824f-1660e5b9cefc",
+    "name": "Question #  198 Regular questions",
+    "content": "Question #  198 Regular questions",
+    "responseType": "Single text line",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 315,
+    "fullNumber": "7.1.315",
+    "normalized": "question 198 regular questions",
+    "tags": []
+  },
+  {
+    "id": "3b6dfd2c-5b92-4c89-9764-13803f3b6a85",
+    "name": "Question #  199 Static question",
+    "content": "Question #  199 Static question",
+    "responseType": "Static/ Fixed",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 316,
+    "fullNumber": "7.1.316",
+    "normalized": "question 199 static question",
+    "tags": []
+  },
+  {
+    "id": "8ab941d1-7e4d-4b2d-96fd-1e8e67882256",
+    "name": "Question #  200 Table with fixed static content",
+    "content": "Question #  200 Table with fixed static content",
+    "responseType": "List table",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 317,
+    "fullNumber": "7.1.317",
+    "normalized": "question 200 table with fixed static content",
+    "tags": []
+  },
+  {
+    "id": "8a61e0ee-d0ed-4686-8dbb-4a0553077d83",
+    "name": "Branching logic test dropdown 1A?",
+    "content": "Branching logic test dropdown 1A?",
+    "responseType": "Dropdown",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 318,
+    "fullNumber": "7.1.318",
+    "normalized": "branching logic test dropdown 1a",
+    "tags": []
+  },
+  {
+    "id": "d26dab4b-87ec-469b-abbb-bc6840d2ac34",
+    "name": "Branching logic test from A1 being A2?",
+    "content": "Branching logic test from A1 being A2?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 319,
+    "fullNumber": "7.1.319",
+    "normalized": "branching logic test from a1 being a2",
+    "tags": []
+  },
+  {
+    "id": "9f7ac015-263d-4ff5-83ee-3adc7c60fb59",
+    "name": "Branching logic from A1 and A2 being A3 single entry?",
+    "content": "Branching logic from A1 and A2 being A3 single entry?",
+    "responseType": "Single text line",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 320,
+    "fullNumber": "7.1.320",
+    "normalized": "branching logic from a1 and a2 being a3 single entry",
+    "tags": []
+  },
+  {
+    "id": "c45dd6ca-66a2-458c-b15e-862798c76a9a",
+    "name": "Fill in the PIDSL table on rows that are relevant to your company",
+    "content": "Fill in the PIDSL table on rows that are relevant to your company",
+    "responseType": "PIDSL List",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 321,
+    "fullNumber": "7.1.321",
+    "normalized": "fill in the pidsl table on rows that are relevant to your company",
+    "tags": []
+  },
+  {
+    "id": "efd62fa2-b2b9-464d-901e-b98be6a6db9a",
+    "name": "Branching logic with radio buttons B1?",
+    "content": "Branching logic with radio buttons B1?",
+    "responseType": "Select one Radio",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 325,
+    "fullNumber": "7.1.325",
+    "normalized": "branching logic with radio buttons b1",
+    "tags": []
+  },
+  {
+    "id": "4c074d47-11cf-45a5-8672-9fdf329e7f42",
+    "name": "Branching logic Radio Selections from B1 as B2?",
+    "content": "Branching logic Radio Selections from B1 as B2?",
+    "responseType": "Dropdown",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 326,
+    "fullNumber": "7.1.326",
+    "normalized": "branching logic radio selections from b1 as b2",
+    "tags": []
+  },
+  {
+    "id": "0bddc369-fc1b-48f7-932f-fa917366c997",
+    "name": "Branching logic from B1 and B2 being B3",
+    "content": "Branching logic from B1 and B2 being B3",
+    "responseType": "Single text line",
+    "sectionNumber": 7,
+    "subsectionNumber": 1,
+    "orderNumber": 327,
+    "fullNumber": "7.1.327",
+    "normalized": "branching logic from b1 and b2 being b3",
+    "tags": []
+  },
+  {
+    "id": "f14ba018-f980-4be3-95a5-6724d4563504",
+    "name": "Please upload any additional documentation here.",
+    "content": "Please upload any additional documentation here.",
+    "responseType": "File document",
+    "sectionNumber": 7,
+    "subsectionNumber": null,
+    "orderNumber": 337,
+    "fullNumber": "7.337",
+    "normalized": "please upload any additional documentation here",
+    "tags": [
+      "HQ 2.0.1",
+      "General",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "69599d47-aa61-41bc-a09b-3af467443460",
+    "name": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+    "content": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+    "responseType": "List table",
+    "sectionNumber": 7,
+    "subsectionNumber": null,
+    "orderNumber": 339,
+    "fullNumber": "7.339",
+    "normalized": "please upload any additional documentation here if you have more than one document please add additional rows to the table and follow the instructions",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "405328d5-65f0-4095-ae8d-f4a894fd1414",
+    "name": "Is Scott from New York",
+    "content": "Is Scott from New York",
+    "responseType": "Select one",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 0,
+    "fullNumber": "0",
+    "normalized": "is scott from new york",
+    "tags": [
+      "new test tag-UPM",
+      "ScottTA-UPM"
+    ]
+  },
+  {
+    "id": "e3023ae2-0096-4c0e-9711-b523f0aba1a1",
+    "name": "Test question Kaisa Tuesday",
+    "content": "Test question Kaisa Tuesday",
+    "responseType": "Select one",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 0,
+    "fullNumber": "0",
+    "normalized": "test question kaisa tuesday",
+    "tags": [
+      "Test tag Kaisa Tuesday-UPM"
+    ]
+  },
+  {
+    "id": "f5f7e060-f969-4b93-9eb0-f273f76b1a7d",
+    "name": "Heather, can you see my test question under Additional Requirements?",
+    "content": "Heather, can you see my test question under Additional Requirements?",
+    "responseType": "Select one",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 0,
+    "fullNumber": "0",
+    "normalized": "heather can you see my test question under additional requirements",
+    "tags": [
+      "AddMyOwn-UPM",
+      "Kaisa test tag-UPM"
+    ]
+  },
+  {
+    "id": "7fa61d8a-af43-476e-aa1e-c93b693bc3cb",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "a8de2bcb-5117-4495-9909-b8d1fc4127e2",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "08553b2f-a277-435e-8210-2e349c1792f4",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "cf5b8567-4e4d-47d6-888d-efb7c4b28be7",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "31d77677-ba03-41bc-88ef-2b812c78f865",
+    "name": "Is it snowing?",
+    "content": "Is it snowing?",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "is it snowing",
+    "tags": [
+      "Kaisa test tag-UPM"
+    ]
+  },
+  {
+    "id": "6e7a3aab-18d2-438a-9522-b5be0e3bffde",
+    "name": "Is there any PIDSL substance below 0,1 %?",
+    "content": "Is there any PIDSL substance below 0,1 %?",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "is there any pidsl substance below 0 1",
+    "tags": []
+  },
+  {
+    "id": "f0902102-a3f5-4004-a2a1-34d0adb6d277",
+    "name": "Is it dark already?",
+    "content": "Is it dark already?",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "is it dark already",
+    "tags": []
+  },
+  {
+    "id": "c05c0dce-8441-445a-887b-92e34ce1aed2",
+    "name": "test question 09112023",
+    "content": "test question 09112023",
+    "responseType": "Select one",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "test question 09112023",
+    "tags": [
+      "Test tag Kaisa Tuesday-UPM",
+      "Test tag 09112023-UPM"
+    ]
+  },
+  {
+    "id": "3a503698-da13-4e49-a7c2-337caa962b12",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "c37ae106-4de6-4555-a7a6-e4fa7dce79bc",
+    "name": "test question 14122023",
+    "content": "test question 14122023",
+    "responseType": "Select one",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "test question 14122023",
+    "tags": [
+      "Test tag 14122023-UPM"
+    ]
+  },
+  {
+    "id": "45cd1a67-fb09-47eb-8b43-1cf3f03383d5",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "1e0024bd-4da2-483b-b014-dac6af83b12c",
+    "name": "Rename new question",
+    "content": "Rename new question",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "rename new question",
+    "tags": []
+  },
+  {
+    "id": "87fa6106-f63e-43c6-91b7-73322d1ea831",
+    "name": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?\t\t\t",
+    "content": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "does the product contain substances classified as carcinogenic c mutagenic m or reprotoxic r according to annex vi of the clp regulation ec no 1272 2008 as amended in concentrations exceeding 0 1 w w or a specific concentration limit",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "1d8fb025-1dbe-40ac-9fd0-17e23d55f934",
+    "name": "Test question pulp",
+    "content": "Test question pulp",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 1,
+    "fullNumber": "1",
+    "normalized": "test question pulp",
+    "tags": []
+  },
+  {
+    "id": "5ce3428a-231f-4091-85f6-ccfa9b326d1a",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 2,
+    "fullNumber": "2",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "0b41eecf-d752-4500-b86d-33f31d467c0b",
+    "name": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?",
+    "content": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 3,
+    "fullNumber": "3",
+    "normalized": "does the product contain svhc substances listed in the candidate list of substances of very high concern for authorization article 59 list on the echa homepage in concentrations exceeding 0 1 w w",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "8bfaa7b4-2f53-45a2-b8b1-e25e20521ba4",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 4,
+    "fullNumber": "4",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "fb85817e-7924-479c-b13b-a35a2e02c9b0",
+    "name": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 5,
+    "fullNumber": "5",
+    "normalized": "does the product contain substances subject to authorisation according to annex xiv of the reach regulation ec no 1907 2006 as amended in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "4f09e067-3124-4140-bbf6-beccab8cd19d",
+    "name": "f yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "f yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 6,
+    "fullNumber": "6",
+    "normalized": "f yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "b0611f59-4d32-4956-b5a9-bbfbe310b3f0",
+    "name": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 7,
+    "fullNumber": "7",
+    "normalized": "does the product contain substances subject to restrictions according to annex xvii of the reach regulation ec no 1907 2006 as amended in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "d3da8f1f-285e-4e0d-95b9-84383689d52a",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 8,
+    "fullNumber": "8",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "2475b215-fc14-4816-a086-fe638b276c3f",
+    "name": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 9,
+    "fullNumber": "9",
+    "normalized": "does the product contain substances subject to community rolling action plan corap in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "dc1d1729-94b2-4c30-bf4a-d92205d55a7e",
+    "name": "Does the product contain substances that have Endocrine Disrupting (ED) properties according to Regulation (EU) 2017/2100, or Commission Regulation (EU) 2018/605, or contain substances included in the Candidate List of Substances of Very High Concern (REACH, Article 59 list) for having endocrine disrupting properties (Article 57(f)), in a concentrations exceeding 0.1% (w/w)? \n(Use LIST I & LIST III on https://edlists.org/ as a practical guide.)",
+    "content": "Does the product contain substances that have Endocrine Disrupting (ED) properties according to Regulation (EU) 2017/2100, or Commission Regulation (EU) 2018/605, or contain substances included in the Candidate List of Substances of Very High Concern (REACH, Article 59 list) for having endocrine disrupting properties (Article 57(f)), in a concentrations exceeding 0.1% (w/w)? \n(Use LIST I & LIST III on https://edlists.org/ as a practical guide.)",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 9,
+    "fullNumber": "9",
+    "normalized": "does the product contain substances that have endocrine disrupting ed properties according to regulation eu 2017 2100 or commission regulation eu 2018 605 or contain substances included in the candidate list of substances of very high concern reach article 59 list for having endocrine disrupting properties article 57 f in a concentrations exceeding 0 1 w w use list i list iii on https edlists org as a practical guide",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "cab54591-fb59-4669-850f-d2e20808a23d",
+    "name": "If yes, please provide details of the substance identity and concentration (Endocrine)",
+    "content": "If yes, please provide details of the substance identity and concentration (Endocrine)",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 10,
+    "fullNumber": "10",
+    "normalized": "if yes please provide details of the substance identity and concentration endocrine",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b26cc225-4660-4b84-bcc9-c270f8a94a9b",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 10,
+    "fullNumber": "10",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "467085a7-694f-4327-b526-ef849d4aa5d4",
+    "name": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 11,
+    "fullNumber": "11",
+    "normalized": "does the product contain priority substances listed in the water framework directive 2000 60 ec or the directive on environmental quality standards directive 2008 105 ec in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "866b54a8-49ee-4475-9b53-2d79010234c5",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 12,
+    "fullNumber": "12",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "530bcf38-7c0c-4958-af0d-5f527add4643",
+    "name": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "content": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 13,
+    "fullNumber": "13",
+    "normalized": "does the product contain persistent organic pollutants pop in concentrations exceeding 0 1 w w or a specific concentration limit mentioned in the relevant regulation",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "a8bb5e71-18ce-433c-9d08-133463cbc6f2",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 14,
+    "fullNumber": "14",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": []
+  },
+  {
+    "id": "c4464510-21b4-4e6d-ab84-9ca0c844125d",
+    "name": "Does the product contain synthetic polymer microparticles, as defined in Annex of COMMISSION REGULATION (EU) 2023/2055?",
+    "content": "Does the product contain synthetic polymer microparticles, as defined in Annex of COMMISSION REGULATION (EU) 2023/2055?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 15,
+    "fullNumber": "15",
+    "normalized": "does the product contain synthetic polymer microparticles as defined in annex of commission regulation eu 2023 2055",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "cb7aa4b8-06d8-4654-b4d2-f120eec81b1c",
+    "name": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?\t\t\t",
+    "content": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 15,
+    "fullNumber": "15",
+    "normalized": "does the product contain more than 100 ppm as sum of lead cadmium mercury and hexavalent chromium therefore the product can not be used in packaging material with regard to coneg and directive 94 62 ec on packaging and packaging waste",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "676ca9bd-73c5-4bc6-b39c-e376b2d1bc5b",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 16,
+    "fullNumber": "16",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "6c7f42de-f7e6-44b0-b5f4-03b4c99d20a5",
+    "name": "If yes, does the synthetic polymer microparticles meet the specifics of paragraph 1 of the restriction (>0,01% and conferring a sought-after characteristic to the product as supplied)?",
+    "content": "If yes, does the synthetic polymer microparticles meet the specifics of paragraph 1 of the restriction (>0,01% and conferring a sought-after characteristic to the product as supplied)?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 16,
+    "fullNumber": "16",
+    "normalized": "if yes does the synthetic polymer microparticles meet the specifics of paragraph 1 of the restriction 0 01 and conferring a sought after characteristic to the product as supplied",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "915182dc-d0c1-453d-af16-787fdceeb822",
+    "name": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 16,
+    "fullNumber": "16",
+    "normalized": "if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "4f94920d-a3a1-456a-935f-d4560a29faa2",
+    "name": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t\t\t",
+    "content": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 17,
+    "fullNumber": "17",
+    "normalized": "does the product contain elements restricted by standard en 71 3 or organic contaminants as restricted by standard en 71 9 in its current version",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "83f41b2e-3074-4aa0-806b-0ae3e91b0ca8",
+    "name": "Does the product contain polymers excluded from SPM definition?",
+    "content": "Does the product contain polymers excluded from SPM definition?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 17,
+    "fullNumber": "17",
+    "normalized": "does the product contain polymers excluded from spm definition",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "b288f0a6-d6b8-4b72-ad4e-c122e2649e41",
+    "name": "List of exemptions",
+    "content": "List of exemptions",
+    "responseType": "Select multiple",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 18,
+    "fullNumber": "18",
+    "normalized": "list of exemptions",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "1830bb29-b247-43f9-b7ee-b2d8ec2b10d5",
+    "name": "COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 18,
+    "fullNumber": "18",
+    "normalized": "copy of copy of copy of copy of copy of copy of if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "cf4648ad-01f6-452a-801b-3309b5a5fa73",
+    "name": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?\t\t\t",
+    "content": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 19,
+    "fullNumber": "19",
+    "normalized": "does the product contain substances included in the california proposition 65 list safe drinking water and toxic enforcement act of 1986",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "e91127d9-1e56-4a9b-9113-876a9afc0765",
+    "name": "COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "content": "COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF COPY OF If yes, please provide details of the substance identity and concentration:\t\t\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 20,
+    "fullNumber": "20",
+    "normalized": "copy of copy of copy of copy of copy of copy of copy of if yes please provide details of the substance identity and concentration",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "cdd081c2-ce97-48e8-a7c6-a28d99fb99c2",
+    "name": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?\t\t\t",
+    "content": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?\t\t\t",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 21,
+    "fullNumber": "21",
+    "normalized": "does the product contain substances listed in the pidsl list in concentrations exceeding the declarable limit",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "a20e84f3-13a7-4c47-8846-fbef87d584ec",
+    "name": "Does the product contain per- or polyfluoroalkyl substances (PFAS), defined as substances that contain at least one fully fluorinated methyl (CF3-) or methylene (-CF2-) carbon atom (without any H/Cl/Br/I atom attached to it), in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+    "content": "Does the product contain per- or polyfluoroalkyl substances (PFAS), defined as substances that contain at least one fully fluorinated methyl (CF3-) or methylene (-CF2-) carbon atom (without any H/Cl/Br/I atom attached to it), in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 25,
+    "fullNumber": "25",
+    "normalized": "does the product contain per or polyfluoroalkyl substances pfas defined as substances that contain at least one fully fluorinated methyl cf3 or methylene cf2 carbon atom without any h cl br i atom attached to it in concentrations exceeding 0 1 w w",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "bea889d8-f1b1-4d7c-a1a8-f73f7a99673d",
+    "name": "If yes, please provide details of the substance identity and concentration (PFAS)",
+    "content": "If yes, please provide details of the substance identity and concentration (PFAS)",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 26,
+    "fullNumber": "26",
+    "normalized": "if yes please provide details of the substance identity and concentration pfas",
+    "tags": [
+      "HQ 2.0.1",
+      "PIDSL",
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8cc4fd7d-ec57-4208-982e-d8ff834bab32",
+    "name": "Unnamed Question",
+    "content": "",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 53,
+    "fullNumber": "53",
+    "normalized": "unnamed question",
+    "tags": []
+  },
+  {
+    "id": "de37d78f-6db7-45b2-aa4c-4404b9caccf7",
+    "name": "Has the Mercosur compliance of your product verified by the third-party laboratory? If yes, please attach the test report into Supplementary Documents.",
+    "content": "Has the Mercosur compliance of your product verified by the third-party laboratory? If yes, please attach the test report into Supplementary Documents.",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 56,
+    "fullNumber": "56",
+    "normalized": "has the mercosur compliance of your product verified by the third party laboratory if yes please attach the test report into supplementary documents",
+    "tags": [
+      "Mercosur additional questions-UPM"
+    ]
+  },
+  {
+    "id": "3df1577c-5cea-4a73-bd4d-ac5f0aaa971e",
+    "name": "Has the Mercosur compliance of your product verified by the third-party laboratory? If yes, please attach the test report into Supplementary Documents.",
+    "content": "Has the Mercosur compliance of your product verified by the third-party laboratory? If yes, please attach the test report into Supplementary Documents.",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 56,
+    "fullNumber": "56",
+    "normalized": "has the mercosur compliance of your product verified by the third party laboratory if yes please attach the test report into supplementary documents",
+    "tags": [
+      "Mercosur additional questions2-UPM"
+    ]
+  },
+  {
+    "id": "2a1fab04-5ec0-4a19-948a-7edfed090c29",
+    "name": "Are all the chemical substances (excluding impurities and residuals), which have been brought forward either in this Harmonized Questionnaire through other questions, in MSDS or in your own compliance documentation, listed in the positive list of Mercosur Resolution No. 40/15 or other Mercosur Resolutions? If YES, please indicate by chemical substances the Resolution number and chapter/article number. If NO, please indicate by those chemical substances which are listed, the Resolution number and chapter/article number.",
+    "content": "Are all the chemical substances (excluding impurities and residuals), which have been brought forward either in this Harmonized Questionnaire through other questions, in MSDS or in your own compliance documentation, listed in the positive list of Mercosur Resolution No. 40/15 or other Mercosur Resolutions? If YES, please indicate by chemical substances the Resolution number and chapter/article number. If NO, please indicate by those chemical substances which are listed, the Resolution number and chapter/article number.",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 57,
+    "fullNumber": "57",
+    "normalized": "are all the chemical substances excluding impurities and residuals which have been brought forward either in this harmonized questionnaire through other questions in msds or in your own compliance documentation listed in the positive list of mercosur resolution no 40 15 or other mercosur resolutions if yes please indicate by chemical substances the resolution number and chapter article number if no please indicate by those chemical substances which are listed the resolution number and chapter article number",
+    "tags": [
+      "Mercosur additional questions2-UPM"
+    ]
+  },
+  {
+    "id": "dbee061a-8c4a-4ebb-9843-869903c32df4",
+    "name": "Please indicate by chemical substances the chapter/article number",
+    "content": "Please indicate by chemical substances the chapter/article number",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 57,
+    "fullNumber": "57",
+    "normalized": "please indicate by chemical substances the chapter article number",
+    "tags": [
+      "Mercosur additional questions-UPM"
+    ]
+  },
+  {
+    "id": "1ba79948-0dec-45cd-b009-98c4de09fabe",
+    "name": "Are all chemical substances (excluding impurities and residuals), which have been brought forward in this Harmonized Questionnaire through other questions, listed in the positive list of Mercosur Resolution No. 40/15 or other Mercosur Resolutions? If YES, please indicate by chemical substances the chapter/article number. If NO, please indicate by those chemical substances which are listed, the chapter/article number ",
+    "content": "Are all chemical substances (excluding impurities and residuals), which have been brought forward in this Harmonized Questionnaire through other questions, listed in the positive list of Mercosur Resolution No. 40/15 or other Mercosur Resolutions? If YES, please indicate by chemical substances the chapter/article number. If NO, please indicate by those chemical substances which are listed, the chapter/article number ",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 57,
+    "fullNumber": "57",
+    "normalized": "are all chemical substances excluding impurities and residuals which have been brought forward in this harmonized questionnaire through other questions listed in the positive list of mercosur resolution no 40 15 or other mercosur resolutions if yes please indicate by chemical substances the chapter article number if no please indicate by those chemical substances which are listed the chapter article number",
+    "tags": [
+      "Mercosur additional questions-UPM"
+    ]
+  },
+  {
+    "id": "2b87aac8-d204-4e46-b05a-4ad929f9d9f3",
+    "name": "Please indicate by chemical substances the Resolution number and chapter/article number.",
+    "content": "Please indicate by chemical substances the Resolution number and chapter/article number.",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 57,
+    "fullNumber": "57",
+    "normalized": "please indicate by chemical substances the resolution number and chapter article number",
+    "tags": [
+      "Mercosur additional questions2-UPM"
+    ]
+  },
+  {
+    "id": "aa7b1944-7609-4fdb-b0a2-f8c69baf58b8",
+    "name": "If yes, please provide details of the  identi",
+    "content": "If yes, please provide details of the  identi",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 98,
+    "fullNumber": "98",
+    "normalized": "if yes please provide details of the identi",
+    "tags": []
+  },
+  {
+    "id": "827e2fe6-50a0-4f89-8003-7f46364953da",
+    "name": "Question #  196",
+    "content": "Question #  196",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 313,
+    "fullNumber": "313",
+    "normalized": "question 196",
+    "tags": []
+  },
+  {
+    "id": "f132d84b-28d2-4bec-86e4-e97c70c331f4",
+    "name": "Add a comment\n",
+    "content": "Add a comment\n",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 314,
+    "fullNumber": "314",
+    "normalized": "add a comment",
+    "tags": [
+      "HQ 2.0.1"
+    ]
+  },
+  {
+    "id": "c2eefbab-8d9d-4a6a-b63e-452465065323",
+    "name": "Commission Decision (EU) 2020/1803 - ANNEX of 27 November 2020 establishing the EU Ecolabel criteria for printed paper, stationery paper and paper carrier bag products.",
+    "content": "Commission Decision (EU) 2020/1803 - ANNEX of 27 November 2020 establishing the EU Ecolabel criteria for printed paper, stationery paper and paper carrier bag products.",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 340,
+    "fullNumber": "340",
+    "normalized": "commission decision eu 2020 1803 annex of 27 november 2020 establishing the eu ecolabel criteria for printed paper stationery paper and paper carrier bag products",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "c88a3e15-12cf-4cee-8eda-2040b38cd5cf",
+    "name": "Question #  DE-UZ 217a - Paper made from 100% recovered paper for paper bags and boxes",
+    "content": "Question #  DE-UZ 217a - Paper made from 100% recovered paper for paper bags and boxes",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 341,
+    "fullNumber": "341",
+    "normalized": "question de uz 217a paper made from 100 recovered paper for paper bags and boxes",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "96e17b1d-bb43-497e-99e3-feaf1c8feb67",
+    "name": "DE-UZ 217b - Paper bags and boxes made out of recycled paper\t\t\t",
+    "content": "DE-UZ 217b - Paper bags and boxes made out of recycled paper\t\t\t",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 342,
+    "fullNumber": "342",
+    "normalized": "de uz 217b paper bags and boxes made out of recycled paper",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "084b119d-12c0-4aff-82c7-38ce9203dc2a",
+    "name": "Does the product comply with the requirements of \"DGCCRF - Fiche Papiers et Cartons - January 2019\" about materials and objects made of paper and cardboard in the state of finished products intended to come into contact with foodstuffs within the meaning of the framework regulation (EC) 1935/2004?\t\t\t",
+    "content": "Does the product comply with the requirements of \"DGCCRF - Fiche Papiers et Cartons - January 2019\" about materials and objects made of paper and cardboard in the state of finished products intended to come into contact with foodstuffs within the meaning of the framework regulation (EC) 1935/2004?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 344,
+    "fullNumber": "344",
+    "normalized": "does the product comply with the requirements of dgccrf fiche papiers et cartons january 2019 about materials and objects made of paper and cardboard in the state of finished products intended to come into contact with foodstuffs within the meaning of the framework regulation ec 1935 2004",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "8cccd5ed-0393-436d-873a-538292aa543b",
+    "name": "Does the product contain substances which are listed in Regulation (EC) No 1333/2008 on food additives, or listed in (EC) No 1334/2008 on flavourings (as amended)? \t\t\t\n\t\t\t",
+    "content": "Does the product contain substances which are listed in Regulation (EC) No 1333/2008 on food additives, or listed in (EC) No 1334/2008 on flavourings (as amended)? \t\t\t\n\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 345,
+    "fullNumber": "345",
+    "normalized": "does the product contain substances which are listed in regulation ec no 1333 2008 on food additives or listed in ec no 1334 2008 on flavourings as amended",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "150eeaa8-edbb-4984-8962-ccd70d7befd3",
+    "name": "If yes, please provide the E No. / FL No. for substances for which the concentration exceeds 10% of the given limit value in the regulations:\t",
+    "content": "If yes, please provide the E No. / FL No. for substances for which the concentration exceeds 10% of the given limit value in the regulations:\t",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 346,
+    "fullNumber": "346",
+    "normalized": "if yes please provide the e no fl no for substances for which the concentration exceeds 10 of the given limit value in the regulations",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "7c6d0261-eff6-4415-8987-753862cbd158",
+    "name": "Does the product comply with Food Sanitation Act - Ministry of Health, Labor and Welfare Positive Lists effective 1 June 2020 and amendments?\t\t\t",
+    "content": "Does the product comply with Food Sanitation Act - Ministry of Health, Labor and Welfare Positive Lists effective 1 June 2020 and amendments?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 347,
+    "fullNumber": "347",
+    "normalized": "does the product comply with food sanitation act ministry of health labor and welfare positive lists effective 1 june 2020 and amendments",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "d79836bf-50c1-4325-860c-17aa1a2d4b57",
+    "name": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-2:",
+    "content": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-2:",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 348,
+    "fullNumber": "348",
+    "normalized": "suppliers of base polymers and masterbatches please provide details according to listings in appended table 1 table 2",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "0b72b11e-1aac-4641-a50c-afb3e2b4880c",
+    "name": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-1:",
+    "content": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-1:",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 349,
+    "fullNumber": "349",
+    "normalized": "suppliers of base polymers and masterbatches please provide details according to listings in appended table 1 table 1",
+    "tags": [
+      "HQ2.1"
+    ]
+  },
+  {
+    "id": "0f5a9f22-93fc-4183-86bc-7ba570a6ba95",
+    "name": "How would you rate your overall experience with Stacks Software?",
+    "content": "How would you rate your overall experience with Stacks Software?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 352,
+    "fullNumber": "352",
+    "normalized": "how would you rate your overall experience with stacks software",
+    "tags": [
+      "Feedback"
+    ]
+  },
+  {
+    "id": "b32c45a1-3cfd-45a4-98ed-17c2fa5f0284",
+    "name": "How likely are you to recommend Stacks software to others?",
+    "content": "How likely are you to recommend Stacks software to others?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 353,
+    "fullNumber": "353",
+    "normalized": "how likely are you to recommend stacks software to others",
+    "tags": [
+      "Feedback"
+    ]
+  },
+  {
+    "id": "c3f04d88-7c01-43a9-a7a3-c5596fea0d80",
+    "name": "How likely are you to renew your subscription in 2024?",
+    "content": "How likely are you to renew your subscription in 2024?",
+    "responseType": "Dropdown",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 354,
+    "fullNumber": "354",
+    "normalized": "how likely are you to renew your subscription in 2024",
+    "tags": [
+      "Feedback"
+    ]
+  },
+  {
+    "id": "fe657c93-8ebc-441e-bbf7-76b1605ff84e",
+    "name": "Please write a few sentences to explain your choice, and what we could do to improve the situation?",
+    "content": "Please write a few sentences to explain your choice, and what we could do to improve the situation?",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 355,
+    "fullNumber": "355",
+    "normalized": "please write a few sentences to explain your choice and what we could do to improve the situation",
+    "tags": []
+  },
+  {
+    "id": "d010b86e-1a7f-40eb-9fdf-a936c50df2da",
+    "name": "That's great, let us know if there's anything we can do to make it even better for you!",
+    "content": "That's great, let us know if there's anything we can do to make it even better for you!",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 356,
+    "fullNumber": "356",
+    "normalized": "that s great let us know if there s anything we can do to make it even better for you",
+    "tags": [
+      "Feedback"
+    ]
+  },
+  {
+    "id": "b5039dd7-46ab-4761-82ad-c4b406860b08",
+    "name": "No one wants to be average, please let us know if there's anything we can do to grow your enthusiasm!",
+    "content": "No one wants to be average, please let us know if there's anything we can do to grow your enthusiasm!",
+    "responseType": "Multiple text lines",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 357,
+    "fullNumber": "357",
+    "normalized": "no one wants to be average please let us know if there s anything we can do to grow your enthusiasm",
+    "tags": [
+      "Feedback"
+    ]
+  },
+  {
+    "id": "ac6373e2-5b86-4bfe-8b80-dbf7a01bb74a",
+    "name": "Question #  195",
+    "content": "Question #  195",
+    "responseType": "Single text line",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 358,
+    "fullNumber": "358",
+    "normalized": "question 195",
+    "tags": []
+  },
+  {
+    "id": "8fa6e772-5404-4f67-9a08-927251470bee",
+    "name": "If yes, please give all relevant restrictions (France 2):",
+    "content": "If yes, please give all relevant restrictions (France 2):",
+    "responseType": "List table",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 359,
+    "fullNumber": "359",
+    "normalized": "if yes please give all relevant restrictions france 2",
+    "tags": []
+  },
+  {
+    "id": "d4829ebc-bd30-4cec-8c10-dad0d785a784",
+    "name": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?\t\t\t",
+    "content": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?\t\t\t",
+    "responseType": "Select one Radio",
+    "sectionNumber": null,
+    "subsectionNumber": null,
+    "orderNumber": 2800,
+    "fullNumber": "2800",
+    "normalized": "does the product contain substances included in the california proposition 65 list safe drinking water and toxic enforcement act of 1986",
+    "tags": []
+  }
+]

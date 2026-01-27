@@ -4,9 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Stacks Data 2050 is a supply chain compliance platform that was migrated from Bubble.io to Supabase. The project consists of:
-- A Next.js 16 web application (`/web`) with Supabase backend
-- Migration scripts and tooling for the Bubble.io → Supabase data migration
+Stacks Data 2050 is a supplier compliance intelligence platform for the paper/packaging industry that was migrated from Bubble.io to Supabase. The system manages supplier product questionnaires (221 questions per sheet) with hierarchical question structures, tags for versioning (e.g., HQ 2.0.1 vs HQ2.1), chemical compliance tracking, and supply chain intelligence.
+
+The project consists of:
+- A Next.js 15 web application (`/web`) with Supabase backend
+- Migration scripts and tooling for the Bubble.io → Supabase data migration  
+- Chemical compliance intelligence system with regulatory tracking (REACH SVHC, Prop 65, PFAS)
 
 ## Development Commands
 
@@ -16,7 +19,7 @@ Stacks Data 2050 is a supply chain compliance platform that was migrated from Bu
 # Navigate to web directory
 cd web
 
-# Development server (runs on port 3000, or 3002 if 3000 is in use)
+# Development server (runs on port 3000)
 npm run dev
 
 # Production build
@@ -29,48 +32,130 @@ npm start
 npm run lint
 ```
 
-### Migration Scripts
+### Migration & Utility Scripts
+
+Run from `/stacks` directory:
 
 ```bash
-# Full migration (root directory)
+# Full migration
 npm run migrate
 
 # Dry run mode
 npm run migrate:dry-run
 
-# Import answers from JSON
-npx tsx src/migration/import-answers-json.ts
+# Run any TypeScript utility script
+npx tsx <script-name>.ts
 
-# Fix choice relationships
-npx tsx src/migration/fix-answer-choices-batch.ts
-
-# Verify migration
-npx tsx src/migration/verify-migration.ts
+# Examples:
+npx tsx enrich-chemicals-regulatory.ts
+npx tsx check-chemical-data.ts
+npx tsx verify-dashboard-data.ts
 ```
 
 ## Architecture
 
 ### Web Application Structure
 
-The Next.js application uses:
-- **Framework**: Next.js 16.1.1 with App Router and Turbopack
-- **UI**: React 19 with Radix UI components and Tailwind CSS
+**Technology Stack:**
+- **Framework**: Next.js 15.1.1 with App Router (Server Components by default)
+- **UI**: React 19 with shadcn/ui (Radix UI primitives) and Tailwind CSS v4
 - **Database**: Supabase (PostgreSQL) with SSR support
+- **Auth**: Supabase Auth with middleware protection
 - **Icons**: Lucide React
 
 **Key directories:**
-- `/web/src/app/` - Next.js app router pages
+- `/web/src/app/` - Next.js app router pages (all server components unless marked "use client")
   - `sheets/[id]/` - Sheet detail and editing
   - `dashboard/` - Main dashboard
+  - `compliance/` - Chemical compliance intelligence
+    - `supplier/` - Main compliance dashboard
+    - `chemical/[id]/` - Chemical detail with products
   - `suppliers/` - Supplier management
   - `questions/` - Question management
   - `admin/` - Admin interface
   - `auth/` - Authentication pages
+  - `demo/compliance/` - Standalone CAS lookup demo
 - `/web/src/components/` - Reusable React components
-  - `sheets/` - Sheet-specific components (question inputs, list tables)
-  - `ui/` - Base UI components (buttons, inputs, etc.)
+  - `layout/` - App layout, sidebar, header (must be client components)
+  - `sheets/` - Sheet-specific components (question inputs, list tables, CAS lookup)
+  - `dashboard/` - Dashboard components
+  - `ui/` - shadcn/ui base components
 - `/web/src/lib/` - Utility functions and clients
-  - `supabase/` - Supabase client configuration
+  - `supabase/` - Supabase client configuration (server.ts vs client.ts)
+  - `pubchem.ts` - PubChem API integration for chemical data
+
+**Layout Pattern:**
+All main pages use `<AppLayout>` wrapper for consistent navigation:
+```typescript
+import { AppLayout } from '@/components/layout/app-layout'
+
+export default async function MyPage() {
+  return (
+    <AppLayout title="Page Title">
+      <div className="space-y-8">
+        {/* Page content */}
+      </div>
+    </AppLayout>
+  )
+}
+```
+
+### Chemical Compliance Intelligence System
+
+**New Feature (Jan 2026)**: Supply chain chemical tracking across all supplier sheets.
+
+**Architecture:**
+- `chemical_inventory` table stores unique chemicals enriched with PubChem data
+- `sheet_chemicals` junction table links chemicals to sheets
+- Automatic regulatory flagging (REACH SVHC, Prop 65, PFAS)
+- CAS number validation and auto-fill via PubChem API
+
+**Key Files:**
+- `/web/src/app/compliance/supplier/page.tsx` - Main compliance dashboard (server component)
+- `/web/src/app/compliance/chemical/[id]/page.tsx` - Chemical detail page (server component)
+- `/web/src/components/sheets/cas-lookup.tsx` - CAS number lookup component (client component)
+- `/web/src/lib/pubchem.ts` - PubChem API integration
+- `/stacks/enrich-chemicals-regulatory.ts` - Regulatory enrichment script
+
+**Important Implementation Details:**
+
+1. **Product Deduplication**: Chemical detail pages deduplicate by product name and show only the most recent version:
+```typescript
+// Keep most recent version per product name
+const sheetsByName = new Map()
+sheetChemicals?.forEach((sc: any) => {
+  const productName = sc.sheets.name
+  const existing = sheetsByName.get(productName)
+  if (!existing || new Date(sc.sheets.created_at) > new Date(existing.created_at)) {
+    sheetsByName.set(productName, sc.sheets)
+  }
+})
+```
+
+2. **Sheet Count Calculation**: Must parse aggregated count from Supabase query:
+```typescript
+const sheetCount = Array.isArray(chemical.sheet_chemicals) && chemical.sheet_chemicals.length > 0
+  ? (chemical.sheet_chemicals[0] as any).count || 0
+  : 0
+```
+
+3. **Foreign Key Ambiguity**: When joining `sheets` → `companies`, must specify which FK:
+```typescript
+companies!sheets_company_id_fkey (name)
+```
+
+4. **Next.js 15 Async Params**: Dynamic route params are now Promises:
+```typescript
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params  // Must await!
+}
+```
+
+**Chemical Enrichment:**
+- Run `/stacks/enrich-chemicals-regulatory.ts` to flag chemicals
+- Uses official REACH SVHC, Prop 65, and PFAS lists
+- Automatically calculates risk levels (high/medium/low)
+- Identifies formaldehyde releasers (biocides that decompose to formaldehyde)
 
 ### List Table Architecture
 
@@ -113,6 +198,13 @@ The Next.js application uses:
 
 3. **Retry Logic**: 3 attempts with 2-second delay for transient network errors
 
+**Migration Order** (respects foreign key dependencies):
+1. Associations → Stacks → Companies → Users
+2. List Tables → List Table Columns
+3. Sections → Subsections
+4. Tags → Questions → Choices
+5. Sheets → Answers → Requests → Sheet Statuses
+
 **Migration Files:**
 - `src/migration/index.ts` - Main orchestrator (16 steps)
 - `src/migration/migrators/` - Individual entity migrators
@@ -121,28 +213,46 @@ The Next.js application uses:
 
 ## Database Schema
 
-### Key Tables
+### Core Tables
 
 **sheets** - Questionnaire instances
-- Core fields: name, version, company_id, created_by
-- Versioning: version_lock, version_close_date, father_sheet_id
-- Status tracking: new_name, unread_comment, mark_as_archived
+- Core fields: `name`, `version`, `company_id`, `created_by`
+- Status field: `new_status` (draft/submitted/approved)
+- Versioning: `version_lock`, `version_close_date`, `father_sheet_id`
 
 **answers** - Question responses (367k records)
-- Multiple value types: text_value, number_value, choice_id, boolean_value, date_value
-- List table integration: list_table_row_id, list_table_column_id
-- Relationships: sheet_id, parent_question_id, choice_id, company_id
+- Multiple value types: `text_value`, `number_value`, `choice_id`, `boolean_value`, `date_value`
+- List table integration: `list_table_row_id`, `list_table_column_id`
+- Relationships: `sheet_id`, `parent_question_id`, `choice_id`, `company_id`
+
+**questions** - Compliance questions (221 total)
+- Fields: `text`, `response_type`, `section_id`, `subsection_id`
+- Hierarchical numbering: `section_sort_number.subsection_sort_number.order_number`
+- `list_table_id` may be null even when columns exist
 
 **list_table_columns** - Dynamic column definitions
-- Fields: name, order_number, response_type, parent_table_id
-- **choice_options** (jsonb): Array of dropdown choices ["mg/kg", "percent"]
+- Fields: `name`, `order_number`, `response_type`, `parent_table_id`
+- **`choice_options`** (jsonb): Array of dropdown choices `["mg/kg", "percent"]`
 
 **choices** - Multiple choice options
-- Fields: id, **content** (not "text"), parent_question_id, order_number
+- Fields: `id`, **`content`** (not "text"), `parent_question_id`, `order_number`
 
-**questions** - Compliance questions
-- Fields: text, response_type, section_id, subsection_id
-- list_table_id may be null even when columns exist
+### Chemical Compliance Tables
+
+**chemical_inventory** - Unique chemicals with enriched data
+- Core: `cas_number` (unique), `chemical_name`, `molecular_formula`, `molecular_weight`
+- PubChem data: `pubchem_cid`, `synonyms`, `iupac_name`, `inchi_key`
+- Regulatory flags: `is_pfas`, `is_reach_svhc`, `is_prop65`, `is_food_contact_restricted`
+- Risk assessment: `risk_level` (high/medium/low), `warnings`, `restrictions`, `hazards`
+
+**sheet_chemicals** - Junction table linking chemicals to sheets
+- Links: `sheet_id`, `chemical_id`
+- Concentration data: `concentration`, `concentration_unit`
+- Traceability: `list_table_row_id`, `answer_id`
+- Unique per: (sheet_id, chemical_id, list_table_row_id)
+
+**Migration ID Mapping:**
+- `_migration_id_map` - Bubble ID → Supabase UUID mappings for traceability
 
 ## Environment Variables
 
@@ -151,9 +261,10 @@ The Next.js application uses:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://yrguoooxamecsjtkfqcw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon_key>
+SUPABASE_SERVICE_ROLE_KEY=<service_role_key>
 ```
 
-### Migration Scripts (.env)
+### Migration Scripts (.env in /stacks root)
 
 ```bash
 # Supabase
@@ -169,7 +280,39 @@ DRY_RUN=false
 BATCH_SIZE=100
 ```
 
-## Recent Bug Fixes
+## Recent Bug Fixes & Patterns
+
+### Next.js 15 Async Params (Fixed Jan 2026)
+
+**Issue**: Dynamic route params are now Promises in Next.js 15.
+
+**Pattern:**
+```typescript
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>  // Type as Promise
+}) {
+  const { id } = await params  // Must await params
+  // ... use id
+}
+```
+
+### Chemical Product Deduplication (Fixed Jan 2026)
+
+**Issue**: Same product appeared multiple times due to version history.
+
+**Solution**: Deduplicate by product name, keep only most recent:
+```typescript
+const sheetsByName = new Map()
+sheetChemicals?.forEach((sc: any) => {
+  const productName = sc.sheets.name
+  const existing = sheetsByName.get(productName)
+  if (!existing || new Date(sc.sheets.created_at) > new Date(existing.created_at)) {
+    sheetsByName.set(productName, sc.sheets)
+  }
+})
+```
 
 ### List Table Dropdown Values (Fixed Jan 2026)
 
@@ -177,13 +320,56 @@ BATCH_SIZE=100
 
 **Root Cause**: Code used `choice.text` but database field is `choice.content`.
 
-**Fix**: Changed choice lookup to use `choice.content` in `web/src/app/sheets/[id]/page.tsx:476`.
+**Fix**: Always use `choice.content` for choice lookups.
 
 ### List Table Deduplication
 
 **Issue**: Multiple duplicate rows showing due to version history.
 
 **Solution**: Find GLOBAL latest `created_at` across ALL rows for a list table question, then only keep rows matching that timestamp. See `web/src/app/sheets/[id]/page.tsx:228-289`.
+
+### Supabase Foreign Key Ambiguity
+
+**Issue**: Error when joining sheets → companies due to multiple foreign keys.
+
+**Solution**: Specify exact foreign key relationship:
+```typescript
+companies!sheets_company_id_fkey (name)
+```
+
+## Demo & Testing
+
+### Demo Accounts (Password: `demo2026`)
+
+| Company | User | Email |
+|---------|------|-------|
+| UPM (Customer) | Kaisa Herranen | kaisa.herranen@upm.com |
+| Sappi (Customer) | Christian Torborg | christian.torborg@sappi.com |
+| Kemira (Supplier) | Tiia Aho | tiia.aho@kemira.com |
+| Omya (Supplier) | Abdessamad Arbaoui | abdessamad.arbaoui@omya.com |
+
+### Key Demo URLs
+
+- `/` - Dashboard (requires login)
+- `/sheets/[id]` - Sheet editing with CAS validation
+- `/compliance/supplier` - Chemical compliance intelligence dashboard
+- `/compliance/chemical/[id]` - Chemical detail with affected products
+- `/demo/compliance` - Standalone CAS lookup demo (no login required)
+
+### Testing Scripts
+
+```bash
+cd /stacks
+
+# Test compliance dashboard data
+npx tsx test-compliance-dashboard.ts
+
+# Verify chemical enrichment
+npx tsx check-flagged-chemicals.ts
+
+# Verify dashboard queries
+npx tsx verify-dashboard-data.ts
+```
 
 ## Migration Status
 
@@ -192,10 +378,11 @@ BATCH_SIZE=100
 - ✅ Data integrity verified
 - ✅ Foreign key relationships validated
 - ✅ Choice ID mappings fixed (99,203 updates)
+- ✅ Chemical compliance system added (Jan 2026)
 
 **Remaining:**
 - ⏳ Enable Row Level Security policies
-- ⏳ Configure Supabase Auth
+- ⏳ Configure Supabase Auth for production
 - ⏳ Send password reset emails to users
 
 ## MCP Server Configuration

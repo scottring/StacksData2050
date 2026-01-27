@@ -31,6 +31,7 @@ import {
   Clock,
   AlertCircle,
   Send,
+  Pencil,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -267,7 +268,7 @@ export default function SheetsPage() {
                 <TableHead className="w-[180px]">Assigned To</TableHead>
                 <TableHead className="w-[100px]">Answers</TableHead>
                 <TableHead className="w-[120px]">Last Updated</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -318,7 +319,20 @@ export default function SheetsPage() {
                       {formatDate(sheet.modified_at)}
                     </TableCell>
                     <TableCell>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/sheets/${sheet.id}/edit`)
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

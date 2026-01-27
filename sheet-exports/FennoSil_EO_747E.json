@@ -1,0 +1,1772 @@
+{
+  "sheet_name": "FennoSil_EO_747E",
+  "bubble_id": "1673876195053x296656086242426900",
+  "supabase_id": "524c952f-1750-4705-849c-3c7b0a5fb6e5",
+  "total_answers": 196,
+  "answers": [
+    {
+      "question": "Product Description or Chemical Characterization ",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Anionic polyacrylamide - emulsion"
+    },
+    {
+      "question": "Product Code/Reference",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "n/a"
+    },
+    {
+      "question": "Function in Application",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Retention aid, flocculation of solids."
+    },
+    {
+      "question": "Producer",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Kemira Oyj"
+    },
+    {
+      "question": "Production sites",
+      "question_number": null,
+      "response_type": "Single text line",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Botlek (NL)"
+    },
+    {
+      "question": "Add disclaimer (optional)",
+      "question_number": "1.1.338",
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "It should be noted that the manufacturer of the finished material or article remains responsible to confirm the products intended for food contact are suitable for such use and are in compliance with applicable legislation and regulations."
+    },
+    {
+      "question": "2012/481/EU: Commission Decision of 16 August 2012 establishing the ecological criteria for the award of the EU Ecolabel for printed paper:\t\t\t",
+      "question_number": "2.1.1",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "2014/256/EU: Commission Decision of 2 May 2014 establishing the ecological criteria for the award of the EU Ecolabel for converted paper products:\t\t\t",
+      "question_number": "2.1.2",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Commission Decision (EU) 2019/70 - ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper:\t\t\t",
+      "question_number": "2.1.3",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes, the product meets the criteria. Declaration is available on request."
+    },
+    {
+      "question": "Commission Decision (EU) 2019/70 - ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper:\t\t\t",
+      "question_number": "2.1.4",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes, the product meets the criteria. Declaration is available on request."
+    },
+    {
+      "question": "Paper Products - Chemical Module",
+      "question_number": "2.2.5",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Product is listed in MySwan Account and approved"
+    },
+    {
+      "question": "Tissue Paper - Supplementary Module",
+      "question_number": "2.2.6",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Grease-proof paper - Supplementary Module",
+      "question_number": "2.2.7",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "Packaging for Liquid Foods",
+      "question_number": "2.2.8",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "Disposables for Food",
+      "question_number": "2.2.9",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ-5. Sanitary paper products made of recycled paper",
+      "question_number": "2.3.11",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "DE-UZ 14a - Recycled paper",
+      "question_number": "2.3.12",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed."
+    },
+    {
+      "question": "DE-UZ 14b - Finished products made from recovered paper for office and school demand\t\t\t",
+      "question_number": "2.3.13",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ 56 - Recycled cardboard\t\t\t",
+      "question_number": "2.3.14",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "DE-UZ 72 - Printing and publication papers",
+      "question_number": "2.3.15",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "The product has not been assessed"
+    },
+    {
+      "question": "According to Regulation (EU) No. 528/2012 does the product contain biocidal active substances either intentionally added or non-intentionally via other raw materials?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are the biocidal active substances used for in-can preservation (PT 6)?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 6?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances used as slimicides (PT 12)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances used as Preservatives for liquid-cooling and processing systems (PT 11)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are the biocidal active substances listed in the Article 95 list, published by ECHA with the respective producer under PT 11?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Please specify general limitations which may apply to the product (e.g. dosage limitation): (Enter n/a if not applicable)",
+      "question_number": null,
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "For specific limitations please carefully review the sections below."
+    },
+    {
+      "question": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of article 3 and article 17 of the Framework Regulation (EC) No 1935/2004?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "64742-47-8"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "B. III. 1. Footnote 22"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 3,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "12"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "Hydrocarbon solvents C10-C16 (fulfilling BfRs purity criteria)"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "Content: approx. 23%"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1673876264641x259022569112765000",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "68439-50-9"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "B. V. 5."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 3,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "Polyethylene glycol (EO = 1-20) ethers of linear and branched primary (C8-C26) alcohols"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "- Maximum use level: 0.3 mg/dm�.\n- Of the production aids listed under B. V. 1.-10. up to 1.0% of each may be used, but in total not more than 3.0%."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1673876264986x561711080607055100",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 1,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "26100-47-0"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number of Regulation, if any",
+      "column_order": 2,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "B. III. 1."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 3,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 6,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "Anionic polyacrylamide"
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and specifications",
+      "column_order": 7,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "Maximum use level: \n   0.1% based on dry finished product.\nResiduals:\n   < 1000 ppm Acrylamide\n   < 5000 ppm Acrylic acid\nbased on polymer content."
+    },
+    {
+      "question": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 8,
+      "row_id": "1673876265386x196518437144006080",
+      "answer": "Monomer limitations (purity criteria) fulfilled."
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Citation of recommendation",
+      "column_order": 1,
+      "row_id": "1673876264488x613775656958519000",
+      "answer": "� add free text here."
+    },
+    {
+      "question": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions and Specifications",
+      "column_order": 2,
+      "row_id": "1673876264488x613775656958519000",
+      "answer": "� add free text here."
+    },
+    {
+      "question": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 3,
+      "row_id": "1673876264488x613775656958519000",
+      "answer": "� add free text here."
+    },
+    {
+      "question": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Does the product comply with the French Decree No. 2008/1469 of 30 December 2008 „on materials and articles intended to contact with food“? ",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Please give detailed information on the respective directive and include all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Citation of Legislation",
+      "column_order": 1,
+      "row_id": "1673876263913x287679675300077000",
+      "answer": "� add free text here."
+    },
+    {
+      "question": "Please give detailed information on the respective directive and include all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 2,
+      "row_id": "1673876263913x287679675300077000",
+      "answer": "� add free text here."
+    },
+    {
+      "question": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 as amended?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": "1338-43-8"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": "87680"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": null
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": "E 494"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": "Sorbitan monooleate"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1673876264244x198557648652278660",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "79-10-7"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "10690"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "Acrylic acid"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1673876264302x176710191817000640",
+      "answer": "Content (as is): < 0.0027% (27 ppm)"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": "10630"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": null
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1673876264425x817995915252536700",
+      "answer": "SML = not detectable\nDetection Limit = 0.01 mg/kg\nContent (as is): < 0.01% (100 ppm)"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": "75-21-8"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCM Number in (EU) 10/2011",
+      "column_order": 5,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": "17020"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": null
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "E-no",
+      "column_order": 7,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Substance or product (chemical) name",
+      "column_order": 8,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": "Ethylene oxide"
+    },
+    {
+      "question": "If yes, please provide FCM No. and all relevant restrictions:",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Restrictions & specifications",
+      "column_order": 9,
+      "row_id": "1673876264863x632090812126984300",
+      "answer": "SML = not detectable\nDetection Limit = 0.01 mg/kg\nQM = 1 mg/kg in final product\nContent (as is): < 0.00005% (0.5 ppm)"
+    },
+    {
+      "question": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry foods”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "21 CFR § 176.300 “Slimicides”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "Does the product have a Food Contact Notification (FCN) in effect?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Other 21 CFR chapters including all relevant limitations?",
+      "question_number": null,
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "-"
+    },
+    {
+      "question": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB4806.8-2016 as amended?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876263989x820038633070633300",
+      "answer": "64742-47-8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1673876263989x820038633070633300",
+      "answer": "FCA1131"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876263989x820038633070633300",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1673876263989x820038633070633300",
+      "answer": "Distillates (petroleum), hydrotreated light"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1673876263989x820038633070633300",
+      "answer": "Maximum use level: 0.10% based on dry paper weight."
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264074x874485802014118000",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1673876264074x874485802014118000",
+      "answer": "FCA0224"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264074x874485802014118000",
+      "answer": "ND"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1673876264074x874485802014118000",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1673876264074x874485802014118000",
+      "answer": "SML = not detectable\nDetection Limit = 0.01 mg/kg\nContent (as is): < 0.01% (100 ppm)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264090x804573972016862700",
+      "answer": "26100-47-0"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1673876264090x804573972016862700",
+      "answer": "FCA0190"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264090x804573972016862700",
+      "answer": "-"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1673876264090x804573972016862700",
+      "answer": "Anionic polyacrylamide"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1673876264090x804573972016862700",
+      "answer": "Maximum use level: 0.10% based on dry paper weight."
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264159x515562632671720640",
+      "answer": "68439-50-9"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1673876264159x515562632671720640",
+      "answer": "FCA1276"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264159x515562632671720640",
+      "answer": "1.8"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1673876264159x515562632671720640",
+      "answer": "Alcohols, C12-14, ethoxylated"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1673876264159x515562632671720640",
+      "answer": "Ethylene oxide: QM = 1 mg/kg or SML = ND, DL = 0.01 mg/kg.\nContent EO (as is): < 0.00005% (0.5 ppm)"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number, if any",
+      "column_order": 4,
+      "row_id": "1673876264670x607082908601321900",
+      "answer": "79-10-7"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "FCA number of regulation, if any",
+      "column_order": 5,
+      "row_id": "1673876264670x607082908601321900",
+      "answer": "FCA0621"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "SML (mg/kg)",
+      "column_order": 6,
+      "row_id": "1673876264670x607082908601321900",
+      "answer": "6"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 8,
+      "row_id": "1673876264670x607082908601321900",
+      "answer": "Acrylic acid"
+    },
+    {
+      "question": "If yes, please give all relevant restrictions (GB9685)\n",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Comments",
+      "column_order": 10,
+      "row_id": "1673876264670x607082908601321900",
+      "answer": "SML(T) = 6.0 mg/kg, Group Number 22\nContent (as is): < 0.0027% (27 ppm)"
+    },
+    {
+      "question": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable."
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not applicable"
+    },
+    {
+      "question": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264159x334508603092207300",
+      "answer": "Ethylene oxide"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264159x334508603092207300",
+      "answer": "75-21-8"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264159x334508603092207300",
+      "answer": "200-849-9"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1673876264159x334508603092207300",
+      "answer": "< 0.5 ppm"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264435x369011122551468900",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264435x369011122551468900",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264435x369011122551468900",
+      "answer": "201-173-7"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1673876264435x369011122551468900",
+      "answer": "< 100 ppm"
+    },
+    {
+      "question": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration (SVHC)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264093x630154909731428100",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration (SVHC)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264093x630154909731428100",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration (SVHC)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264093x630154909731428100",
+      "answer": "201-173-7"
+    },
+    {
+      "question": "Please provide details of the substance identity and concentration (SVHC)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1673876264093x630154909731428100",
+      "answer": "< 100 ppm"
+    },
+    {
+      "question": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (71-3)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264634x143999025914727460",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (71-3)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264634x143999025914727460",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (71-3)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264634x143999025914727460",
+      "answer": "201-173-7"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (71-3)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1673876264634x143999025914727460",
+      "answer": "< 100 ppm"
+    },
+    {
+      "question": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes, details provided in table below."
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264123x270356814895957860",
+      "answer": "Acrylamide"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264123x270356814895957860",
+      "answer": "79-06-1"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264123x270356814895957860",
+      "answer": "201-173-7"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 5,
+      "row_id": "1673876264123x270356814895957860",
+      "answer": "< 100 ppm"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264626x340553066936522600",
+      "answer": "Ethylene oxide"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264626x340553066936522600",
+      "answer": "75-21-8"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264626x340553066936522600",
+      "answer": "200-849-9"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 5,
+      "row_id": "1673876264626x340553066936522600",
+      "answer": "< 0.5 ppm"
+    },
+    {
+      "question": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Chemical name",
+      "column_order": 1,
+      "row_id": "1673876264333x619069361426665100",
+      "answer": "Isopropanol"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "CAS Number",
+      "column_order": 2,
+      "row_id": "1673876264333x619069361426665100",
+      "answer": "67-63-0"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "EC Number",
+      "column_order": 3,
+      "row_id": "1673876264333x619069361426665100",
+      "answer": "200-661-7"
+    },
+    {
+      "question": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Concentration",
+      "column_order": 4,
+      "row_id": "1673876264333x619069361426665100",
+      "answer": "< 0.2 %"
+    },
+    {
+      "question": "Click here and then press the button to open PIDSL List. NOTE: if you don't have any changes to make in the PIDSL table, please click the \"open PIDSL table button\" and type \"no changes\" in any open comments box.",
+      "question_number": null,
+      "response_type": "PIDSL List",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": null
+    },
+    {
+      "question": "Does the product contain substances subject to Community rolling action plan (CoRAP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "question_number": null,
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No, not present above the limit"
+    },
+    {
+      "question": "Does the delivered product and/or its production site or line have a Kosher certification?",
+      "question_number": "6.1.1",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Does the delivered product and/or its production site or line have a Halal certification?",
+      "question_number": "6.1.3",
+      "response_type": "Select one",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product? ",
+      "question_number": "6.1.5",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Not assessed"
+    },
+    {
+      "question": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.2.7",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+      "question_number": "6.3.9",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+      "question_number": "6.4.10",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "If yes, is the ethanol derived from plant (wheat, grape, …) source?",
+      "question_number": "6.4.11",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": null
+    },
+    {
+      "question": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.5.12",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+      "question_number": "6.5.14",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are nanomaterials as defined by EC Recommendation 2011/696/EU intentionally added to the product? ",
+      "question_number": "6.6.16",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+      "question_number": "6.7.18",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+      "question_number": "6.8.20",
+      "response_type": "Dropdown",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes"
+    },
+    {
+      "question": "If yes, please specify type and grade, e.g. White Mineral Oil - food grade, - cosmetic grade, etc., and the maximum concentration:",
+      "question_number": "6.8.21",
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Contains hydrocarbon solvents (C10-C16) at approx. 25% fulfilling BfR’s purity requirements for liquid paraffins (see 155. Mitt., Bundesgesundheitsbl. [155th communication, federal health gazette] 25 (1982) 192). \nThe transfer of these solvents from the final product (in)to the foodstuff may not exceed 12 mg/kg (preliminary limit)."
+    },
+    {
+      "question": "If yes, please provide details regarding the content of MOAH (Mineral Oil Aromatic Hydrocarbons, C16-35) and PAH (Polyaromatic Hydrocarbons):",
+      "question_number": "6.8.23",
+      "response_type": "Multiple text lines",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "C16-35 most probably not contained, no specific data on raw material. Aromatics content of used MOSH raw material max. 500 ppm, usually < 50 ppm."
+    },
+    {
+      "question": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+      "question_number": "6.9.24",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "No"
+    },
+    {
+      "question": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+      "question_number": "6.10.26",
+      "response_type": "Select one Radio",
+      "column": null,
+      "column_order": 0,
+      "row_id": null,
+      "answer": "Yes, from sources with unknown certification status."
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "File",
+      "column_order": 1,
+      "row_id": "1673876264957x350680521306272500",
+      "answer": null
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Filename",
+      "column_order": 2,
+      "row_id": "1673876264957x350680521306272500",
+      "answer": "SDS EU/EN"
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "File",
+      "column_order": 1,
+      "row_id": "1673876265119x466628403374934140",
+      "answer": null
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Filename",
+      "column_order": 2,
+      "row_id": "1673876265119x466628403374934140",
+      "answer": "Product Compliance Sheet (PCS)"
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "File",
+      "column_order": 1,
+      "row_id": "1673876265129x428335943359629630",
+      "answer": null
+    },
+    {
+      "question": "Please upload any additional documentation here. If you have more than one document, please add additional rows to the table and follow the instructions.",
+      "question_number": null,
+      "response_type": "List table",
+      "column": "Filename",
+      "column_order": 2,
+      "row_id": "1673876265129x428335943359629630",
+      "answer": "SDS FI/FI"
+    }
+  ]
+}

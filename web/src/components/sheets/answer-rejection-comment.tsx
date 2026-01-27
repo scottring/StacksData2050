@@ -5,9 +5,9 @@ import { AlertTriangle, MessageSquare } from 'lucide-react'
 export interface AnswerRejection {
   id: string
   answer_id: string
-  reason: string
-  rejected_by: string | null
-  created_at: string
+  reason: string | null
+  rejected_by?: string | null
+  created_at?: string
   rejector_name?: string
 }
 
@@ -16,11 +16,15 @@ interface AnswerRejectionCommentProps {
 }
 
 export function AnswerRejectionComment({ rejection }: AnswerRejectionCommentProps) {
-  const formattedDate = new Date(rejection.created_at).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
+  const formattedDate = rejection.created_at
+    ? new Date(rejection.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      })
+    : null
+
+  if (!rejection.reason) return null
 
   return (
     <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
@@ -31,9 +35,11 @@ export function AnswerRejectionComment({ rejection }: AnswerRejectionCommentProp
             <span className="font-medium text-amber-800 dark:text-amber-300">
               Reviewer Feedback
             </span>
-            <span className="text-amber-600 dark:text-amber-500 text-xs">
-              {formattedDate}
-            </span>
+            {formattedDate && (
+              <span className="text-amber-600 dark:text-amber-500 text-xs">
+                {formattedDate}
+              </span>
+            )}
           </div>
           <p className="mt-1 text-sm text-amber-900 dark:text-amber-200">
             {rejection.reason}

@@ -21,6 +21,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Plus,
   Download,
   Search,
@@ -29,6 +38,7 @@ import {
   Filter,
   ChevronRight,
   Loader2,
+  CheckCircle2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -70,6 +80,69 @@ export default function QuestionsPage() {
   const [filterSection, setFilterSection] = useState<string>('all')
   const [filterType, setFilterType] = useState<string>('all')
   const [filterTag, setFilterTag] = useState<string>('all')
+
+  // Add Question Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [newQuestion, setNewQuestion] = useState({
+    content: '',
+    question_type: 'text',
+    parent_section_id: '',
+    required: false,
+  })
+
+  // Handle creating a new custom question
+  const handleCreateQuestion = async () => {
+    if (!newQuestion.content.trim()) return
+
+    setSaving(true)
+    const supabase = createClient()
+
+    // Find the highest order number in the selected section
+    const sectionQuestions = questions.filter(q => q.parent_section_id === newQuestion.parent_section_id)
+    const maxOrder = sectionQuestions.reduce((max, q) => Math.max(max, q.order_number || 0), 0)
+
+    const { data, error } = await supabase
+      .from('questions')
+      .insert({
+        content: newQuestion.content,
+        name: newQuestion.content.substring(0, 100),
+        question_type: newQuestion.question_type,
+        parent_section_id: newQuestion.parent_section_id || null,
+        required: newQuestion.required,
+        order_number: maxOrder + 1,
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error creating question:', error)
+      setSaving(false)
+      return
+    }
+
+    // Add to local state
+    if (data) {
+      setQuestions(prev => [...prev, data])
+    }
+
+    setSaving(false)
+    setSaveSuccess(true)
+
+    // Reset form after short delay
+    setTimeout(() => {
+      setSaveSuccess(false)
+      setDialogOpen(false)
+      setNewQuestion({
+        content: '',
+        question_type: 'text',
+        parent_section_id: '',
+        required: false,
+      })
+    }, 1500)
+  }
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -201,10 +274,112 @@ export default function QuestionsPage() {
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Question
-            </Button>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Custom Question
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Add Custom Question</DialogTitle>
+                  <DialogDescription>
+                    Create a custom question for your questionnaires. This allows manufacturers to add their own compliance questions.
+                  </DialogDescription>
+                </DialogHeader>
+                {saveSuccess ? (
+                  <div className="flex flex-col items-center justify-center py-8 gap-3">
+                    <CheckCircle2 className="h-12 w-12 text-green-600" />
+                    <p className="text-lg font-medium">Question Created!</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Question Text</label>
+                      <textarea
+                        className="w-full min-h-[100px] px-3 py-2 border rounded-md bg-background text-sm"
+                        placeholder="Enter your question..."
+                        value={newQuestion.content}
+                        onChange={(e) => setNewQuestion(prev => ({ ...prev, content: e.target.value }))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Question Type</label>
+                        <Select
+                          value={newQuestion.question_type}
+                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, question_type: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="text">Text</SelectItem>
+                            <SelectItem value="text_area">Text Area</SelectItem>
+                            <SelectItem value="yes_no">Yes/No</SelectItem>
+                            <SelectItem value="number">Number</SelectItem>
+                            <SelectItem value="date">Date</SelectItem>
+                            <SelectItem value="dropdown">Dropdown</SelectItem>
+                            <SelectItem value="file">File Upload</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Section</label>
+                        <Select
+                          value={newQuestion.parent_section_id}
+                          onValueChange={(value) => setNewQuestion(prev => ({ ...prev, parent_section_id: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select section" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sections.map(section => (
+                              <SelectItem key={section.id} value={section.id}>
+                                {section.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="required"
+                        checked={newQuestion.required}
+                        onChange={(e) => setNewQuestion(prev => ({ ...prev, required: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <label htmlFor="required" className="text-sm">
+                        Required question (suppliers must answer)
+                      </label>
+                    </div>
+                  </div>
+                )}
+                {!saveSuccess && (
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleCreateQuestion} disabled={saving || !newQuestion.content.trim()}>
+                      {saving ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create Question
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 

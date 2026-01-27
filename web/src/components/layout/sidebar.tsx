@@ -14,6 +14,9 @@ import {
   BarChart3,
   Settings,
   ChevronDown,
+  ShieldAlert,
+  Inbox,
+  Send,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -35,6 +38,11 @@ const customerNavItems: NavItem[] = [
     href: '/supplier-products',
     icon: Package,
   },
+  {
+    title: 'Outgoing Requests',
+    href: '/requests/outgoing',
+    icon: Send,
+  },
 ]
 
 const supplierNavItems: NavItem[] = [
@@ -48,9 +56,32 @@ const supplierNavItems: NavItem[] = [
     href: '/customer-products',
     icon: ShoppingCart,
   },
+  {
+    title: 'Incoming Requests',
+    href: '/requests/incoming',
+    icon: Inbox,
+  },
+]
+
+const complianceNavItems: NavItem[] = [
+  {
+    title: 'Supplier View',
+    href: '/compliance/supplier',
+    icon: ShieldAlert,
+  },
+  {
+    title: 'Manufacturer View',
+    href: '/compliance/manufacturer',
+    icon: Building2,
+  },
 ]
 
 const adminNavItems: NavItem[] = [
+  {
+    title: 'Companies',
+    href: '/admin/companies',
+    icon: Building2,
+  },
   {
     title: 'Questions',
     href: '/questions',
@@ -120,11 +151,12 @@ export function Sidebar() {
     <aside className="flex h-screen w-64 flex-col border-r bg-sidebar">
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">S</span>
-          </div>
-          <span className="text-lg font-semibold">Stacks</span>
+        <Link href="/dashboard" className="flex items-center">
+          <img
+            src="/stacks-logo-new.png"
+            alt="Stacks Data"
+            className="h-10 w-auto"
+          />
         </Link>
       </div>
 
@@ -148,6 +180,7 @@ export function Sidebar() {
 
         <NavSection title="As Customer" items={customerNavItems} pathname={pathname} />
         <NavSection title="As Supplier" items={supplierNavItems} pathname={pathname} />
+        <NavSection title="Compliance" items={complianceNavItems} pathname={pathname} />
         <NavSection title="Admin" items={adminNavItems} pathname={pathname} />
 
         {/* Reports */}

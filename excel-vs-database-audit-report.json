@@ -1,0 +1,1424 @@
+{
+  "summary": {
+    "excel_count": 104,
+    "database_count": 151,
+    "matched": 68,
+    "excel_only": 36,
+    "database_only": 83
+  },
+  "matched": [
+    {
+      "excel_sheet": "Supplier Product Contact",
+      "excel_row": 20,
+      "excel_text": "Product Description or Chemical Characterization",
+      "db_section": "Product Information",
+      "db_number": "1.2.1",
+      "db_text": "Product Description or Chemical Characterization ",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Supplier Product Contact",
+      "excel_row": 21,
+      "excel_text": "Product Code/Reference",
+      "db_section": "Product Information",
+      "db_number": "1.2.2",
+      "db_text": "Product Code/Reference",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Supplier Product Contact",
+      "excel_row": 22,
+      "excel_text": "Function in Application",
+      "db_section": "Product Information",
+      "db_number": "1.2.3",
+      "db_text": "Function in Application",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Supplier Product Contact",
+      "excel_row": 24,
+      "excel_text": "Production Site(s)",
+      "db_section": "Product Information",
+      "db_number": "1.2.5",
+      "db_text": "Production sites",
+      "match_score": 0.875
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 4,
+      "excel_text": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.1.1",
+      "db_text": "Can the product be used for production of food contact articles from paper and paperboard (incl. incidental food contact)?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 12,
+      "excel_text": "Can the product be used in the production of paper and paperboard products which comply with the requirements of article 3 and 17 of the Framework Regulation (EC) No 1935/2004?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.2.1",
+      "db_text": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of article 3 and article 17 of the Framework Regulation (EC) No 1935/2004?",
+      "match_score": 0.9680365296803652
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 16,
+      "excel_text": "Does the product comply with the requirements of the following BfR (Federal Institute for Risk Assessment) recommendations below?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.11",
+      "db_text": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+      "match_score": 0.7272727272727273
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 18,
+      "excel_text": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version.",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.1",
+      "db_text": "BfR (Federal Institute for Risk Assessment) recommendation XIV. Polymer Dispersions in its current version",
+      "match_score": 0.9935483870967742
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 33,
+      "excel_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.3",
+      "db_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI. Paper and Board for Food Contact in its current version.\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 48,
+      "excel_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.5",
+      "db_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/1. Cooking Papers, Hot Filter Papers and Filter Layers in its current version.",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 63,
+      "excel_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.7",
+      "db_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/2. Paper and Paperboard for Baking Purposes in its current version.\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 78,
+      "excel_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.3.9",
+      "db_text": "BfR (Federal Institute for Risk Assessment) recommendation XXXVI/3. Absorber pads based on cellulosic fibres for food packaging in its current version.",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 92,
+      "excel_text": "Other BfR (Federal Institute for Risk Assessment) recommendations including relevant restrictions:",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.8.1",
+      "db_text": "Please give detailed information on the respective directive and include all relevant restrictions:",
+      "match_score": 0.6131386861313869
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 97,
+      "excel_text": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.4.1",
+      "db_text": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended, Hoofdstuk II \"Papier en Karton (Paper and paperboard)\"?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 112,
+      "excel_text": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.4.3",
+      "db_text": "Does the product comply with the requirements of Commodities Act (Packaging and Consumer Articles) Regulation [Warenwetregeling verpakkingen en gebruiksartikelen] as amended; Hoofdstuk X \"Deklagen (Coatings)\"?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 128,
+      "excel_text": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.5.1",
+      "db_text": "Does the product comply with SR 817.023.21 „Ordinance of the EDI on articles and materials for food contact“ of 01 May 2017, especially Annex 10 „Authorized substances for the manufacture of printing inks“?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 144,
+      "excel_text": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.6.1",
+      "db_text": "Does the product comply with the Ministerial Decree of 21 March 1973 (as amended) concerning hygiene requirements for packages, containers and tools destined to come into contact with food or substances for personal use?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 160,
+      "excel_text": "Does the product comply with the requirements of \"DGCCRF - Fiche Papiers et Cartons - January 2019\" about materials and objects made of paper and cardboard in the state of finished products intended to come into contact with foodstuffs within the meaning of the framework regulation (EC) 1935/2004?",
+      "db_section": null,
+      "db_number": "4.7.3",
+      "db_text": "Does the product comply with the requirements of \"DGCCRF - Fiche Papiers et Cartons - January 2019\" about materials and objects made of paper and cardboard in the state of finished products intended to come into contact with foodstuffs within the meaning of the framework regulation (EC) 1935/2004?\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 176,
+      "excel_text": "Please give detailed information on the respective directive and include all relevant restrictions:",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.11.6",
+      "db_text": "If yes, please give all relevant restrictions (other)",
+      "match_score": 0.6126126126126126
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 182,
+      "excel_text": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 (as amended)?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.9.1",
+      "db_text": "Are components used in the manufacture of the product, which are listed with specific limits in the EU Regulation on plastics materials and articles (EU) 10/2011 as amended?",
+      "match_score": 0.9819819819819819
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 197,
+      "excel_text": "Does the product contain substances which are listed in Regulation (EC) No 1333/2008 on food additives, or listed in (EC) No 1334/2008 on flavourings (as amended)?",
+      "db_section": null,
+      "db_number": "4.9.3",
+      "db_text": "Does the product contain substances which are listed in Regulation (EC) No 1333/2008 on food additives, or listed in (EC) No 1334/2008 on flavourings (as amended)? \t\t\t\n\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 214,
+      "excel_text": "Can the product be used for the manufacture of Food Contact Articles in compliance with the U.S. Federal Food Drug and Cosmetic Act and all applicable “Food Additive Regulations” 21CFR part 170-199, especially the following ones?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.3",
+      "db_text": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry foods”?",
+      "match_score": 0.6829268292682927
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 216,
+      "excel_text": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.1",
+      "db_text": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.170 “Components of paper and paperboard in contact with aqueous and fatty foods”?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 231,
+      "excel_text": "Can the product be used for the manufacture of food contact articles made from paper and paper board otherwise complying with 21 CFR § 176.180 “Components of paper and paperboard in contact with dry food”?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.13",
+      "db_text": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+      "match_score": 0.6966292134831461
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 246,
+      "excel_text": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.5",
+      "db_text": "21 CFR § 175.105 “Adhesives”, provided that the respective use conditions described in § 175.105 are met?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 261,
+      "excel_text": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.7",
+      "db_text": "21 CFR § 175.300 “Resinous and polymeric coatings”?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 276,
+      "excel_text": "21 CFR § 176.300 “Slimicides”?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.9",
+      "db_text": "21 CFR § 176.300 “Slimicides”?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 291,
+      "excel_text": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.11",
+      "db_text": "21 CFR § 176.200 “Defoaming agents used in coatings”?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 321,
+      "excel_text": "Does the product have a Food Contact Notification (FCN) in effect?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.15",
+      "db_text": "Does the product have a Food Contact Notification (FCN) in effect?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 336,
+      "excel_text": "Other 21 CFR chapters including all relevant limitations?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.10.17",
+      "db_text": "Other 21 CFR chapters including all relevant limitations?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 340,
+      "excel_text": "Does the product comply with the requirements of the Chinese Food Contact Materials Hygiene Standards specified below?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.11.1",
+      "db_text": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+      "match_score": 0.6161616161616161
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 342,
+      "excel_text": "Is the product in accordance with the  “National food safety standard – General safety requirements of food contact materials and articles” GB 4806.1-2016 as amended?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.11.2",
+      "db_text": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB4806.8-2016 as amended?\t\t\t",
+      "match_score": 0.8070175438596491
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 345,
+      "excel_text": "Does your product fulfill the requirements of the “National Food Safety Standard – Papers, Paperboard Materials and its Articles for Food Contact” GB 4806.8-2022 as amended?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.11.3",
+      "db_text": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?\t\t\t",
+      "match_score": 0.6567164179104478
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 348,
+      "excel_text": "Does your product comply with the requirements for food contact paper and board materials and their products according to the National Standard of the People's Republic of China GB9685-2016 (Standard for uses of Additives in Food Contact Materials and Articles), issued Oct. 19th 2016 as amended?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.1",
+      "db_text": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+      "match_score": 0.631578947368421
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 363,
+      "excel_text": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.11.5",
+      "db_text": "Other Standard (GB) for resin or any positive listing for resin by MOH Announcement which applies to the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 381,
+      "excel_text": "Can the product be used for the production of articles from paper and paperboard, which comply with the requirements of MERCOSUR GMC Res. No. 03/92?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.17",
+      "db_text": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+      "match_score": 0.600896860986547
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 384,
+      "excel_text": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.2",
+      "db_text": "MERCOSUR GMC Res. No. 39/19 - Technical regulations on positive list of additives for plastic materials and polymeric coatings intended to contact food, in its current version?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 399,
+      "excel_text": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.5",
+      "db_text": "MERCOSUR GMC Res. No. 40/15 - Technical regulations on materials, packages and cellulosic equipment destined to be in contact with foods, in its current version?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 414,
+      "excel_text": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.13",
+      "db_text": "MERCOSUR GMC Res. No. 41/15 - Technical regulations on cellulosic materials for hot cooking and filtration, in its current version?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 429,
+      "excel_text": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?",
+      "db_section": "Food Contact Compliance",
+      "db_number": "4.12.15",
+      "db_text": "MERCOSUR GMC Res. No. 42/15 - Technical regulations on materials, containers and cellulosic equipment destined to be in contact with food during cooking or heating in an oven, in its current version?\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 460,
+      "excel_text": "Does the product comply with the requirements of the respective Food and Sanitation Act, specified below?",
+      "db_section": null,
+      "db_number": "null.null.null",
+      "db_text": "Does the product comply with Food Sanitation Act - Ministry of Health, Labor and Welfare Positive Lists effective 1 June 2020 and amendments?\t\t\t",
+      "match_score": 0.6404494382022472
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 464,
+      "excel_text": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\r\nAppended Table 1 - Table-1:",
+      "db_section": null,
+      "db_number": "null.null.null",
+      "db_text": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-1:",
+      "match_score": 0.9824561403508771
+    },
+    {
+      "excel_sheet": "Food Contact",
+      "excel_row": 476,
+      "excel_text": "Relevant for Additives and Coating agents, and for any Additive used in Base Polymers and Masterbatches:\r\nPlease provide details according to listings in Appended Table 1 - Table-2:",
+      "db_section": null,
+      "db_number": "null.null.null",
+      "db_text": "Suppliers of Base Polymers and Masterbatches, please provide details according to listings in\nAppended Table 1 - Table-2:",
+      "match_score": 0.8105263157894737
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 5,
+      "excel_text": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.1",
+      "db_text": "Does the product contain substances classified as carcinogenic (C), mutagenic (M), or reprotoxic (R), according to Annex VI of the CLP Regulation (EC) No 1272/2008 as amended, in concentrations exceeding 0.1 % (w/w) or a specific concentration limit?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 20,
+      "excel_text": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.3",
+      "db_text": "Does the product contain SVHC substances listed in the Candidate List of Substances of Very High Concern for Authorization (Article 59 list) on the ECHA homepage, in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 35,
+      "excel_text": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.5",
+      "db_text": "Does the product contain substances subject to Authorisation according to Annex XIV of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 50,
+      "excel_text": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.7",
+      "db_text": "Does the product contain substances subject to Restrictions according to Annex XVII of the REACH Regulation (EC) No 1907/2006 as amended in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 65,
+      "excel_text": "Does the product contain substances that have Endocrine Disrupting (ED) properties according to Regulation (EU) 2017/2100, or Commission Regulation (EU) 2018/605, or contain substances included in the Candidate List of Substances of Very High Concern (REACH, Article 59 list) for having endocrine disrupting properties (Article 57(f)), in a concentrations exceeding 0.1% (w/w)? \r\n(Use LIST I & LIST III on https://edlists.org/ as a practicle guide.)",
+      "db_section": null,
+      "db_number": "5.1.9",
+      "db_text": "Does the product contain substances that have Endocrine Disrupting (ED) properties according to Regulation (EU) 2017/2100, or Commission Regulation (EU) 2018/605, or contain substances included in the Candidate List of Substances of Very High Concern (REACH, Article 59 list) for having endocrine disrupting properties (Article 57(f)), in a concentrations exceeding 0.1% (w/w)? \n(Use LIST I & LIST III on https://edlists.org/ as a practical guide.)",
+      "match_score": 0.9872122762148338
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 80,
+      "excel_text": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.11",
+      "db_text": "Does the product contain priority substances listed in the Water Framework Directive (2000/60/EC) or the Directive on Environmental Quality Standards (Directive 2008/105/EC) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 95,
+      "excel_text": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.13",
+      "db_text": "Does the product contain persistent organic pollutants (POP) in concentrations exceeding 0.1 % (w/w) or a specific concentration limit mentioned in the relevant regulation?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 110,
+      "excel_text": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.19",
+      "db_text": "Does the product contain more than 100 ppm (as sum) of lead, cadmium, mercury and hexavalent chromium, therefore the product can not be used in packaging material with regard to CONEG and Directive 94/62/EC on packaging and packaging waste?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 125,
+      "excel_text": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.21",
+      "db_text": "Does the product contain elements restricted by Standard EN 71-3, or organic contaminants as restricted by Standard EN 71-9, in its current version?\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 140,
+      "excel_text": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.23",
+      "db_text": "Does the product contain substances included in the California Proposition 65 list (Safe Drinking Water and Toxic Enforcement Act of 1986)?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 155,
+      "excel_text": "Does the product contain per- or polyfluoroalkyl substances (PFAS), defined as substances that contain at least one fully fluorinated methyl (CF3-) or methylene (-CF2-) carbon atom (without any H/Cl/Br/I atom attached to it), in concentrations exceeding 0.1 % (w/w)?",
+      "db_section": null,
+      "db_number": "5.1.25",
+      "db_text": "Does the product contain per- or polyfluoroalkyl substances (PFAS), defined as substances that contain at least one fully fluorinated methyl (CF3-) or methylene (-CF2-) carbon atom (without any H/Cl/Br/I atom attached to it), in concentrations exceeding 0.1 % (w/w)?\t\t\t",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "PIDSL",
+      "excel_row": 170,
+      "excel_text": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+      "db_section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "db_number": "5.1.27",
+      "db_text": "Does the product contain substances listed in the PIDSL List in concentrations exceeding the declarable limit?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 6,
+      "excel_text": "Does the delivered product and/or its production site or line have a Kosher certification?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.999.1",
+      "db_text": "Does the delivered product and/or its production site or line have a Kosher certification?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 7,
+      "excel_text": "Does the delivered product and/or its production site or line have a Halal certification?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.999.3",
+      "db_text": "Does the delivered product and/or its production site or line have a Halal certification?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 11,
+      "excel_text": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.999.5",
+      "db_text": "Are substances prohibited during Passover (chametz and kitniyot) intentionally added to the product? ",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 23,
+      "excel_text": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.1.1",
+      "db_text": "Are substances of animal origin (including dairy and dairy based ingredients) intentionally added to the product, or known contaminants in the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 40,
+      "excel_text": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.2.1",
+      "db_text": "Is there a concern that the product contains BSE (Bovine Spongiform Encephalopathy) or TSE (Transmissible Spongiform Encephalopathies) specified risk material as defined in the Decision 97/534/EC, EMEA/410/01 and current EU legislation?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 45,
+      "excel_text": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.3.1",
+      "db_text": "Is ethanol (CAS 64-17-5 ) intentionally added to the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 53,
+      "excel_text": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.4.1",
+      "db_text": "Are food allergens as defined by Regulation (EU) No 1169/2011 intentionally added to the product, or known contaminants in the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 68,
+      "excel_text": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.4.3",
+      "db_text": "Are food allergens as defined by US Food Allergen Labeling and Consumer Protection Act of 2004 intentionally added to the product, or known contaminants in the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 85,
+      "excel_text": "Are nanomaterials as defined by EC Recommendation 2022/C 229/01 intentionally added to the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.5.1",
+      "db_text": "Are nanomaterials as defined by EC Recommendation 2011/696/EU intentionally added to the product? ",
+      "match_score": 0.8859060402684564
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 102,
+      "excel_text": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.6.1",
+      "db_text": "Are GMOs, or substances produced from GMO but no longer containing GMO, as defined by Regulation (EU) No 1829/2003 and amendments intentionally added to the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 119,
+      "excel_text": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.7.1",
+      "db_text": "Does the product contain Mineral Oil Hydrocarbons (MOH)?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 128,
+      "excel_text": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.8.1",
+      "db_text": "Are conflict minerals regulated by the Dodd-Frank Act or Regulation (EU) 2017/821 intentionally added to the product, or are conflict minerals used during the production of the product?",
+      "match_score": 1
+    },
+    {
+      "excel_sheet": "Additional Requirements",
+      "excel_row": 145,
+      "excel_text": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+      "db_section": "Additional Requirements",
+      "db_number": "6.9.1",
+      "db_text": "Are Palm Oil or Palm Kernel Oil, or components derived from Palm Oil or Palm Kernel Oil intentionally added to the product?",
+      "match_score": 1
+    }
+  ],
+  "excel_only": [
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 2,
+      "questionText": "Short instructions:",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 3,
+      "questionText": "- Please complete the questionnaire as far as possible, or as far as agreed with your customer.",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 4,
+      "questionText": "- The questionaire should be filled by providing answers to the specific questions via selection from the drop-down list. Such an answer cannot be conclusive in all cases. Therefore additional information/comments/advices or limitations should be provided in the comment sections (free-text field next to the drop-down answer).",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 5,
+      "questionText": "- In order to improve legibility, please use \"Alt\"+\"Enter\" to force line breaks when longer text sections are entered or pasted as free-text.",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 7,
+      "questionText": "General Supplier -, Product - and Contact Information",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 27,
+      "questionText": "Document Completed by (BLOCK Letters)",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 32,
+      "questionText": "Disclaimer/Liability",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 34,
+      "questionText": "The supplier is responsible for ensuring the correctness of information here provided.",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Supplier Product Contact",
+      "rowNumber": 35,
+      "questionText": "All information in this Harmonized Questionnaire document is given in good faith and is based on the legislation in place at the date of publication of this document.",
+      "sectionName": "Supplier Product Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 2,
+      "questionText": "Food Contact Compliance - General Information",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 10,
+      "questionText": "European Union - Framework Regulation",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 14,
+      "questionText": "European Union - National Regulation",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 95,
+      "questionText": "The Netherlands",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 131,
+      "questionText": "*Include \"use\" from column 5",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 132,
+      "questionText": "and classification (A or B) from column 6.",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 174,
+      "questionText": "Other relevant national legislations in Europe",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 180,
+      "questionText": "European Union - Plastics and Dual Use Additives",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 306,
+      "questionText": "21 CFR § 176.210 “Defoaming agents used in the manufacture of paper and paperboard”?",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 379,
+      "questionText": "Does the product comply with the requirements of the respective MERCOSUR GMC Resolutions and respective national implementations in Brasil, Paraguay and Uruguay, specified below?",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 444,
+      "questionText": "MERCOSUR GMC Res. No. 02/12 - Technical regulation on the positive list of monomers, other starting substances and authorized polymers for plastic equipment in contact with food, in its current version?",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "Food Contact",
+      "rowNumber": 462,
+      "questionText": "Does the product comply with Food Sanitation Act - Ministry of Health, Labor and Welfare Positive Lists effective 1 June 2020 and amendments?",
+      "sectionName": "Food Contact"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 2,
+      "questionText": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 3,
+      "questionText": "General Section",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 187,
+      "questionText": "Primary Substance group",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 501,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 502,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 503,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 504,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 505,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 506,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "PIDSL",
+      "rowNumber": 507,
+      "questionText": "Rosin/Resin acid",
+      "sectionName": "PIDSL"
+    },
+    {
+      "sheetName": "Additional Requirements",
+      "rowNumber": 2,
+      "questionText": "Additional Requirements",
+      "sectionName": "Additional Requirements"
+    },
+    {
+      "sheetName": "Additional Requirements",
+      "rowNumber": 4,
+      "questionText": "Kosher and Halal Certification",
+      "sectionName": "Additional Requirements"
+    },
+    {
+      "sheetName": "Additional Requirements",
+      "rowNumber": 9,
+      "questionText": "Kosher Passover",
+      "sectionName": "Additional Requirements"
+    },
+    {
+      "sheetName": "Additional Requirements",
+      "rowNumber": 117,
+      "questionText": "Mineral Oil (MOSH/MOAH)",
+      "sectionName": "Additional Requirements"
+    },
+    {
+      "sheetName": "Additional Requirements",
+      "rowNumber": 126,
+      "questionText": "Conflict Minerals",
+      "sectionName": "Additional Requirements"
+    }
+  ],
+  "database_only": [
+    {
+      "id": "0a61547e-8aea-454b-88b4-c7753065d861",
+      "section": "Product Information",
+      "number": "1.1.1",
+      "name": "Add disclaimer (optional)",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "567e9d19-0d85-4444-814a-b602532df725",
+      "section": "Product Information",
+      "number": "1.2.4",
+      "name": "Producer",
+      "type": "Single text line"
+    },
+    {
+      "id": "76156fbd-ee50-4e30-8a09-9fbe21e4868e",
+      "section": "Ecolabels",
+      "number": "2.1.3",
+      "name": "Commission Decision (EU) 2019/70 - ANNEX I of 11 January 2019 establishing the EU Ecolabel criteria for graphic paper:\t\t\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "3e5c898e-edf3-4c2c-abbe-513f319af644",
+      "section": "Ecolabels",
+      "number": "2.1.4",
+      "name": "Commission Decision (EU) 2019/70 - ANNEX II of 11 January 2019 establishing the EU Ecolabel criteria for tissue paper:\t\t\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "20b98a71-714c-4b91-aca9-4448018376ec",
+      "section": null,
+      "number": "2.1.5",
+      "name": "Commission Decision (EU) 2020/1803 - ANNEX of 27 November 2020 establishing the EU Ecolabel criteria for printed paper, stationery paper and paper carrier bag products.",
+      "type": "Dropdown"
+    },
+    {
+      "id": "44bdb8a9-28f3-4f08-a11d-766c0f55574b",
+      "section": "Ecolabels",
+      "number": "2.2.1",
+      "name": "Paper Products - Chemical Module",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "9fb53227-e2dd-4d38-a89a-5d43c03d3ec6",
+      "section": "Ecolabels",
+      "number": "2.2.2",
+      "name": "Tissue Paper - Supplementary Module",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "31bf07c6-22d7-4d4e-9cb0-9d25a36ac34f",
+      "section": "Ecolabels",
+      "number": "2.2.3",
+      "name": "Grease-proof paper - Supplementary Module",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "c3da3dd6-b5b6-41d8-a7a6-65f9e0ddbff6",
+      "section": "Ecolabels",
+      "number": "2.2.4",
+      "name": "Packaging for Liquid Foods",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "412a04f8-7d43-4b24-adc4-91496d50d9a8",
+      "section": "Ecolabels",
+      "number": "2.2.5",
+      "name": "Disposables for Food",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "6f37f495-47ba-4fdc-a87e-e279632691ff",
+      "section": "Ecolabels",
+      "number": "2.3.1",
+      "name": "DE-UZ-5. Sanitary paper products made of recycled paper",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "0dbef784-8cf6-4eb2-af1c-b368adfd1a4d",
+      "section": "Ecolabels",
+      "number": "2.3.2",
+      "name": "DE-UZ 14a - Recycled paper",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "7410a9e8-656b-4fa2-9c78-5d97258c73e4",
+      "section": "Ecolabels",
+      "number": "2.3.3",
+      "name": "DE-UZ 14b - Finished products made from recovered paper for office and school demand\t\t\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "911a2f91-31e2-4641-8a23-4f8cb1907c83",
+      "section": "Ecolabels",
+      "number": "2.3.4",
+      "name": "DE-UZ 56 - Recycled cardboard\t\t\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "c5b9d0e0-6bc1-48d7-a136-38260f875f85",
+      "section": "Ecolabels",
+      "number": "2.3.5",
+      "name": "DE-UZ 72 - Printing and publication papers",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "0055fac8-2dc4-42be-9abd-e80f7bcdca78",
+      "section": null,
+      "number": "2.3.6",
+      "name": "Question #  DE-UZ 217a - Paper made from 100% recovered paper for paper bags and boxes",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "a699cbcd-fc0d-4b13-bbac-378955ba4a72",
+      "section": null,
+      "number": "2.3.7",
+      "name": "DE-UZ 217b - Paper bags and boxes made out of recycled paper\t\t\t",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "4363a3a6-c74f-46fd-ba64-f06196d0bae9",
+      "section": "Biocides",
+      "number": "3.1.1",
+      "name": "According to Regulation (EU) No. 528/2012 does the product contain biocidal active substances either intentionally added or non-intentionally via other raw materials?\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "55eeea30-92d0-492e-aa44-37819705fbb0",
+      "section": "Biocides",
+      "number": "3.1.2",
+      "name": "If yes, please specify the substance and concentration in product",
+      "type": "List table"
+    },
+    {
+      "id": "c34a58ea-66a6-42c7-b568-d521c3e37a3e",
+      "section": "Biocides",
+      "number": "3.1.3",
+      "name": "Are the biocidal active substances used for in-can preservation (PT 6)?\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "5b1c126c-ccd8-4826-8b3a-ad73519f46b4",
+      "section": "Biocides",
+      "number": "3.1.5",
+      "name": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "de444072-ffd7-47f7-b6e1-585980fa1b8e",
+      "section": "Biocides",
+      "number": "3.1.6",
+      "name": "Are the biocidal active substances used as slimicides (PT 12)?",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "5a921ce7-6c34-4d35-ad04-b348879c098e",
+      "section": "Biocides",
+      "number": "3.1.7",
+      "name": "Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance?",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "d810c46d-91d0-491f-ad96-4a61270a1219",
+      "section": "Biocides",
+      "number": "3.1.8",
+      "name": "Are the biocidal active substances used as Preservatives for liquid-cooling and processing systems (PT 11)?",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "53bdfe23-7266-4372-99cc-c3789c4f36c6",
+      "section": "Biocides",
+      "number": "3.1.10",
+      "name": "\"Only applicable for EU suppliers! Is the supplier of the active substance listed as an approved supplier in the Article 95 list for respective active substance? \"\t",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "cb1558b7-f79a-47b6-ae81-6079c05e3333",
+      "section": "Food Contact Compliance",
+      "number": "4.1.2",
+      "name": "Please specify general limitations which may apply to the product (e.g. dosage limitation): (Enter n/a if not applicable)",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "d9f5ded0-dd82-4b29-800c-2182b0448df4",
+      "section": "Food Contact Compliance",
+      "number": "4.3.2",
+      "name": "If yes, please provide details for components with restrictions: (XIV)",
+      "type": "List table"
+    },
+    {
+      "id": "eaac9048-5d14-4cb1-80f7-d5324f0601eb",
+      "section": "Food Contact Compliance",
+      "number": "4.3.4",
+      "name": "If yes, please provide details for components with restrictions: (XXXVI)",
+      "type": "List table"
+    },
+    {
+      "id": "e557b854-f68d-4bab-b825-ca72b3d953b4",
+      "section": "Food Contact Compliance",
+      "number": "4.3.6",
+      "name": "If yes, please provide details for components with restrictions: (XXXVI/1)",
+      "type": "List table"
+    },
+    {
+      "id": "0d5a4f6d-f803-413e-be52-4e1ed845b4e3",
+      "section": "Food Contact Compliance",
+      "number": "4.3.8",
+      "name": "If yes, please provide details for components with restrictions (XXXVI/2):",
+      "type": "List table"
+    },
+    {
+      "id": "c0ad1738-cfbc-4581-b8bb-f2453228e1ad",
+      "section": "Food Contact Compliance",
+      "number": "4.3.10",
+      "name": "If yes, please provide details for components with restrictions (XXXVI/3)",
+      "type": "List table"
+    },
+    {
+      "id": "8576de2d-9232-4b46-9cd0-c3876a849a26",
+      "section": "Food Contact Compliance",
+      "number": "4.4.2",
+      "name": "If yes, please provide details for components with restrictions (Hoof II)",
+      "type": "List table"
+    },
+    {
+      "id": "1a712f9e-892b-42aa-9006-bab03791ce49",
+      "section": "Food Contact Compliance",
+      "number": "4.4.4",
+      "name": "If yes, please provide details for components with restrictions (Hoof X)",
+      "type": "List table"
+    },
+    {
+      "id": "759ecd2f-0950-4933-95cd-b149af659971",
+      "section": "Food Contact Compliance",
+      "number": "4.5.2",
+      "name": "If yes, please give all relevant restrictions, as well as all limitations given in column 7-9:\t\n*Include \"use\" from column 5 and classification (A or B) from column 6.\t\n\t",
+      "type": "List table"
+    },
+    {
+      "id": "70c8f931-941d-455d-9815-f3e1e6209957",
+      "section": "Food Contact Compliance",
+      "number": "4.6.2",
+      "name": "If yes, please provide details for components with restrictions (italy)",
+      "type": "List table"
+    },
+    {
+      "id": "923d672f-9c2b-4af2-9ea0-86783298cb33",
+      "section": "Food Contact Compliance",
+      "number": "4.7.2",
+      "name": "If yes, please provide details for components with restrictions (France)",
+      "type": "List table"
+    },
+    {
+      "id": "39929d97-d292-419f-9579-8ce989d2d4d8",
+      "section": "Food Contact Compliance",
+      "number": "4.9.2",
+      "name": "If yes, please provide FCM No. and all relevant restrictions:",
+      "type": "List table"
+    },
+    {
+      "id": "3f8befa2-d432-4393-ba60-7643141b796e",
+      "section": null,
+      "number": "4.9.4",
+      "name": "If yes, please provide the E No. / FL No. for substances for which the concentration exceeds 10% of the given limit value in the regulations:\t",
+      "type": "List table"
+    },
+    {
+      "id": "34ef55d5-884c-445e-bd4f-4d088dbfb391",
+      "section": "Food Contact Compliance",
+      "number": "4.10.2",
+      "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.170)",
+      "type": "List table"
+    },
+    {
+      "id": "16649aa5-dd34-4681-83e8-66da0edf5d06",
+      "section": "Food Contact Compliance",
+      "number": "4.10.4",
+      "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.180)",
+      "type": "List table"
+    },
+    {
+      "id": "9c98c9b3-9890-47c8-b51a-73325b0ccdcc",
+      "section": "Food Contact Compliance",
+      "number": "4.10.6",
+      "name": "If yes, please give all relevant restrictions (USA 175.105):",
+      "type": "List table"
+    },
+    {
+      "id": "35d17d7e-d82c-4584-9add-12964c7d0f83",
+      "section": "Food Contact Compliance",
+      "number": "4.10.8",
+      "name": "If yes, please give all relevant restrictions (USA 175.300):",
+      "type": "List table"
+    },
+    {
+      "id": "263efb9f-f82a-4097-88dd-5c1842c2e9ca",
+      "section": "Food Contact Compliance",
+      "number": "4.10.10",
+      "name": "If yes, please give all relevant restrictions (USA Slimicides 176.300\"):",
+      "type": "List table"
+    },
+    {
+      "id": "c0f8015b-ac9f-4104-8225-e802ec245614",
+      "section": "Food Contact Compliance",
+      "number": "4.10.12",
+      "name": "If yes, please give all relevant restrictions (176.200):",
+      "type": "List table"
+    },
+    {
+      "id": "ac8833bb-da29-45dd-969a-cab28b795f05",
+      "section": "Food Contact Compliance",
+      "number": "4.10.14",
+      "name": "If yes, please give all relevant restrictions: (USA 21 CFR 176.210)",
+      "type": "List table"
+    },
+    {
+      "id": "7d83203b-716c-467b-a28d-c2a657ed8293",
+      "section": "Food Contact Compliance",
+      "number": "4.10.16",
+      "name": "If yes, please give all relevant restrictions (USA FCN):",
+      "type": "List table"
+    },
+    {
+      "id": "79f3635f-db0c-41df-9a37-35ad9a19e774",
+      "section": "Food Contact Compliance",
+      "number": "4.11.4",
+      "name": "If yes, please give all relevant restrictions (GB9685)\n",
+      "type": "List table"
+    },
+    {
+      "id": "2d62607e-9fff-4808-855f-3a8690b0d330",
+      "section": "Food Contact Compliance",
+      "number": "4.12.4",
+      "name": "(39-19) If yes, please give all relevant restrictions:",
+      "type": "List table"
+    },
+    {
+      "id": "52f92078-666f-4ee5-b134-7ff5f54126de",
+      "section": "Food Contact Compliance",
+      "number": "4.12.7",
+      "name": "(40-15) If yes, please give all relevant restrictions:",
+      "type": "List table"
+    },
+    {
+      "id": "784bfa22-5fb7-45be-91e7-4216c2ddf1bf",
+      "section": "Food Contact Compliance",
+      "number": "4.12.14",
+      "name": "If yes, please give all relevant restrictions: (41/15) ",
+      "type": "List table"
+    },
+    {
+      "id": "fb9be0bd-7cd9-470d-a7f4-82928959de0a",
+      "section": "Food Contact Compliance",
+      "number": "4.12.16",
+      "name": "(MERC42/15) If yes, please give all relevant restrictions:",
+      "type": "List table"
+    },
+    {
+      "id": "a82673b1-dcca-46a2-9a54-02a1c74f572b",
+      "section": "Food Contact Compliance",
+      "number": "4.12.18",
+      "name": "If yes, please give all relevant restrictions: (02/12)",
+      "type": "List table"
+    },
+    {
+      "id": "424a8582-e7dd-4929-bf8a-39e1ae7c13b0",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.2",
+      "name": "Please provide details of the substance identity and concentration",
+      "type": "List table"
+    },
+    {
+      "id": "8b267571-6e27-4f9c-869d-224750075eeb",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.4",
+      "name": "Please provide details of the substance identity and concentration (SVHC)",
+      "type": "List table"
+    },
+    {
+      "id": "4452cd96-b87b-4a97-976e-4fd76227888d",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.6",
+      "name": "If yes, please provide details of the substance identity and concentration (Annex XIV)",
+      "type": "List table"
+    },
+    {
+      "id": "523816a1-6e05-4d1c-8454-ea7544a87b99",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.8",
+      "name": "If yes, please provide details of the substance identity and concentration (Annex XVII)",
+      "type": "List table"
+    },
+    {
+      "id": "43c89205-f1b6-4f26-a397-da3256f2e93b",
+      "section": null,
+      "number": "5.1.10",
+      "name": "If yes, please provide details of the substance identity and concentration (Endocrine)",
+      "type": "List table"
+    },
+    {
+      "id": "4e243372-3ef9-4fbf-8df2-28631e3e2252",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.12",
+      "name": "If yes, please provide details of the substance identity and concentration (2000/60.EC)",
+      "type": "List table"
+    },
+    {
+      "id": "ded7fd25-a0e7-4de0-9631-acaa0dc750a5",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.14",
+      "name": "If yes, please provide details of the substance identity and concentration (POP)",
+      "type": "List table"
+    },
+    {
+      "id": "1c38f511-a3c8-4264-a4b7-46f2f97e232a",
+      "section": null,
+      "number": "5.1.15",
+      "name": "Does the product contain synthetic polymer microparticles, as defined in Annex of COMMISSION REGULATION (EU) 2023/2055?",
+      "type": "Dropdown"
+    },
+    {
+      "id": "7b41c58d-9ec4-4f67-900e-88acb10b9160",
+      "section": null,
+      "number": "5.1.16",
+      "name": "If yes, does the synthetic polymer microparticles meet the specifics of paragraph 1 of the restriction (>0,01% and conferring a sought-after characteristic to the product as supplied)?",
+      "type": "Dropdown"
+    },
+    {
+      "id": "2ae7fbf2-4df1-4fdd-bdbc-b6e39b939c16",
+      "section": null,
+      "number": "5.1.17",
+      "name": "Does the product contain polymers excluded from SPM definition?",
+      "type": "Dropdown"
+    },
+    {
+      "id": "08fa9d31-349e-4e63-aa47-93df9aa7962d",
+      "section": null,
+      "number": "5.1.18",
+      "name": "List of exemptions",
+      "type": "Select multiple"
+    },
+    {
+      "id": "ad6c2b6c-fbc9-4493-912d-cd7d4512a4d0",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.20",
+      "name": "If yes, please provide details of the substance identity and concentration (CONEG)",
+      "type": "List table"
+    },
+    {
+      "id": "d975235e-d406-40ca-90a1-cb24eaa2f9e7",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.22",
+      "name": "If yes, please provide details of the substance identity and concentration (71-3)",
+      "type": "List table"
+    },
+    {
+      "id": "bee95446-3eb5-46e1-b9ad-4369b3cf3dc8",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.24",
+      "name": "If yes, please provide details of the substance identity and concentration (Drinking water)",
+      "type": "List table"
+    },
+    {
+      "id": "45029916-dc45-4ee8-88cd-43990ded6aac",
+      "section": null,
+      "number": "5.1.26",
+      "name": "If yes, please provide details of the substance identity and concentration (PFAS)",
+      "type": "List table"
+    },
+    {
+      "id": "ed882da2-e367-4f83-9a26-5d011ba21af7",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.28",
+      "name": "If yes, please provide details of the substance identity and concentration (PIDSL)",
+      "type": "List table"
+    },
+    {
+      "id": "bbbc34fa-d047-487e-8c44-d77834029749",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.1.32",
+      "name": "If yes, please provide details of the substance identity and concentration (CoRAP)",
+      "type": "List table"
+    },
+    {
+      "id": "d9962953-6fd3-4578-86f3-2936d8e56cc6",
+      "section": "Pulp and Paper Industry List of Declarable Substances (PIDSL)",
+      "number": "5.3.1",
+      "name": "Click here and then press the button to open PIDSL List. NOTE: if you don't have any changes to make in the PIDSL table, please click the \"open PIDSL table button\" and type \"no changes\" in any open comments box.",
+      "type": "PIDSL List"
+    },
+    {
+      "id": "e4ca7a5a-ec53-41ed-9ffa-f640b90fdf06",
+      "section": "Additional Requirements",
+      "number": "6.1.8",
+      "name": "If yes, please provide details on the substance identity and concentration:",
+      "type": "List table"
+    },
+    {
+      "id": "33c50fe8-27cf-4f26-94ec-e72ef280587c",
+      "section": "Additional Requirements",
+      "number": "6.3.2",
+      "name": "If yes, is the ethanol derived from plant (wheat, grape, …) source?",
+      "type": "Select one Radio"
+    },
+    {
+      "id": "7d5cd8b9-cf39-4ccd-a264-7fccf5f5ec67",
+      "section": "Additional Requirements",
+      "number": "6.4.2",
+      "name": "If yes, please provide details on the substance identity and concentration:",
+      "type": "List table"
+    },
+    {
+      "id": "67250dd1-02a2-4f54-91dd-ccb5cff92509",
+      "section": "Additional Requirements",
+      "number": "6.4.15",
+      "name": "If yes, please provide details on the substance identity and concentration",
+      "type": "List table"
+    },
+    {
+      "id": "9b83bfda-59cf-491c-9b8f-f4d635845083",
+      "section": "Additional Requirements",
+      "number": "6.5.2",
+      "name": "Nano - If yes, please provide details on the substance identity and concentration",
+      "type": "List table"
+    },
+    {
+      "id": "7282fab1-66cd-47d6-a437-82f17e59498f",
+      "section": "Additional Requirements",
+      "number": "6.6.2",
+      "name": "GMO - If yes, please provide details on the substance identity and concentration",
+      "type": "List table"
+    },
+    {
+      "id": "d2025e22-2f6d-4da2-bea1-ba0f3c73aed0",
+      "section": "Additional Requirements",
+      "number": "6.7.2",
+      "name": "If yes, please specify type and grade, e.g. White Mineral Oil - food grade, - cosmetic grade, etc., and the maximum concentration:",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "d844fbcc-af0e-418d-b664-afa01dfcf1fd",
+      "section": "Additional Requirements",
+      "number": "6.7.3",
+      "name": "If yes, please provide details regarding the content of MOAH (Mineral Oil Aromatic Hydrocarbons, C16-35) and PAH (Polyaromatic Hydrocarbons):",
+      "type": "Multiple text lines"
+    },
+    {
+      "id": "79bd0fd1-b2f3-42f1-a537-0bf5079cea8a",
+      "section": "Additional Requirements",
+      "number": "6.8.2",
+      "name": "If yes, please provide details on the substance identity and concentration",
+      "type": "List table"
+    },
+    {
+      "id": "50381267-a8d1-456b-b5b7-42bc383c4597",
+      "section": "Additional Requirements",
+      "number": "6.999.2",
+      "name": "If yes, please attach the certificate and specify an expiration date!",
+      "type": "File document"
+    },
+    {
+      "id": "357d950f-e620-4947-b3da-1b4a79a5fcc7",
+      "section": "Additional Requirements",
+      "number": "6.999.4",
+      "name": "If yes, please attach the certificate (Halal)!",
+      "type": "File document"
+    },
+    {
+      "id": "c715e32d-f26c-4a42-8486-b72bf42e5be3",
+      "section": "Additional Requirements",
+      "number": "6.999.6",
+      "name": "If yes, please provide details on the substance identity and concentration (ch-ki)",
+      "type": "List table"
+    },
+    {
+      "id": "a949c26f-cf8c-40a6-813f-2737b6672f6a",
+      "section": "Supplementary Materials",
+      "number": "7.1.4",
+      "name": "Please upload any additional documentation here.",
+      "type": "File document"
+    }
+  ]
+}
