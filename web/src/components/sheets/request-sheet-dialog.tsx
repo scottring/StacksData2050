@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -23,21 +22,17 @@ import {
 import { Loader2, CheckCircle2 } from 'lucide-react'
 import type { Database } from '@/lib/database.types'
 import { TagMultiSelect } from '@/components/ui/tag-multi-select'
-
 type Company = Database['public']['Tables']['companies']['Row']
-
 // Use a simpler tag type for what we actually need
 interface TagOption {
   id: string
   name: string | null
   description: string | null
 }
-
 interface RequestSheetDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-
 export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogProps) {
   const [suppliers, setSuppliers] = useState<Company[]>([])
   const [tags, setTags] = useState<TagOption[]>([])
@@ -45,7 +40,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [supplierMode, setSupplierMode] = useState<'existing' | 'new'>('existing')
-
   const [formData, setFormData] = useState({
     productName: '',
     supplierId: '',
@@ -53,62 +47,48 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     newSupplierEmail: '',
     newSupplierCompanyName: '',
   })
-
   useEffect(() => {
     if (open) {
       fetchData()
       setSuccess(false)
     }
   }, [open])
-
   async function fetchData() {
     setLoading(true)
     const supabase = createClient()
-
     // Fetch suppliers (companies with show_as_supplier = true)
     const { data: supplierData } = await supabase
       .from('companies')
       .select('*')
-      .eq('active', true)
-      .eq('show_as_supplier', true)
       .order('name')
-
     // Fetch tags (HQ 2.0.1, HQ2.1, etc.)
     const { data: tagData } = await supabase
       .from('tags')
       .select('id, name, description')
       .order('name')
-
     setSuppliers(supplierData || [])
     setTags(tagData || [])
     setLoading(false)
   }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
-
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-
       const { data: userData } = await supabase
         .from('users')
         .select('company_id, full_name, email')
         .eq('id', user.id)
         .single()
-
       if (!userData?.company_id) throw new Error('No company found')
-
       let supplierCompanyId = formData.supplierId
       let invitationId: string | null = null
-
       // Handle new supplier invitation
       if (supplierMode === 'new') {
         // Generate unique token
         const token = crypto.randomUUID()
-
         // Create invitation record
         const { data: invitation, error: inviteError } = await supabase
           .from('invitations')
@@ -121,26 +101,20 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           })
           .select()
           .single()
-
         if (inviteError) throw inviteError
-
         invitationId = invitation.id
-
         // Create placeholder company (will be replaced when supplier signs up)
         const { data: placeholderCompany, error: companyError } = await supabase
           .from('companies')
           .insert({
             name: formData.newSupplierCompanyName || `Invited: ${formData.newSupplierEmail}`,
-            active: false, // Inactive until signup
-            show_as_supplier: true,
+            
+            
           })
           .select()
           .single()
-
         if (companyError) throw companyError
-
         supplierCompanyId = placeholderCompany.id
-
         // Send invitation email via API route
         try {
           await fetch('/api/invitations/send', {
@@ -158,7 +132,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           // Non-fatal: continue with request creation
         }
       }
-
       // Create new sheet
       const { data: newSheet, error: sheetError } = await supabase
         .from('sheets')
@@ -166,15 +139,13 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           name: formData.productName,
           company_id: userData.company_id,
           requesting_company_id: supplierCompanyId,
-          stack_id: null, // Not using stacks anymore - tags control questions
+          // stack_id removed - tags control questions now
           status: 'pending',
           created_by: user.id,
         })
         .select()
         .single()
-
       if (sheetError) throw sheetError
-
       // Create request record
       const { data: newRequest, error: requestError} = await supabase
         .from('requests')
@@ -187,47 +158,77 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
         })
         .select()
         .single()
-
       if (requestError) throw requestError
-
       // Link selected tags to request
       if (formData.selectedTags.length > 0) {
         const requestTagInserts = formData.selectedTags.map(tagId => ({
           request_id: newRequest.id,
           tag_id: tagId
         }))
-
         const { error: tagError } = await supabase
           .from('request_tags')
           .insert(requestTagInserts)
-
         if (tagError) {
           console.error('Error linking tags to request:', tagError)
         }
       }
-
       // Also link tags to sheet for question filtering
       if (formData.selectedTags.length > 0) {
         const sheetTagInserts = formData.selectedTags.map(tagId => ({
           sheet_id: newSheet.id,
           tag_id: tagId
         }))
-
         const { error: sheetTagError } = await supabase
           .from('sheet_tags')
           .insert(sheetTagInserts)
-
         if (sheetTagError) {
           console.error('Error linking tags to sheet:', sheetTagError)
         }
       }
-
       // If invitation, link request to invitation
       if (supplierMode === 'new' && invitationId) {
         await supabase
           .from('invitations')
           .update({ request_id: newRequest.id })
           .eq('id', invitationId)
+      }
+
+      // Send email notification to supplier
+      if (supplierMode === 'existing' && formData.supplierId) {
+        try {
+          // Get supplier's primary user email
+          const { data: supplierUsers } = await supabase
+            .from('users')
+            .select('email, full_name')
+            .eq('company_id', formData.supplierId)
+            .limit(1)
+          
+          // Get requester's company name
+          const { data: requesterCompany } = await supabase
+            .from('companies')
+            .select('name')
+            .eq('id', userData.company_id)
+            .single()
+
+          if (supplierUsers && supplierUsers.length > 0) {
+            await fetch('/api/requests/notify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                requestId: newRequest.id,
+                sheetId: newSheet.id,
+                supplierEmail: supplierUsers[0].email,
+                supplierName: supplierUsers[0].full_name,
+                productName: formData.productName,
+                requesterName: userData.full_name,
+                requesterCompany: requesterCompany?.name,
+              })
+            })
+          }
+        } catch (emailError) {
+          console.error('Error sending request notification:', emailError)
+          // Non-fatal: continue even if email fails
+        }
       }
 
       setSuccess(true)
@@ -241,7 +242,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
         })
         onOpenChange(false)
       }, 1500)
-
     } catch (error) {
       console.error('Error creating request:', error)
       alert('Failed to create request. Please try again.')
@@ -249,7 +249,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       setSubmitting(false)
     }
   }
-
   if (loading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -264,7 +263,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       </Dialog>
     )
   }
-
   if (success) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -287,7 +285,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       </Dialog>
     )
   }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -298,7 +295,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
               Send a product data questionnaire to a supplier
             </DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="productName">
@@ -316,12 +312,10 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                 Enter the name of the product you need data for
               </p>
             </div>
-
             <div className="space-y-2">
               <Label>
                 Supplier <span className="text-red-500">*</span>
               </Label>
-
               {/* Toggle between existing/new */}
               <div className="flex gap-2 mb-2">
                 <Button
@@ -343,7 +337,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                   Invite New Supplier
                 </Button>
               </div>
-
               {supplierMode === 'existing' ? (
                 <>
                   <Select
@@ -401,7 +394,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                 </div>
               )}
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="tags">
                 Question Tags <span className="text-red-500">*</span>
@@ -419,7 +411,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
               </p>
             </div>
           </div>
-
           <DialogFooter>
             <Button
               type="button"

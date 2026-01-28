@@ -3,7 +3,8 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
+import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 
 // Standard HQ section IDs - only these should be shown
@@ -258,9 +259,7 @@ export default async function SheetViewPage({
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/sheets" className="text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
+          <BackButton fallbackUrl="/sheets" />
           <div>
             <h1 className="text-2xl font-bold">{sheet.name}</h1>
             <p className="text-muted-foreground">{companyName}</p>

@@ -38,8 +38,8 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
   const { data: companies } = await supabase
     .from('companies')
     .select('*')
-    .eq('active', true)
-    .eq('show_as_supplier', true)  // Only show companies that are suppliers
+    
+    
     .order('name')
 
   if (!companies) return []

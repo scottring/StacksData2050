@@ -91,6 +91,22 @@ This invitation will expire in 30 days.
     `.trim()
 
     // Send email via SendGrid
+    // TESTING SAFEGUARD: Check if emails are disabled
+    if (process.env.DISABLE_OUTBOUND_EMAILS === 'true') {
+      console.log('📧 EMAIL BLOCKED (DISABLE_OUTBOUND_EMAILS=true)')
+      console.log('Would send to:', email)
+      console.log('Signup URL:', signupUrl)
+      
+      // Still update sent_at for testing flow
+      await supabase
+        .from('invitations')
+        .update({ sent_at: new Date().toISOString() })
+        .eq('id', invitationId)
+      
+      return NextResponse.json({ success: true, emailBlocked: true })
+    }
+
+    // Send email via SendGrid
     if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
       await sgMail.send({
         to: email,

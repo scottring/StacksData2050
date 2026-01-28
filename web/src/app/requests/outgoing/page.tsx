@@ -59,28 +59,32 @@ export default function OutgoingRequestsPage() {
 
       const { data: userData } = await supabase
         .from('users')
-        .select('company_id')
+        .select('company_id, role')
         .eq('id', user.id)
         .single()
 
-      if (!userData?.company_id) {
+      if (!userData?.company_id && userData?.role !== 'super_admin') {
         setLoading(false)
         return
       }
 
-      // Fetch requests where we are the customer (requestor_id)
-      const { data: requestData, error } = await supabase
+      // Fetch requests where we are the customer (requestor_id) - or all for super_admin
+      let query = supabase
         .from('requests')
         .select(`
           id,
           processed,
           created_at,
           sheet:sheets(id, name, status),
-          reader_company:companies!requesting_from_id(id, name),
-          request_tags(tag:tags(name))
+          reader_company:companies!requesting_from_id(id, name)
         `)
-        .eq('requestor_id', userData.company_id)
-        .order('created_at', { ascending: false })
+      
+      // Super admins see all requests, others only see their company's
+      if (userData?.role !== 'super_admin' && userData?.company_id) {
+        query = query.eq('requestor_id', userData.company_id)
+      }
+      
+      const { data: requestData, error } = await query.order('created_at', { ascending: false })
 
       if (error) {
         console.error('Error fetching outgoing requests:', error)

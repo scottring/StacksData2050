@@ -288,7 +288,21 @@ export function SimpleSheetEditor({
     answerId?: string,
     choiceContentFallback?: string | null
   ) {
-    const rt = responseType?.toLowerCase() || 'text'
+    // Normalize response type to match our cases
+    const rawType = responseType?.toLowerCase() || 'text'
+    const typeMap = {
+      'single text line': 'text',
+      'multiple text lines': 'textarea',
+      'dropdown': 'choice',
+      'select one': 'choice',
+      'select one radio': 'choice',
+      'select multiple': 'multi-choice',
+      'list table': 'list-table',
+      'pidsl list': 'list-table',
+      'file document': 'file',
+      'static/ fixed': 'static',
+    }
+    const rt = typeMap[rawType] || rawType
 
     // Check if this is a Yes/No question based on:
     // 1. Response type explicitly says yes/no or boolean
