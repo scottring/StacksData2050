@@ -544,11 +544,11 @@ export function SimpleSheetEditor({
               if (!sections.has(sectionNum)) {
                 sections.set(sectionNum, new Map());
               }
-              const sectionMap = sections.get(sectionNum);
+              const sectionMap = sections.get(sectionNum)!;
               if (!sectionMap.has(subsectionNum)) {
                 sectionMap.set(subsectionNum, []);
               }
-              sectionMap.get(subsectionNum).push([questionId, q]);
+              sectionMap.get(subsectionNum)!.push([questionId, q]);
             });
             
             // Sort sections by number

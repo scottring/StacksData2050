@@ -88,7 +88,7 @@ export default function QuestionsPage() {
   const [newQuestion, setNewQuestion] = useState({
     content: '',
     response_type: 'text',
-    section_sort_number: null,
+    section_sort_number: null as number | null,
     required: false,
   })
 
@@ -138,7 +138,7 @@ export default function QuestionsPage() {
       setNewQuestion({
         content: '',
         response_type: 'text',
-        section_sort_number: null,
+        section_sort_number: null as number | null,
         required: false,
       })
     }, 1500)
