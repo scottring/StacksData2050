@@ -7,18 +7,6 @@ import { Pencil } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 
-// Standard HQ section IDs - only these should be shown
-const HQ_SECTION_IDS = [
-  "e642dcaa-a3af-4535-9cba-b51e68f3813b", // Product Information
-  "552794d4-17d5-4228-8713-0fc11ff266d6", // Ecolabels
-  "37aed84e-c334-4f49-9538-6289b3645b50", // Biocides
-  "2dcf4218-d7d9-48c2-b17e-23da10f994ac", // Food Contact Compliance
-  "4dcc094b-d1d2-4ad5-84e5-eb59fb3d0a83", // PIDSL
-  "1f24e929-8291-4b96-9655-4f16d0d42d72", // Additional Requirements
-]
-
-const VALID_SECTION_SORT_NUMBERS = [1, 2, 3, 4, 5, 6]
-
 interface ViewAnswer {
   id: string
   question_id: string
@@ -28,7 +16,9 @@ interface ViewAnswer {
   section_sort_number: number | null
   subsection_sort_number: number | null
   question_order: number | null
+  order_number: number | null
   text_value: string | null
+  text_area_value: string | null
   number_value: number | null
   boolean_value: boolean | null
   date_value: string | null
@@ -68,6 +58,25 @@ export default async function SheetViewPage({
     )
   }
 
+  // === Fetch the sheet's tags (same as edit page) ===
+  const { data: sheetTags } = await supabase
+    .from('sheet_tags')
+    .select('tag_id')
+    .eq('sheet_id', sheetId)
+
+  const tagIds = sheetTags?.map(st => st.tag_id) || []
+
+  // === Get questions with those tags ===
+  let taggedQuestionIds: string[] = []
+  if (tagIds.length > 0) {
+    const { data: questionTags } = await supabase
+      .from('question_tags')
+      .select('question_id')
+      .in('tag_id', tagIds)
+    
+    taggedQuestionIds = [...new Set(questionTags?.map(qt => qt.question_id) || [])]
+  }
+
   // Fetch all answers from the view
   const { data: answers } = await supabase
     .from('sheet_answers_display')
@@ -75,52 +84,104 @@ export default async function SheetViewPage({
     .eq('sheet_id', sheetId)
     .order('section_sort_number')
     .order('subsection_sort_number')
-    .order('question_order')
-    .order('list_table_column_order')
+    .order('order_number')
 
-  // Fetch questions with their section/subsection names via joins
-  const { data: questionsWithSections } = await supabase
-    .from("questions")
-    .select(`
-      id,
-      subsection_id,
-      section_sort_number,
-      subsection_sort_number,
-      subsections!inner(
-        id,
-        name,
-        section_id,
-        sections!inner(
-          id,
-          name
-        )
-      )
-    `)
-
-  // Build lookup map for section/subsection names
-  const questionSectionMap: Record<string, { sectionName: string; subsectionName: string; sectionId: string }> = {}
-  const validQuestionIds = new Set<string>()
+  // Fetch questions with their section/subsection info (only tagged ones)
+  let questionsWithSections: any[] = []
   
-  questionsWithSections?.forEach((q: any) => {
-    if (q.subsections?.sections) {
-      const sectionId = q.subsections.sections.id
-      if (HQ_SECTION_IDS.includes(sectionId)) {
-        questionSectionMap[q.id] = {
-          sectionName: q.subsections.sections.name || "",
-          subsectionName: q.subsections.name || "",
-          sectionId: sectionId
-        }
-        validQuestionIds.add(q.id)
+  if (taggedQuestionIds.length > 0) {
+    const batchSize = 50
+    for (let i = 0; i < taggedQuestionIds.length; i += batchSize) {
+      const batch = taggedQuestionIds.slice(i, i + batchSize)
+      const { data } = await supabase
+        .from('questions')
+        .select(`
+          id,
+          name,
+          content,
+          response_type,
+          order_number,
+          subsections(
+            id,
+            name,
+            order_number,
+            sections(
+              id,
+              name,
+              order_number
+            )
+          )
+        `)
+        .in('id', batch)
+      
+      if (data) {
+        questionsWithSections.push(...data)
+      }
+    }
+  }
+
+  // Build lookup maps
+  const questionSectionMap: Record<string, { sectionName: string; subsectionName: string; sectionOrder: number; subsectionOrder: number }> = {}
+  
+  questionsWithSections.forEach((q: any) => {
+    const subsection = q.subsections
+    const section = subsection?.sections
+    
+    if (subsection && section) {
+      questionSectionMap[q.id] = {
+        sectionName: section.name || '',
+        subsectionName: subsection.name || '',
+        sectionOrder: section.order_number ?? 999,
+        subsectionOrder: subsection.order_number ?? 999
       }
     }
   })
 
-  // Filter answers to only HQ sections
-  const filteredAnswers = answers?.filter(a => 
-    validQuestionIds.has(a.question_id) &&
-    a.section_sort_number !== null &&
-    VALID_SECTION_SORT_NUMBERS.includes(a.section_sort_number)
-  ) || []
+  // Create placeholder answers for questions without answers
+  const existingQuestionIds = new Set(answers?.map(a => a.question_id) || [])
+  const placeholderAnswers = questionsWithSections
+    .filter((q: any) => !existingQuestionIds.has(q.id))
+    .map((q: any) => {
+      const info = questionSectionMap[q.id]
+      return {
+        id: `placeholder-${q.id}`,
+        question_id: q.id,
+        question_name: q.name || '',
+        question_content: q.content,
+        response_type: q.response_type || 'text',
+        section_sort_number: info?.sectionOrder ?? 999,
+        subsection_sort_number: info?.subsectionOrder ?? 999,
+        question_order: q.order_number ?? 999,
+        order_number: q.order_number ?? 999,
+        text_value: null,
+        text_area_value: null,
+        number_value: null,
+        boolean_value: null,
+        date_value: null,
+        choice_id: null,
+        choice_content: null,
+        list_table_row_id: null,
+        list_table_column_id: null,
+        list_table_column_name: null,
+        list_table_column_order: null,
+      }
+    })
+
+  // Combine and filter to only tagged questions
+  const taggedQuestionSet = new Set(taggedQuestionIds)
+  const allAnswers = [...(answers || []), ...placeholderAnswers]
+    .filter(a => taggedQuestionSet.has(a.question_id))
+    .sort((a, b) => {
+      const aSection = a.section_sort_number ?? 999
+      const bSection = b.section_sort_number ?? 999
+      if (aSection !== bSection) return aSection - bSection
+      
+      const aSubsection = a.subsection_sort_number ?? 999
+      const bSubsection = b.subsection_sort_number ?? 999
+      if (aSubsection !== bSubsection) return aSubsection - bSubsection
+      
+      return (a.question_order ?? a.order_number ?? 999) - (b.question_order ?? b.order_number ?? 999)
+    })
 
   // Group answers by question
   const questionMap = new Map<string, {
@@ -133,7 +194,7 @@ export default async function SheetViewPage({
     answers: ViewAnswer[]
   }>()
 
-  filteredAnswers.forEach((answer: ViewAnswer) => {
+  allAnswers.forEach((answer: any) => {
     if (!questionMap.has(answer.question_id)) {
       questionMap.set(answer.question_id, {
         question_name: answer.question_name,
@@ -141,11 +202,11 @@ export default async function SheetViewPage({
         response_type: answer.response_type,
         section_sort_number: answer.section_sort_number,
         subsection_sort_number: answer.subsection_sort_number,
-        question_order: answer.question_order,
+        question_order: answer.question_order ?? answer.order_number,
         answers: []
       })
     }
-    questionMap.get(answer.question_id)!.answers.push(answer)
+    questionMap.get(answer.question_id)!.answers.push(answer as ViewAnswer)
   })
 
   // Sort questions
@@ -199,6 +260,7 @@ export default async function SheetViewPage({
   function formatAnswer(answer: ViewAnswer): string {
     if (answer.choice_content) return answer.choice_content
     if (answer.text_value) return answer.text_value
+    if (answer.text_area_value) return answer.text_area_value
     if (answer.number_value !== null) return String(answer.number_value)
     if (answer.boolean_value !== null) return answer.boolean_value ? 'Yes' : 'No'
     if (answer.date_value) return answer.date_value
@@ -277,8 +339,8 @@ export default async function SheetViewPage({
 
         {/* Stats */}
         <div className="flex gap-4 text-sm text-muted-foreground">
-          <span>{sortedQuestions.length} questions with answers</span>
-          <span>{filteredAnswers.length} total answer values</span>
+          <span>{sortedQuestions.length} questions</span>
+          {tagIds.length > 0 && <span>• {tagIds.length} tag(s) selected</span>}
         </div>
 
         {/* Questions grouped by Section/Subsection */}
@@ -312,7 +374,7 @@ export default async function SheetViewPage({
                         const questionNumber = q.section_sort_number && q.subsection_sort_number && q.question_order
                           ? `${q.section_sort_number}.${q.subsection_sort_number}.${q.question_order}`
                           : null
-                        const isListTable = q.response_type === 'List table'
+                        const isListTable = q.response_type?.toLowerCase() === 'list table'
                         const singleAnswer = q.answers[0]
 
                         return (
@@ -349,7 +411,9 @@ export default async function SheetViewPage({
 
         {sortedQuestions.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No answers found for this sheet
+            {tagIds.length === 0 
+              ? 'No tags selected for this sheet. Add tags to see questions.'
+              : 'No questions found for the selected tags.'}
           </div>
         )}
       </div>
