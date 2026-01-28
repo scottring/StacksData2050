@@ -28,7 +28,7 @@ export interface Question {
 export interface Choice {
   id: string
   content: string | null
-  parent_question_id: string | null
+  question_id: string | null
   order_number: number | null
 }
 
@@ -75,7 +75,7 @@ export function QuestionInput({
   listTableColumns = [],
 }: QuestionInputProps) {
   const questionChoices = choices
-    .filter(c => c.parent_question_id === question.id)
+    .filter(c => c.question_id === question.id)
     .sort((a, b) => (a.order_number || 0) - (b.order_number || 0))
 
   switch (question.question_type) {

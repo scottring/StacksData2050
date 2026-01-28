@@ -302,7 +302,7 @@ export function SimpleSheetEditor({
       'file document': 'file',
       'static/ fixed': 'static',
     }
-    const rt = typeMap[rawType] || rawType
+    const rt = (typeMap as Record<string, string>)[rawType] || rawType
 
     // Check if this is a Yes/No question based on:
     // 1. Response type explicitly says yes/no or boolean
@@ -535,7 +535,7 @@ export function SimpleSheetEditor({
         <div className="space-y-6">
           {(() => {
             // Group questions by section, then subsection
-            const sections = new Map();
+            const sections = new Map<number, Map<number, Array<[string, typeof sortedQuestions[0][1]]>>>();
             
             sortedQuestions.forEach(([questionId, q]) => {
               const sectionNum = q.section_sort_number ?? 0;

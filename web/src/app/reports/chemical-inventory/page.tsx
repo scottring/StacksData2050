@@ -50,7 +50,7 @@ export default function ChemicalInventoryReport() {
           id,
           text_value,
           sheet_id,
-          parent_question_id,
+          question_id,
           list_table_column_id
         `)
         .not('text_value', 'is', null)

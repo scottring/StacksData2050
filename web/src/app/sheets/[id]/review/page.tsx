@@ -51,12 +51,12 @@ interface Question {
 interface Choice {
   id: string
   content: string | null
-  parent_question_id: string | null
+  question_id: string | null
 }
 
 interface Answer {
   id: string
-  parent_question_id: string | null
+  question_id: string | null
   text_value: string | null
   text_area_value: string | null
   number_value: number | null
@@ -172,8 +172,8 @@ export default function ReviewPage() {
       const flaggedMap = new Map<string, string>()
       existingRejections.forEach(r => {
         const answer = answers?.find(a => a.id === r.answer_id)
-        if (answer?.parent_question_id) {
-          flaggedMap.set(answer.parent_question_id, r.reason)
+        if (answer?.question_id) {
+          flaggedMap.set(answer.question_id, r.reason)
         }
       })
 
@@ -285,7 +285,7 @@ export default function ReviewPage() {
 
       // Create answer rejections for flagged answers
       for (const [questionId, reason] of flaggedAnswers) {
-        const answer = data.answers.find(a => a.parent_question_id === questionId)
+        const answer = data.answers.find(a => a.question_id === questionId)
         if (answer) {
           await supabase
             .from('answer_rejections')
@@ -466,7 +466,7 @@ export default function ReviewPage() {
               {expandedSections.has(section.id) && (
                 <CardContent className="space-y-6">
                   {directQuestions.map((question, idx) => {
-                    const answer = answers.find(a => a.parent_question_id === question.id)
+                    const answer = answers.find(a => a.question_id === question.id)
                     const isFlagged = flaggedAnswers.has(question.id)
 
                     return (
@@ -546,7 +546,7 @@ export default function ReviewPage() {
                       <h4 className="font-medium text-muted-foreground mb-4">{subsection.name}</h4>
                       <div className="space-y-4 pl-4 border-l-2 border-muted">
                         {subQuestions.map((question, idx) => {
-                          const answer = answers.find(a => a.parent_question_id === question.id)
+                          const answer = answers.find(a => a.question_id === question.id)
                           const isFlagged = flaggedAnswers.has(question.id)
 
                           return (

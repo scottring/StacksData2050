@@ -23,7 +23,7 @@ interface Question {
 
 interface Answer {
   id: string
-  parent_question_id: string
+  question_id: string
   choice_id: string | null
   text_value: string | null
   text_area_value: string | null
@@ -211,7 +211,7 @@ export default function SheetDemoPage() {
   // Group answers by question
   const answersByQuestion = new Map<string, Answer[]>()
   answers.forEach(answer => {
-    const qid = answer.parent_question_id
+    const qid = answer.question_id
     if (!answersByQuestion.has(qid)) {
       answersByQuestion.set(qid, [])
     }

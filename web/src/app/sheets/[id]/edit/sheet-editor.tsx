@@ -61,7 +61,7 @@ interface Question {
 interface Choice {
   id: string
   content: string | null
-  parent_question_id: string | null
+  question_id: string | null
   order_number: number | null
 }
 
