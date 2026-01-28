@@ -56,7 +56,7 @@ export default async function SheetEditPage({
   // Fetch choices for dropdown questions
   const { data: choices } = await supabase
     .from("choices")
-    .select("id, content, parent_question_id")
+    .select("id, content, question_id")
     .order("order_number")
 
   // Fetch questions with their section/subsection info

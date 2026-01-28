@@ -41,7 +41,7 @@ interface ViewAnswer {
 interface Choice {
   id: string
   content: string | null
-  parent_question_id: string | null
+  question_id: string | null
 }
 
 interface SimpleSheetEditorProps {
@@ -107,11 +107,11 @@ export function SimpleSheetEditor({
   const choicesByQuestion = useMemo(() => {
     const map = new Map<string, Choice[]>()
     choices.forEach(c => {
-      if (c.parent_question_id) {
-        if (!map.has(c.parent_question_id)) {
-          map.set(c.parent_question_id, [])
+      if (c.question_id) {
+        if (!map.has(c.question_id)) {
+          map.set(c.question_id, [])
         }
-        map.get(c.parent_question_id)!.push(c)
+        map.get(c.question_id)!.push(c)
       }
     })
     return map
