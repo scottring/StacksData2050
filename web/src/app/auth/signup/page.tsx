@@ -12,6 +12,7 @@ interface Invitation {
   id: string
   email: string
   company_name: string | null
+  company_id: string | null
   request_id: string | null
 }
 
@@ -39,12 +40,16 @@ function SignupContent() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [signupComplete, setSignupComplete] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     password: '',
     confirmPassword: '',
     companyName: '',
   })
+
+  // Whether the invitation links to an existing company (read-only company name)
+  const hasExistingCompany = !!invitation?.company_id
 
   useEffect(() => {
     async function validateToken() {
@@ -109,18 +114,38 @@ function SignupContent() {
         throw new Error('Failed to create user account')
       }
 
-      // Create company
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          name: formData.companyName,
-          active: true,
-          show_as_supplier: true,
-        })
-        .select()
-        .single()
+      // Check if the user needs email confirmation
+      // If session is null but user exists, Supabase requires email confirmation
+      if (!authData.session) {
+        // User created but not confirmed — show confirmation message
+        // Mark invitation as accepted so we know they completed signup
+        await supabase
+          .from('invitations')
+          .update({ accepted_at: new Date().toISOString() })
+          .eq('id', invitation!.id)
 
-      if (companyError) throw companyError
+        setSignupComplete(true)
+        setSubmitting(false)
+        return
+      }
+
+      // Determine company_id: use existing company or create new one
+      let companyId: string
+
+      if (invitation!.company_id) {
+        // Link to existing company (trial / admin invite flow)
+        companyId = invitation!.company_id
+      } else {
+        // Create new company (new supplier flow)
+        const { data: company, error: companyError } = await supabase
+          .from('companies')
+          .insert({ name: formData.companyName })
+          .select()
+          .single()
+
+        if (companyError) throw companyError
+        companyId = company.id
+      }
 
       // Create user record
       const { error: userError } = await supabase
@@ -129,7 +154,7 @@ function SignupContent() {
           id: authData.user.id,
           email: invitation!.email,
           full_name: formData.fullName,
-          company_id: company.id,
+          company_id: companyId,
           role: 'company_admin',
         })
 
@@ -192,13 +217,36 @@ function SignupContent() {
     )
   }
 
+  // Show confirmation message if email verification is required
+  if (signupComplete) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md space-y-6 text-center">
+          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold">Check Your Email</h1>
+          <p className="text-muted-foreground">
+            We&apos;ve sent a confirmation link to <strong>{invitation.email}</strong>.
+            Please click the link in the email to activate your account.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Once confirmed, you can <a href="/login" className="text-primary underline">log in here</a>.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Complete Your Signup</h1>
           <p className="text-muted-foreground mt-2">
-            You've been invited to join StacksData
+            You&apos;ve been invited to join StacksData
           </p>
           <p className="text-sm text-muted-foreground mt-1">
             Email: {invitation.email}
@@ -234,8 +282,15 @@ function SignupContent() {
               value={formData.companyName}
               onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
               required
-              disabled={submitting}
+              disabled={submitting || hasExistingCompany}
+              readOnly={hasExistingCompany}
+              className={hasExistingCompany ? 'bg-muted cursor-not-allowed' : ''}
             />
+            {hasExistingCompany && (
+              <p className="text-xs text-muted-foreground">
+                Company is pre-assigned and cannot be changed.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
