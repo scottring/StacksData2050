@@ -74,7 +74,8 @@ export default function IncomingRequestsPage() {
           processed,
           created_at,
           sheet:sheets(id, name, status),
-          owner_company:companies!requestor_id(id, name)
+          owner_company:companies!requestor_id(id, name),
+          request_tags(tag:tags(name))
           
         `)
         .eq('requesting_from_id', userData.company_id)

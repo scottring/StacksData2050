@@ -76,7 +76,8 @@ export default function OutgoingRequestsPage() {
           processed,
           created_at,
           sheet:sheets(id, name, status),
-          reader_company:companies!requesting_from_id(id, name)
+          reader_company:companies!requesting_from_id(id, name),
+          request_tags(tag:tags(name))
         `)
       
       // Super admins see all requests, others only see their company's
