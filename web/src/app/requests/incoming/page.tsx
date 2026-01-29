@@ -215,7 +215,7 @@ export default function IncomingRequestsPage() {
                   <TableRow
                     key={request.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => router.push(`/sheets/${request.sheet?.id}`)}
+                    onClick={() => router.push(`/sheets/${request.sheet?.id}/edit`)}
                   >
                     <TableCell className="font-medium">{request.sheet?.name || 'Untitled'}</TableCell>
                     <TableCell>{request.owner_company?.name || 'Unknown'}</TableCell>

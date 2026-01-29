@@ -164,6 +164,7 @@ export function SheetEditor({
   sheetObservations,
 }: SheetEditorProps) {
   const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
     // Start with first section expanded
     const firstSection = sections.sort((a, b) => (a.order_number || 0) - (b.order_number || 0))[0]
@@ -395,6 +396,75 @@ export function SheetEditor({
     }
   }, [questions, localAnswers])
 
+  // Handle submit to customer
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    try {
+      // Flush any pending saves first
+      await flush()
+      
+      const supabase = (await import('@/lib/supabase/client')).createClient()
+      
+      // Update sheet status to 'submitted'
+      const { error: updateError } = await supabase
+        .from('sheets')
+        .update({ 
+          status: 'submitted',
+          modified_at: new Date().toISOString()
+        })
+        .eq('id', sheetId)
+      
+      if (updateError) throw updateError
+
+      // Create sheet_status record
+      await supabase
+        .from('sheet_statuses')
+        .insert({
+          sheet_id: sheetId,
+          status: 'submitted',
+          completed: false
+        })
+
+      // Get request info for notification
+      const { data: request } = await supabase
+        .from('requests')
+        .select('id, requestor_id')
+        .eq('sheet_id', sheetId)
+        .single()
+
+      if (request) {
+        // Get customer's primary user email for notification
+        const { data: customerUsers } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('company_id', request.requestor_id)
+          .limit(1)
+
+        if (customerUsers && customerUsers.length > 0) {
+          // Send notification (non-blocking)
+          fetch('/api/requests/notify-submitted', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sheetId,
+              customerEmail: customerUsers[0].email,
+              customerName: customerUsers[0].full_name,
+              productName: sheetName,
+            })
+          }).catch(console.error)
+        }
+      }
+
+      // Redirect to dashboard with success message
+      router.push('/dashboard?submitted=true')
+    } catch (error) {
+      console.error('Submit error:', error)
+      alert('Failed to submit. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   // Check if editing is allowed based on status
   const canEdit = !['approved', 'completed'].includes(sheetStatus || '')
 
@@ -568,14 +638,20 @@ export function SheetEditor({
                 Save
               </Button>
               <Button
-                onClick={() => {
-                  // TODO: Implement submit flow
-                  alert('Submit functionality coming soon')
-                }}
-                disabled={saveStatus === 'saving'}
+                onClick={handleSubmit}
+                disabled={saveStatus === 'saving' || submitting}
               >
-                <SendHorizontal className="h-4 w-4 mr-2" />
-                Submit
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <SendHorizontal className="h-4 w-4 mr-2" />
+                    Submit to Customer
+                  </>
+                )}
               </Button>
             </div>
           </div>

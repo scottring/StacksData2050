@@ -225,7 +225,7 @@ export default function OutgoingRequestsPage() {
                   <TableRow
                     key={request.id}
                     className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => router.push(`/sheets/${request.sheet?.id}`)}
+                    onClick={() => router.push(`/sheets/${request.sheet?.id}/review`)}
                   >
                     <TableCell className="font-medium">{request.sheet?.name || 'Untitled'}</TableCell>
                     <TableCell>{request.reader_company?.name || 'Unknown'}</TableCell>
