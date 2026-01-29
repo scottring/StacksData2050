@@ -75,7 +75,7 @@ export default function IncomingRequestsPage() {
           created_at,
           sheet:sheets(id, name, status),
           owner_company:companies!requestor_id(id, name),
-          request_tags(tag:tags(name))
+          
           
         `)
         .eq('requesting_from_id', userData.company_id)
@@ -86,7 +86,29 @@ export default function IncomingRequestsPage() {
         console.error('Error details:', JSON.stringify(error, null, 2))
       }
 
-      setRequests((requestData as any) || [])
+      // Fetch tags separately (FK relationship not in schema cache)
+      const requestIds = requestData?.map((r: any) => r.id) || []
+      let tagsByRequest: Record<string, string[]> = {}
+      
+      if (requestIds.length > 0) {
+        const { data: tagsData } = await supabase
+          .from("request_tags")
+          .select("request_id, tag:tags(name)")
+          .in("request_id", requestIds)
+        
+        tagsData?.forEach((t: any) => {
+          if (!tagsByRequest[t.request_id]) tagsByRequest[t.request_id] = []
+          if (t.tag?.name) tagsByRequest[t.request_id].push(t.tag.name)
+        })
+      }
+
+      // Merge tags into requests
+      const requestsWithTags = requestData?.map((r: any) => ({
+        ...r,
+        request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } }))
+      }))
+
+      setRequests((requestsWithTags as any) || [])
       setLoading(false)
     }
 
