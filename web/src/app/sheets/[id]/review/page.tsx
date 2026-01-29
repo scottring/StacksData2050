@@ -728,16 +728,29 @@ export default function ReviewPage() {
                               )}
                             </div>
                             {isFlagged && (
-                              <div className="mt-2 flex items-center gap-2 text-amber-700">
-                                <Flag className="h-4 w-4" />
-                                <span className="text-sm">{(flaggedAnswers.get(question.id) || []).slice(-1)[0]?.reason}</span>
+                              <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
+                                <p className="text-xs font-medium text-amber-700">Revision History:</p>
+                                {(flaggedAnswers.get(question.id) || []).map((round, ridx) => (
+                                  <div key={ridx} className="text-sm space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <Flag className="h-3 w-3 text-amber-600" />
+                                      <span className="font-medium text-amber-800">Flag {ridx + 1}:</span>
+                                      <span className="text-gray-600">{round.reason}</span>
+                                    </div>
+                                    {round.response && (
+                                      <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800">
+                                        <span className="font-medium">Supplier:</span> {round.response}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleUnflag(question.id)}
-                                  className="text-xs h-6"
+                                  className="text-xs h-6 text-amber-600"
                                 >
-                                  Remove flag
+                                  Remove latest flag
                                 </Button>
                               </div>
                             )}
@@ -811,16 +824,29 @@ export default function ReviewPage() {
                                     )}
                                   </div>
                                   {isFlagged && (
-                                    <div className="mt-2 flex items-center gap-2 text-amber-700">
-                                      <Flag className="h-4 w-4" />
-                                      <span className="text-sm">{(flaggedAnswers.get(question.id) || []).slice(-1)[0]?.reason}</span>
+                                    <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
+                                      <p className="text-xs font-medium text-amber-700">Revision History:</p>
+                                      {(flaggedAnswers.get(question.id) || []).map((round, ridx) => (
+                                        <div key={ridx} className="text-sm space-y-1">
+                                          <div className="flex items-center gap-2">
+                                            <Flag className="h-3 w-3 text-amber-600" />
+                                            <span className="font-medium text-amber-800">Flag {ridx + 1}:</span>
+                                            <span className="text-gray-600">{round.reason}</span>
+                                          </div>
+                                          {round.response && (
+                                            <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800">
+                                              <span className="font-medium">Supplier:</span> {round.response}
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
                                       <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleUnflag(question.id)}
-                                        className="text-xs h-6"
+                                        className="text-xs h-6 text-amber-600"
                                       >
-                                        Remove flag
+                                        Remove latest flag
                                       </Button>
                                     </div>
                                   )}
