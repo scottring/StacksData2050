@@ -118,7 +118,7 @@ export default function ReviewPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
   const [observations, setObservations] = useState('')
-  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, { reason: string; response: string | null }>>(new Map())
+  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, Array<{ reason: string; response: string | null; created_at: string }>>>(new Map())
   const [showFlagInput, setShowFlagInput] = useState<string | null>(null)
   const [flagReason, setFlagReason] = useState('')
 
@@ -185,12 +185,18 @@ export default function ReviewPage() {
         existingRejections = (rejectionsData || []) as AnswerRejection[]
       }
 
-      // Pre-populate flagged answers from existing rejections (with responses)
-      const flaggedMap = new Map<string, { reason: string; response: string | null }>()
-      existingRejections.forEach(r => {
+      // Pre-populate flagged answers from existing rejections (all rounds)
+      const flaggedMap = new Map<string, Array<{ reason: string; response: string | null; created_at: string }>>()
+      // Sort by created_at to maintain conversation order
+      const sortedRejections = [...existingRejections].sort((a, b) => 
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+      sortedRejections.forEach(r => {
         const answer = answers?.find(a => a.id === r.answer_id)
         if (answer?.question_id) {
-          flaggedMap.set(answer.question_id, { reason: r.reason, response: r.response })
+          const existing = flaggedMap.get(answer.question_id) || []
+          existing.push({ reason: r.reason, response: r.response, created_at: r.created_at })
+          flaggedMap.set(answer.question_id, existing)
         }
       })
 
@@ -259,7 +265,13 @@ export default function ReviewPage() {
 
   const handleFlagAnswer = (questionId: string) => {
     if (flagReason.trim()) {
-      setFlaggedAnswers(prev => new Map(prev).set(questionId, { reason: flagReason, response: null }))
+      setFlaggedAnswers(prev => {
+        const next = new Map(prev)
+        const existing = next.get(questionId) || []
+        existing.push({ reason: flagReason, response: null, created_at: new Date().toISOString() })
+        next.set(questionId, existing)
+        return next
+      })
       setShowFlagInput(null)
       setFlagReason('')
     }
@@ -268,7 +280,14 @@ export default function ReviewPage() {
   const handleUnflag = (questionId: string) => {
     setFlaggedAnswers(prev => {
       const next = new Map(prev)
-      next.delete(questionId)
+      const existing = next.get(questionId) || []
+      // Remove the last (most recent) flag
+      if (existing.length > 1) {
+        existing.pop()
+        next.set(questionId, existing)
+      } else {
+        next.delete(questionId)
+      }
       return next
     })
   }
@@ -321,11 +340,18 @@ export default function ReviewPage() {
           completed: false
         })
 
-      // Create answer rejections via API (bypasses RLS)
-      const rejections = Array.from(flaggedAnswers.entries()).map(([questionId, data]) => ({
-        questionId,
-        reason: data.reason
-      }))
+      // Create answer rejections via API (bypasses RLS) - only send NEW flags (no response yet)
+      const rejections = Array.from(flaggedAnswers.entries())
+        .filter(([_, rounds]) => rounds.some(r => r.response === null))
+        .map(([questionId, rounds]) => {
+          // Get the latest flag without a response
+          const latestUnresponded = rounds.filter(r => r.response === null).pop()
+          return {
+            questionId,
+            reason: latestUnresponded?.reason || ''
+          }
+        })
+        .filter(r => r.reason)
       
       const rejectResponse = await fetch('/api/sheets/reject-answers', {
         method: 'POST',
@@ -693,7 +719,7 @@ export default function ReviewPage() {
                             {isFlagged && (
                               <div className="mt-2 flex items-center gap-2 text-amber-700">
                                 <Flag className="h-4 w-4" />
-                                <span className="text-sm">{flaggedAnswers.get(question.id)?.reason}</span>
+                                <span className="text-sm">{(flaggedAnswers.get(question.id) || []).slice(-1)[0]?.reason}</span>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -776,7 +802,7 @@ export default function ReviewPage() {
                                   {isFlagged && (
                                     <div className="mt-2 flex items-center gap-2 text-amber-700">
                                       <Flag className="h-4 w-4" />
-                                      <span className="text-sm">{flaggedAnswers.get(question.id)?.reason}</span>
+                                      <span className="text-sm">{(flaggedAnswers.get(question.id) || []).slice(-1)[0]?.reason}</span>
                                       <Button
                                         variant="ghost"
                                         size="sm"
