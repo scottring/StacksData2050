@@ -126,6 +126,10 @@ export function SimpleSheetEditor({
   const [submitting, setSubmitting] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
 
+  // Check if editing is allowed based on status
+  // Locked when: submitted (waiting for review), approved, or completed
+  const canEdit = !['submitted', 'approved', 'completed'].includes(sheetStatus || '')
+
   // Group choices by question
   const choicesByQuestion = useMemo(() => {
     const map = new Map<string, Choice[]>()
@@ -466,6 +470,7 @@ export function SimpleSheetEditor({
         <Select
           value={selectValue}
           onValueChange={(v) => handleValueChange(questionId, v === 'yes', 'boolean', answerId)}
+          disabled={!canEdit}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select..." />
@@ -502,6 +507,7 @@ export function SimpleSheetEditor({
         <Select
           value={selectValue}
           onValueChange={(v) => handleValueChange(questionId, v, 'choice', answerId)}
+          disabled={!canEdit}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select an option..." />
@@ -525,6 +531,7 @@ export function SimpleSheetEditor({
           value={currentValue ?? ''}
           onChange={(e) => handleValueChange(questionId, e.target.value ? Number(e.target.value) : null, 'number', answerId)}
           placeholder="Enter a number..."
+          disabled={!canEdit}
         />
       )
     }
@@ -536,6 +543,7 @@ export function SimpleSheetEditor({
           type="date"
           value={currentValue || ''}
           onChange={(e) => handleValueChange(questionId, e.target.value, 'date', answerId)}
+          disabled={!canEdit}
         />
       )
     }
@@ -549,6 +557,7 @@ export function SimpleSheetEditor({
           onChange={(e) => handleValueChange(questionId, e.target.value, 'text_area', answerId)}
           placeholder="Enter your answer..."
           rows={3}
+          disabled={!canEdit}
         />
       )
     }
@@ -559,6 +568,7 @@ export function SimpleSheetEditor({
         value={currentValue || ''}
         onChange={(e) => handleValueChange(questionId, e.target.value, 'text', answerId)}
         placeholder="Enter your answer..."
+        disabled={!canEdit}
       />
     )
   }
@@ -644,20 +654,23 @@ export function SimpleSheetEditor({
                             answer?.id
                           )}
                           className="h-8 text-sm"
+                          disabled={!canEdit}
                         />
                       </td>
                     )
                   })}
-                  <td className="border px-2 py-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteRow(questionId, rowId)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
+                  {canEdit && (
+                    <td className="border px-2 py-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteRow(questionId, rowId)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
               {/* New/temp rows */}
@@ -682,20 +695,23 @@ export function SimpleSheetEditor({
                           )}
                           className="h-8 text-sm"
                           placeholder="Enter value..."
+                          disabled={!canEdit}
                         />
                       </td>
                     )
                   })}
-                  <td className="border px-2 py-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteRow(questionId, rowId)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
+                  {canEdit && (
+                    <td className="border px-2 py-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteRow(questionId, rowId)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
               {/* Empty state row */}
@@ -709,15 +725,17 @@ export function SimpleSheetEditor({
             </tbody>
           </table>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handleAddRow(questionId)}
-          className="mt-2"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Add Row
-        </Button>
+        {canEdit && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleAddRow(questionId)}
+            className="mt-2"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add Row
+          </Button>
+        )}
       </div>
     )
   }
@@ -735,24 +753,32 @@ export function SimpleSheetEditor({
             <p className="text-muted-foreground">{companyName}</p>
           </div>
           <Badge variant="outline">{sheetStatus || 'Draft'}</Badge>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : saveStatus === 'saved' ? (
-              <Check className="h-4 w-4 mr-2 text-green-600" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            {saving ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
-          </Button>
-          <Button onClick={handleSubmit} disabled={saving || submitting} variant="default" className="bg-green-600 hover:bg-green-700">
-            {submitting ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <SendHorizontal className="h-4 w-4 mr-2" />
-            )}
-            {submitting ? 'Submitting...' : 'Submit to Customer'}
-          </Button>
+          {canEdit ? (
+            <>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : saveStatus === 'saved' ? (
+                  <Check className="h-4 w-4 mr-2 text-green-600" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                {saving ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
+              </Button>
+              <Button onClick={handleSubmit} disabled={saving || submitting} variant="default" className="bg-green-600 hover:bg-green-700">
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <SendHorizontal className="h-4 w-4 mr-2" />
+                )}
+                {submitting ? 'Submitting...' : 'Submit to Customer'}
+              </Button>
+            </>
+          ) : (
+            <Badge className="bg-blue-100 text-blue-800">
+              {sheetStatus === 'submitted' ? 'Awaiting Review' : sheetStatus === 'approved' ? 'Approved' : 'Locked'}
+            </Badge>
+          )}
         </div>
 
         {/* Stats */}

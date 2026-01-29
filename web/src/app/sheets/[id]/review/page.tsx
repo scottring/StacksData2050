@@ -337,14 +337,11 @@ export default function ReviewPage() {
         return 'Not answered'
       case 'list table':
       case 'list_table':
-        // List tables store JSON in text_value
-        if (answer.text_value) {
-          try {
-            const rows = JSON.parse(answer.text_value)
-            return `${rows.length} row(s) of data`
-          } catch {
-            return answer.text_value
-          }
+        // List tables are stored cell-by-cell, count answers with this question_id
+        const listAnswers = answers.filter(a => a.question_id === question.id && a.list_table_row_id)
+        const uniqueRows = new Set(listAnswers.map(a => a.list_table_row_id))
+        if (uniqueRows.size > 0) {
+          return `${uniqueRows.size} row(s) of data entered`
         }
         return 'No data'
       case 'single text line':
