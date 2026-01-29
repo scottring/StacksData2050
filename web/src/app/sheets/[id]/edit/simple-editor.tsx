@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle } from 'lucide-react'
 
 interface ViewAnswer {
   id: string
@@ -59,6 +59,11 @@ interface BranchingData {
   parentQuestionId: string | null
 }
 
+interface Rejection {
+  question_id: string
+  reason: string
+}
+
 interface SimpleSheetEditorProps {
   sheetId: string
   sheetName: string
@@ -69,6 +74,7 @@ interface SimpleSheetEditorProps {
   questionSectionMap: Record<string, { sectionName: string; subsectionName: string }>
   listTableColumns: ListTableColumn[]
   branchingData?: Record<string, BranchingData>
+  rejections?: Rejection[]
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -83,6 +89,12 @@ function getDisplayValue(answer: ViewAnswer): string {
   return ''
 }
 
+// Get rejection reason for a question
+function getRejectionReason(rejections: Rejection[], questionId: string): string | null {
+  const rejection = rejections.find(r => r.question_id === questionId)
+  return rejection?.reason || null
+}
+
 export function SimpleSheetEditor({
   sheetId,
   sheetName,
@@ -93,6 +105,7 @@ export function SimpleSheetEditor({
   questionSectionMap,
   listTableColumns,
   branchingData = {},
+  rejections = [],
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -786,6 +799,22 @@ export function SimpleSheetEditor({
           {visibleQuestions.length} questions
         </div>
 
+        {/* Revision banner for flagged sheets */}
+        {sheetStatus === 'flagged' && rejections.length > 0 && (
+          <div className="p-4 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-amber-800 dark:text-amber-200">Revision Requested</h3>
+                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                  Your customer has requested revisions to {rejections.length} question{rejections.length === 1 ? '' : 's'} below. 
+                  Please review and update your answers, then resubmit.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Questions grouped by Section/Subsection */}
         <div className="space-y-6">
           {(() => {
@@ -857,6 +886,17 @@ export function SimpleSheetEditor({
                   </CardTitle>
                   {q.question_content && q.question_name && (
                     <p className="text-sm text-muted-foreground">{q.question_content}</p>
+                  )}
+                  {getRejectionReason(rejections, questionId) && (
+                    <div className="mt-2 p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+                      <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
+                        <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Revision Requested</p>
+                          <p className="text-sm mt-1">{getRejectionReason(rejections, questionId)}</p>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </CardHeader>
                 <CardContent>

@@ -49,8 +49,6 @@ export default async function SheetEditPage({
     .from("sheet_answers_display")
     .select("*")
     .eq("sheet_id", sheetId)
-  
-  // Debug removed
 
   // Fetch choices for dropdown questions (for branching (disabled))
   const { data: choices } = await supabase
@@ -65,6 +63,30 @@ export default async function SheetEditPage({
     .not("question_id", "is", null)
     .order("question_id")
     .order("order_number")
+
+  // === Fetch rejections if sheet is flagged ===
+  let rejections: { question_id: string; reason: string }[] = []
+  if (sheet.status === 'flagged') {
+    // Get all answer IDs for this sheet
+    const answerIds = answers?.map(a => a.id).filter(Boolean) || []
+    if (answerIds.length > 0) {
+      const { data: rejectionsData } = await supabase
+        .from("answer_rejections")
+        .select("answer_id, reason")
+        .in("answer_id", answerIds)
+      
+      // Map rejections to question IDs
+      if (rejectionsData) {
+        rejections = rejectionsData.map(r => {
+          const answer = answers?.find(a => a.id === r.answer_id)
+          return {
+            question_id: answer?.question_id || '',
+            reason: r.reason || 'Revision requested'
+          }
+        }).filter(r => r.question_id)
+      }
+    }
+  }
 
   // Fetch questions with their section/subsection info + branching fields
   let questionsWithSections: any[] = []
@@ -208,7 +230,7 @@ export default async function SheetEditPage({
     }))
 
   // Combine existing answers with placeholders
-  const allAnswers = [...(answers || []), ...placeholderAnswers]
+  let allAnswers = [...(answers || []), ...placeholderAnswers]
     .sort((a, b) => {
       const aSection = a.section_sort_number ?? 999
       const bSection = b.section_sort_number ?? 999
@@ -223,6 +245,12 @@ export default async function SheetEditPage({
       return aOrder - bOrder
     })
 
+  // If sheet is flagged, filter to only show rejected questions
+  if (sheet.status === 'flagged' && rejections.length > 0) {
+    const rejectedQuestionIds = new Set(rejections.map(r => r.question_id))
+    allAnswers = allAnswers.filter(a => rejectedQuestionIds.has(a.question_id))
+  }
+
   const companyName = (sheet as any).companies?.name || "Unknown"
 
   return (
@@ -236,6 +264,7 @@ export default async function SheetEditPage({
       questionSectionMap={questionSectionMap}
       listTableColumns={listTableColumns || []}
       branchingData={branchingData}
+      rejections={rejections}
     />
   )
 }
