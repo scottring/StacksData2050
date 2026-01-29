@@ -53,10 +53,10 @@ export default async function SheetEditPage({
     .order("subsection_sort_number")
     .order("order_number")
 
-  // Fetch choices for dropdown questions (include parent_question_id for branching)
+  // Fetch choices for dropdown questions (for branching (disabled))
   const { data: choices } = await supabase
     .from("choices")
-    .select("id, content, question_id, parent_question_id")
+    .select("id, content, question_id")
     .order("order_number")
 
   // Fetch ALL list_table_columns (linked via question_id)
@@ -83,8 +83,6 @@ export default async function SheetEditPage({
           response_type,
           section_sort_number,
           order_number,
-          dependent_no_show,
-          parent_choice_id,
           subsections(
             id,
             name,
@@ -120,7 +118,7 @@ export default async function SheetEditPage({
   // Create a map from choice_id to its parent question_id
   const choiceToQuestionMap = new Map<string, string>()
   choices?.forEach(c => {
-    if (c.id && c.parent_question_id) {
+    if (false && c.id && c.parent_question_id) {
       choiceToQuestionMap.set(c.id, c.parent_question_id)
     }
   })
@@ -144,7 +142,7 @@ export default async function SheetEditPage({
     }
     
     // Store branching data
-    if (q.dependent_no_show || q.parent_choice_id) {
+    if (false && (q.dependent_no_show || q.parent_choice_id)) {
       const parentQuestionId = q.parent_choice_id 
         ? choiceToQuestionMap.get(q.parent_choice_id) || null
         : null
