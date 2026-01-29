@@ -53,6 +53,12 @@ interface ListTableColumn {
   response_type: string | null
 }
 
+interface BranchingData {
+  dependentNoShow: boolean
+  parentChoiceId: string | null
+  parentQuestionId: string | null
+}
+
 interface SimpleSheetEditorProps {
   sheetId: string
   sheetName: string
@@ -62,6 +68,7 @@ interface SimpleSheetEditorProps {
   choices: Choice[]
   questionSectionMap: Record<string, { sectionName: string; subsectionName: string }>
   listTableColumns: ListTableColumn[]
+  branchingData?: Record<string, BranchingData>
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -85,6 +92,7 @@ export function SimpleSheetEditor({
   choices,
   questionSectionMap,
   listTableColumns,
+  branchingData = {},
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -194,6 +202,33 @@ export function SimpleSheetEditor({
       return (qa.question_order || 0) - (qb.question_order || 0)
     })
   }, [questionMap])
+
+  // Helper to check if a question should be hidden based on branching logic
+  const isQuestionHidden = useMemo(() => {
+    return (questionId: string): boolean => {
+      const branching = branchingData[questionId]
+      if (!branching?.dependentNoShow || !branching?.parentQuestionId) {
+        return false
+      }
+      
+      // Get the parent question's current answer
+      const parentValue = localValues.get(branching.parentQuestionId)
+      if (!parentValue) {
+        // No answer yet - show the question (default behavior)
+        return false
+      }
+      
+      const answerValue = parentValue.value?.toString().toLowerCase()
+      // Hide if parent answered No or no or false
+      return answerValue === 'no' || answerValue === 'false' || answerValue === ''
+    }
+  }, [branchingData, localValues])
+
+  // Filter sortedQuestions to exclude hidden dependent questions
+  const visibleQuestions = useMemo(() => {
+    return sortedQuestions.filter(([questionId]) => !isQuestionHidden(questionId))
+  }, [sortedQuestions, isQuestionHidden])
+
 
   // Create lookup for section names based on questions in each section group
   const sectionNames = useMemo(() => {
@@ -682,16 +717,16 @@ export function SimpleSheetEditor({
 
         {/* Stats */}
         <div className="text-sm text-muted-foreground">
-          {sortedQuestions.length} questions
+          {visibleQuestions.length} questions
         </div>
 
         {/* Questions grouped by Section/Subsection */}
         <div className="space-y-6">
           {(() => {
             // Group questions by section, then subsection
-            const sections = new Map<number, Map<number, Array<[string, typeof sortedQuestions[0][1]]>>>();
+            const sections = new Map<number, Map<number, Array<[string, typeof visibleQuestions[0][1]]>>>();
             
-            sortedQuestions.forEach(([questionId, q]) => {
+            visibleQuestions.forEach(([questionId, q]) => {
               const sectionNum = q.section_sort_number ?? 0;
               const subsectionNum = q.subsection_sort_number ?? 0;
               
@@ -783,7 +818,7 @@ export function SimpleSheetEditor({
           })()}
         </div>
 
-        {sortedQuestions.length === 0 && (
+        {visibleQuestions.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             No answers found for this sheet. The sheet may not have any data yet.
           </div>
