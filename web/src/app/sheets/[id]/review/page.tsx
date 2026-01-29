@@ -312,6 +312,37 @@ export default function ReviewPage() {
         }
       }
 
+      // Get supplier info for notification
+      const { data: request } = await supabase
+        .from('requests')
+        .select('requesting_from_id')
+        .eq('sheet_id', sheetId)
+        .single()
+
+      if (request) {
+        const { data: supplierUsers } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('company_id', request.requesting_from_id)
+          .limit(1)
+
+        if (supplierUsers && supplierUsers.length > 0) {
+          // Send revision notification
+          fetch('/api/requests/notify-revision', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sheetId,
+              supplierEmail: supplierUsers[0].email,
+              supplierName: supplierUsers[0].full_name,
+              productName: data.sheet.name,
+              flaggedCount: flaggedAnswers.size,
+              observations: observations || null,
+            })
+          }).catch(console.error)
+        }
+      }
+
       router.push('/dashboard')
     } catch (error) {
       console.error('Error requesting revision:', error)
