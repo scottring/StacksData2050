@@ -25,6 +25,7 @@ interface ViewAnswer {
   section_sort_number: number | null
   subsection_sort_number: number | null
   question_order: number | null
+  list_table_id?: string | null
   text_value: string | null
   text_area_value: string | null
   number_value: number | null
@@ -44,6 +45,14 @@ interface Choice {
   question_id: string | null
 }
 
+interface ListTableColumn {
+  id: string
+  name: string
+  order_number: number | null
+  parent_table_id: string | null
+  response_type: string | null
+}
+
 interface SimpleSheetEditorProps {
   sheetId: string
   sheetName: string
@@ -52,6 +61,7 @@ interface SimpleSheetEditorProps {
   answers: ViewAnswer[]
   choices: Choice[]
   questionSectionMap: Record<string, { sectionName: string; subsectionName: string }>
+  listTableColumns: ListTableColumn[]
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -74,6 +84,7 @@ export function SimpleSheetEditor({
   answers,
   choices,
   questionSectionMap,
+  listTableColumns,
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -100,6 +111,9 @@ export function SimpleSheetEditor({
     return map
   })
 
+  // Track added rows for list tables (questionId -> array of temp row IDs)
+  const [addedRows, setAddedRows] = useState<Map<string, string[]>>(new Map())
+
   const [saving, setSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
 
@@ -117,6 +131,24 @@ export function SimpleSheetEditor({
     return map
   }, [choices])
 
+  // Group columns by parent_table_id (list_table_id)
+  const columnsByTableId = useMemo(() => {
+    const map = new Map<string, ListTableColumn[]>()
+    listTableColumns.forEach(col => {
+      if (col.parent_table_id) {
+        if (!map.has(col.parent_table_id)) {
+          map.set(col.parent_table_id, [])
+        }
+        map.get(col.parent_table_id)!.push(col)
+      }
+    })
+    // Sort each array by order_number
+    map.forEach((cols, key) => {
+      cols.sort((a, b) => (a.order_number || 0) - (b.order_number || 0))
+    })
+    return map
+  }, [listTableColumns])
+
   // Group answers by question
   const questionMap = useMemo(() => {
     const map = new Map<string, {
@@ -126,6 +158,7 @@ export function SimpleSheetEditor({
       section_sort_number: number | null
       subsection_sort_number: number | null
       question_order: number | null
+      list_table_id: string | null
       answers: ViewAnswer[]
     }>()
 
@@ -138,6 +171,7 @@ export function SimpleSheetEditor({
           section_sort_number: answer.section_sort_number,
           subsection_sort_number: answer.subsection_sort_number,
           question_order: answer.question_order,
+          list_table_id: answer.list_table_id || null,
           answers: []
         })
       }
@@ -217,6 +251,40 @@ export function SimpleSheetEditor({
     setSaveStatus('idle')
   }
 
+  const handleAddRow = (questionId: string) => {
+    const tempRowId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    setAddedRows(prev => {
+      const next = new Map(prev)
+      const existing = next.get(questionId) || []
+      next.set(questionId, [...existing, tempRowId])
+      return next
+    })
+    setSaveStatus('idle')
+  }
+
+  const handleDeleteRow = (questionId: string, rowId: string) => {
+    // Remove from addedRows if it's a temp row
+    if (rowId.startsWith('temp-')) {
+      setAddedRows(prev => {
+        const next = new Map(prev)
+        const existing = next.get(questionId) || []
+        next.set(questionId, existing.filter(r => r !== rowId))
+        return next
+      })
+    }
+    // Remove values for this row
+    setLocalValues(prev => {
+      const next = new Map(prev)
+      Array.from(next.keys()).forEach(key => {
+        if (key.startsWith(`${questionId}|${rowId}|`)) {
+          next.delete(key)
+        }
+      })
+      return next
+    })
+    setSaveStatus('idle')
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setSaveStatus('idle')
@@ -230,17 +298,18 @@ export function SimpleSheetEditor({
           const [questionId, rowId, columnId] = key.split('|')
           answersToSave.push({
             question_id: questionId,
-            answer_id: data.answerId,
+            answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
             value: data.value,
             type: mapResponseType(data.type),
-            list_table_row_id: rowId,
+            list_table_row_id: rowId.startsWith('temp-') ? undefined : rowId,
             list_table_column_id: columnId,
+            is_new_row: rowId.startsWith('temp-'),
           })
         } else {
           // Single value answer
           answersToSave.push({
             question_id: key,
-            answer_id: data.answerId,
+            answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
             value: data.value,
             type: mapResponseType(data.type),
           })
@@ -261,6 +330,8 @@ export function SimpleSheetEditor({
       }
 
       setSaveStatus('saved')
+      // Clear temp rows after successful save (they now have real IDs)
+      setAddedRows(new Map())
       setTimeout(() => setSaveStatus('idle'), 2000)
     } catch (error) {
       console.error('Save error:', error)
@@ -425,10 +496,13 @@ export function SimpleSheetEditor({
     )
   }
 
-  function renderListTable(questionId: string, questionAnswers: ViewAnswer[]) {
-    // Group by row, then by column
+  function renderListTable(questionId: string, questionAnswers: ViewAnswer[], listTableId: string | null) {
+    // Get columns from the listTableColumns prop
+    const tableColumns = listTableId ? columnsByTableId.get(listTableId) || [] : []
+    
+    // Group existing answers by row, then by column
     const rows = new Map<string, Map<string, ViewAnswer>>()
-    const columns = new Map<string, { name: string; order: number; id: string }>()
+    const columnsFromAnswers = new Map<string, { name: string; order: number; id: string }>()
 
     questionAnswers.forEach(a => {
       if (!a.list_table_row_id || !a.list_table_column_id) return
@@ -438,8 +512,8 @@ export function SimpleSheetEditor({
       }
       rows.get(a.list_table_row_id)!.set(a.list_table_column_id, a)
 
-      if (!columns.has(a.list_table_column_id)) {
-        columns.set(a.list_table_column_id, {
+      if (!columnsFromAnswers.has(a.list_table_column_id)) {
+        columnsFromAnswers.set(a.list_table_column_id, {
           name: a.list_table_column_name || 'Column',
           order: a.list_table_column_order || 0,
           id: a.list_table_column_id
@@ -447,56 +521,136 @@ export function SimpleSheetEditor({
       }
     })
 
-    const sortedColumns = Array.from(columns.entries())
-      .sort((a, b) => a[1].order - b[1].order)
+    // Use columns from the database if available, otherwise fall back to answers
+    const sortedColumns = tableColumns.length > 0 
+      ? tableColumns.map(c => ({ id: c.id, name: c.name, order: c.order_number || 0 }))
+      : Array.from(columnsFromAnswers.entries())
+          .sort((a, b) => a[1].order - b[1].order)
+          .map(([id, col]) => ({ id, name: col.name, order: col.order }))
 
-    if (rows.size === 0) {
-      return <p className="text-muted-foreground italic">No data in this table</p>
+    // Get added rows for this question
+    const tempRows = addedRows.get(questionId) || []
+
+    // No columns at all - can't show a table
+    if (sortedColumns.length === 0) {
+      return (
+        <div className="text-muted-foreground italic">
+          <p>No columns defined for this table</p>
+        </div>
+      )
     }
 
     return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full border text-sm">
-          <thead className="bg-muted">
-            <tr>
-              {sortedColumns.map(([colId, col]) => (
-                <th key={colId} className="border px-3 py-2 text-left font-medium">
-                  {col.name}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from(rows.entries()).map(([rowId, rowData]) => (
-              <tr key={rowId} className="hover:bg-muted/50">
-                {sortedColumns.map(([colId]) => {
-                  const answer = rowData.get(colId)
-                  const key = `${questionId}|${rowId}|${colId}`
-                  const localData = localValues.get(key)
-                  // Always use display value (human-readable) for list table cells
-                  const displayValue = localData?.value ?? (answer ? getDisplayValue(answer) : '')
-
-                  return (
-                    <td key={colId} className="border px-2 py-1">
-                      <Input
-                        value={displayValue}
-                        onChange={(e) => handleListTableChange(
-                          questionId,
-                          rowId,
-                          colId,
-                          e.target.value,
-                          'text',
-                          answer?.id
-                        )}
-                        className="h-8 text-sm"
-                      />
-                    </td>
-                  )
-                })}
+      <div className="space-y-2">
+        <div className="overflow-x-auto">
+          <table className="min-w-full border text-sm">
+            <thead className="bg-muted">
+              <tr>
+                {sortedColumns.map((col) => (
+                  <th key={col.id} className="border px-3 py-2 text-left font-medium">
+                    {col.name}
+                  </th>
+                ))}
+                <th className="border px-3 py-2 w-12"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {/* Existing rows */}
+              {Array.from(rows.entries()).map(([rowId, rowData]) => (
+                <tr key={rowId} className="hover:bg-muted/50">
+                  {sortedColumns.map((col) => {
+                    const answer = rowData.get(col.id)
+                    const key = `${questionId}|${rowId}|${col.id}`
+                    const localData = localValues.get(key)
+                    const displayValue = localData?.value ?? (answer ? getDisplayValue(answer) : '')
+
+                    return (
+                      <td key={col.id} className="border px-2 py-1">
+                        <Input
+                          value={displayValue}
+                          onChange={(e) => handleListTableChange(
+                            questionId,
+                            rowId,
+                            col.id,
+                            e.target.value,
+                            'text',
+                            answer?.id
+                          )}
+                          className="h-8 text-sm"
+                        />
+                      </td>
+                    )
+                  })}
+                  <td className="border px-2 py-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteRow(questionId, rowId)}
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+              {/* New/temp rows */}
+              {tempRows.map((rowId) => (
+                <tr key={rowId} className="hover:bg-muted/50 bg-green-50">
+                  {sortedColumns.map((col) => {
+                    const key = `${questionId}|${rowId}|${col.id}`
+                    const localData = localValues.get(key)
+                    const displayValue = localData?.value ?? ''
+
+                    return (
+                      <td key={col.id} className="border px-2 py-1">
+                        <Input
+                          value={displayValue}
+                          onChange={(e) => handleListTableChange(
+                            questionId,
+                            rowId,
+                            col.id,
+                            e.target.value,
+                            'text',
+                            undefined
+                          )}
+                          className="h-8 text-sm"
+                          placeholder="Enter value..."
+                        />
+                      </td>
+                    )
+                  })}
+                  <td className="border px-2 py-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteRow(questionId, rowId)}
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+              {/* Empty state row */}
+              {rows.size === 0 && tempRows.length === 0 && (
+                <tr>
+                  <td colSpan={sortedColumns.length + 1} className="border px-3 py-4 text-center text-muted-foreground italic">
+                    No data yet. Click "Add Row" to start entering data.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleAddRow(questionId)}
+          className="mt-2"
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add Row
+        </Button>
       </div>
     )
   }
@@ -528,7 +682,7 @@ export function SimpleSheetEditor({
 
         {/* Stats */}
         <div className="text-sm text-muted-foreground">
-          {sortedQuestions.length} questions with answers
+          {sortedQuestions.length} questions
         </div>
 
         {/* Questions grouped by Section/Subsection */}
@@ -606,7 +760,7 @@ export function SimpleSheetEditor({
                 </CardHeader>
                 <CardContent>
                   {isListTable ? (
-                    renderListTable(questionId, q.answers)
+                    renderListTable(questionId, q.answers, q.list_table_id)
                   ) : (
                     renderInput(
                       questionId,

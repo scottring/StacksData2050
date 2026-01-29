@@ -141,6 +141,7 @@ async function main() {
       company_id: company.id,
       token,
       expires_at: expiresAt,
+      created_by: "70398631-d8d8-40ed-9baa-794a2710ddbc", // admin@stacksdata.com
     })
     .select()
     .single()

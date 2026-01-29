@@ -31,7 +31,7 @@ export default async function SheetEditPage({
     .select("tag_id")
     .eq("sheet_id", sheetId)
 
-  const tagIds = sheetTags?.map(st => st.tag_id) || []; console.log("DEBUG: sheetTags=", sheetTags, "tagIds=", tagIds)
+  const tagIds = sheetTags?.map(st => st.tag_id) || []
 
   // === If sheet has tags, get questions with those tags ===
   let taggedQuestionIds: string[] = []
@@ -41,7 +41,7 @@ export default async function SheetEditPage({
       .select("question_id")
       .in("tag_id", tagIds)
     
-    taggedQuestionIds = [...new Set(questionTags?.map(qt => qt.question_id) || [])]; console.log("DEBUG: questionTags count=", questionTags?.length, "taggedQuestionIds count=", taggedQuestionIds.length)
+    taggedQuestionIds = [...new Set(questionTags?.map(qt => qt.question_id) || [])]
   }
 
   // Fetch all answers from the view
@@ -59,7 +59,14 @@ export default async function SheetEditPage({
     .select("id, content, question_id")
     .order("order_number")
 
-  // Fetch questions with their section/subsection info
+  // Fetch ALL list_table_columns
+  const { data: listTableColumns } = await supabase
+    .from("list_table_columns")
+    .select("id, name, order_number, parent_table_id, response_type")
+    .order("parent_table_id")
+    .order("order_number")
+
+  // Fetch questions with their section/subsection info (including list_table_id)
   let questionsWithSections: any[] = []
   
   if (taggedQuestionIds.length > 0) {
@@ -75,6 +82,7 @@ export default async function SheetEditPage({
           response_type,
           section_sort_number,
           order_number,
+          list_table_id,
           subsections(
             id,
             name,
@@ -146,6 +154,7 @@ export default async function SheetEditPage({
       section_sort_number: q._sectionSort,
       subsection_sort_number: q._subsectionSort,
       question_order: q._questionOrder,
+      list_table_id: q.list_table_id || null,
       text_value: null,
       text_area_value: null,
       number_value: null,
@@ -177,10 +186,6 @@ export default async function SheetEditPage({
 
   const companyName = (sheet as any).companies?.name || "Unknown"
 
-  console.log("Questions loaded:", processedQuestions.length)
-  console.log("Placeholders:", placeholderAnswers.length)
-  console.log("Total to show:", allAnswers.length)
-
   return (
     <SimpleSheetEditor
       sheetId={sheetId}
@@ -190,6 +195,7 @@ export default async function SheetEditPage({
       answers={allAnswers}
       choices={choices || []}
       questionSectionMap={questionSectionMap}
+      listTableColumns={listTableColumns || []}
     />
   )
 }
