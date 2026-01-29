@@ -301,15 +301,25 @@ export default function ReviewPage() {
         })
 
       // Create answer rejections for flagged answers
+      console.log('Creating rejections for', flaggedAnswers.size, 'questions')
+      console.log('Available answers:', data.answers.length)
       for (const [questionId, reason] of flaggedAnswers) {
         const answer = data.answers.find(a => a.question_id === questionId)
+        console.log('Looking for question:', questionId, 'Found answer:', answer?.id)
         if (answer) {
-          await supabase
+          const { error: insertError } = await supabase
             .from('answer_rejections')
             .insert({
               answer_id: answer.id,
               reason
             })
+          if (insertError) {
+            console.error('Failed to insert rejection:', insertError)
+          } else {
+            console.log('Inserted rejection for answer:', answer.id)
+          }
+        } else {
+          console.error('No answer found for question:', questionId)
         }
       }
 
