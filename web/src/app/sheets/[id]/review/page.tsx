@@ -41,10 +41,12 @@ interface Question {
   name: string | null
   content: string | null
   question_type: string | null
+  response_type?: string | null  // New schema uses this
   required: boolean | null
   order_number: number | null
   parent_section_id: string | null
   parent_subsection_id: string | null
+  subsection_id?: string | null  // New schema field
   clarification: string | null
 }
 
@@ -307,7 +309,10 @@ export default function ReviewPage() {
   const getAnswerDisplay = (question: Question, answer: Answer | undefined): string => {
     if (!answer) return 'Not answered'
 
-    switch (question.question_type) {
+    // Use response_type (new schema) or question_type (old schema)
+    const qType = (question.response_type || question.question_type || '').toLowerCase()
+
+    switch (qType) {
       case 'yes_no':
       case 'boolean':
         return answer.boolean_value === true ? 'Yes' : answer.boolean_value === false ? 'No' : 'Not answered'
@@ -317,15 +322,33 @@ export default function ReviewPage() {
         return answer.date_value || 'Not answered'
       case 'text_area':
       case 'textarea':
+      case 'multiple text lines':
         return answer.text_area_value || 'Not answered'
       case 'dropdown':
       case 'single_choice':
       case 'multiple_choice':
+      case 'select one':
+      case 'select one radio':
+      case 'select multiple':
         if (answer.choice_id && data) {
           const choice = data.choices.find(c => c.id === answer.choice_id)
           return choice?.content || 'Selected'
         }
         return 'Not answered'
+      case 'list table':
+      case 'list_table':
+        // List tables store JSON in text_value
+        if (answer.text_value) {
+          try {
+            const rows = JSON.parse(answer.text_value)
+            return `${rows.length} row(s) of data`
+          } catch {
+            return answer.text_value
+          }
+        }
+        return 'No data'
+      case 'single text line':
+      case 'text':
       default:
         return answer.text_value || 'Not answered'
     }
@@ -356,19 +379,54 @@ export default function ReviewPage() {
 
   const { sheet, sections, subsections, questions, choices, answers } = data
 
-  const questionsBySection = sections.map(section => {
-    const sectionSubsections = subsections.filter(s => s.section_id === section.id)
-    const sectionQuestions = questions.filter(q => q.parent_section_id === section.id)
-
-    return {
-      section,
-      subsections: sectionSubsections.map(sub => ({
-        subsection: sub,
-        questions: questions.filter(q => q.parent_subsection_id === sub.id)
-      })),
-      directQuestions: sectionQuestions.filter(q => !q.parent_subsection_id)
-    }
-  })
+  // Group questions by their subsection, then by the subsection's section
+  const questionsBySection = (() => {
+    // Build a map of subsection -> section
+    const subsectionToSection = new Map<string, Section>()
+    subsections.forEach(sub => {
+      const section = sections.find(s => s.id === sub.section_id)
+      if (section) subsectionToSection.set(sub.id, section)
+    })
+    
+    // Group questions by section (via subsection)
+    const sectionMap = new Map<string, { section: Section, questions: Question[] }>()
+    
+    questions.forEach(q => {
+      // Try subsection_id first (new schema), then parent_subsection_id (old schema)
+      const subId = (q as any).subsection_id || q.parent_subsection_id
+      if (!subId) return
+      
+      const section = subsectionToSection.get(subId)
+      if (!section) return
+      
+      if (!sectionMap.has(section.id)) {
+        sectionMap.set(section.id, { section, questions: [] })
+      }
+      sectionMap.get(section.id)!.questions.push(q)
+    })
+    
+    // Also check for direct section assignment (old schema)
+    questions.forEach(q => {
+      if (q.parent_section_id && !sectionMap.has(q.parent_section_id)) {
+        const section = sections.find(s => s.id === q.parent_section_id)
+        if (section) {
+          if (!sectionMap.has(section.id)) {
+            sectionMap.set(section.id, { section, questions: [] })
+          }
+          sectionMap.get(section.id)!.questions.push(q)
+        }
+      }
+    })
+    
+    return Array.from(sectionMap.values())
+      .filter(({ questions: qs }) => qs.length > 0)
+      .sort((a, b) => (a.section.order_number || 0) - (b.section.order_number || 0))
+      .map(({ section, questions: qs }) => ({
+        section,
+        subsections: [] as { subsection: Subsection, questions: Question[] }[],
+        directQuestions: qs
+      }))
+  })()
 
   return (
     <AppLayout title={`Review: ${sheet.name}`}>
