@@ -88,6 +88,13 @@ interface Sheet {
   modified_at: string | null
 }
 
+interface ListTableColumn {
+  id: string
+  name: string | null
+  order_number: number | null
+  question_id: string | null
+}
+
 interface ReviewData {
   sheet: Sheet
   sections: Section[]
@@ -96,6 +103,7 @@ interface ReviewData {
   choices: Choice[]
   answers: Answer[]
   existingRejections: AnswerRejection[]
+  listTableColumns: ListTableColumn[]
 }
 
 export default function ReviewPage() {
@@ -133,13 +141,15 @@ export default function ReviewPage() {
         { data: subsections },
         { data: questions },
         { data: choices },
-        { data: answers }
+        { data: answers },
+        { data: listTableColumns }
       ] = await Promise.all([
         supabase.from('sections').select('*').order('order_number'),
         supabase.from('subsections').select('*').order('order_number'),
         supabase.from('questions').select('*').order('order_number'),
         supabase.from('choices').select('*').order('order_number'),
-        supabase.from('answers').select('*').eq('sheet_id', sheetId)
+        supabase.from('answers').select('*').eq('sheet_id', sheetId),
+        supabase.from('list_table_columns').select('id, name, order_number, question_id').order('order_number')
       ])
 
       // Filter questions by sheet tags
@@ -189,7 +199,8 @@ export default function ReviewPage() {
         questions: filteredQuestions,
         choices: choices || [],
         answers: answers || [],
-        existingRejections
+        existingRejections,
+        listTableColumns: listTableColumns || []
       })
       setFlaggedAnswers(flaggedMap)
 
@@ -369,16 +380,21 @@ export default function ReviewPage() {
       columnIds.add(a.list_table_column_id)
     })
 
-    // Get column names from first row's answers
-    const columnNames = new Map<string, string>()
-    const firstRow = rows.values().next().value
-    if (firstRow) {
-      firstRow.forEach((a: Answer, colId: string) => {
-        columnNames.set(colId, (a as any).list_table_column_name || `Col ${colId.slice(0,4)}`)
-      })
-    }
+    // Get column definitions from listTableColumns - filter by question_id
+    const questionColumns = listTableColumns
+      .filter(c => c.question_id === question.id)
+      .sort((a, b) => (a.order_number || 0) - (b.order_number || 0))
 
-    const sortedColumns = Array.from(columnIds)
+    // Build column name map
+    const columnNames = new Map<string, string>()
+    questionColumns.forEach(c => {
+      columnNames.set(c.id, c.name || 'Column')
+    })
+
+    // Use columns from the database if available, otherwise use IDs from answers
+    const sortedColumns = questionColumns.length > 0 
+      ? questionColumns.map(c => c.id)
+      : Array.from(columnIds)
 
     return (
       <div className="overflow-x-auto">
@@ -440,7 +456,7 @@ export default function ReviewPage() {
     )
   }
 
-  const { sheet, sections, subsections, questions, choices, answers } = data
+  const { sheet, sections, subsections, questions, choices, answers, listTableColumns } = data
 
   // Group questions by their subsection, then by the subsection's section
   const questionsBySection = (() => {
