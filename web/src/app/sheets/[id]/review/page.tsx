@@ -76,6 +76,7 @@ interface AnswerRejection {
   id: string
   answer_id: string
   reason: string
+  response: string | null
   rejected_by: string | null
   created_at: string
 }
@@ -117,7 +118,7 @@ export default function ReviewPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
   const [observations, setObservations] = useState('')
-  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, string>>(new Map())
+  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, { reason: string; response: string | null }>>(new Map())
   const [showFlagInput, setShowFlagInput] = useState<string | null>(null)
   const [flagReason, setFlagReason] = useState('')
 
@@ -184,12 +185,12 @@ export default function ReviewPage() {
         existingRejections = (rejectionsData || []) as AnswerRejection[]
       }
 
-      // Pre-populate flagged answers from existing rejections
-      const flaggedMap = new Map<string, string>()
+      // Pre-populate flagged answers from existing rejections (with responses)
+      const flaggedMap = new Map<string, { reason: string; response: string | null }>()
       existingRejections.forEach(r => {
         const answer = answers?.find(a => a.id === r.answer_id)
         if (answer?.question_id) {
-          flaggedMap.set(answer.question_id, r.reason)
+          flaggedMap.set(answer.question_id, { reason: r.reason, response: r.response })
         }
       })
 
@@ -205,8 +206,34 @@ export default function ReviewPage() {
       })
       setFlaggedAnswers(flaggedMap)
 
-      // Expand first section
-      if (sections && sections.length > 0) {
+      // If there are existing rejections, expand sections that contain flagged questions
+      // Also filter questions to only show flagged ones
+      if (flaggedMap.size > 0) {
+        // Find sections that contain flagged questions
+        const flaggedQuestionIds = new Set(flaggedMap.keys())
+        const sectionsWithFlags = new Set<string>()
+        
+        // Build subsection -> section mapping
+        const subToSection = new Map<string, string>()
+        subsections?.forEach(sub => {
+          if (sub.section_id) subToSection.set(sub.id, sub.section_id)
+        })
+        
+        // Find sections for flagged questions
+        filteredQuestions.forEach(q => {
+          if (flaggedQuestionIds.has(q.id)) {
+            const subId = (q as any).subsection_id || q.parent_subsection_id
+            const sectionId = subToSection.get(subId)
+            if (sectionId) sectionsWithFlags.add(sectionId)
+          }
+        })
+        
+        setExpandedSections(sectionsWithFlags)
+        
+        // Filter to only flagged questions
+        filteredQuestions = filteredQuestions.filter(q => flaggedQuestionIds.has(q.id))
+      } else if (sections && sections.length > 0) {
+        // No existing rejections - expand first section
         setExpandedSections(new Set([sections[0].id]))
       }
 
@@ -232,7 +259,7 @@ export default function ReviewPage() {
 
   const handleFlagAnswer = (questionId: string) => {
     if (flagReason.trim()) {
-      setFlaggedAnswers(prev => new Map(prev).set(questionId, flagReason))
+      setFlaggedAnswers(prev => new Map(prev).set(questionId, { reason: flagReason, response: null }))
       setShowFlagInput(null)
       setFlagReason('')
     }
@@ -295,9 +322,9 @@ export default function ReviewPage() {
         })
 
       // Create answer rejections via API (bypasses RLS)
-      const rejections = Array.from(flaggedAnswers.entries()).map(([questionId, reason]) => ({
+      const rejections = Array.from(flaggedAnswers.entries()).map(([questionId, data]) => ({
         questionId,
-        reason
+        reason: data.reason
       }))
       
       const rejectResponse = await fetch('/api/sheets/reject-answers', {
@@ -666,7 +693,7 @@ export default function ReviewPage() {
                             {isFlagged && (
                               <div className="mt-2 flex items-center gap-2 text-amber-700">
                                 <Flag className="h-4 w-4" />
-                                <span className="text-sm">{flaggedAnswers.get(question.id)}</span>
+                                <span className="text-sm">{flaggedAnswers.get(question.id)?.reason}</span>
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -749,7 +776,7 @@ export default function ReviewPage() {
                                   {isFlagged && (
                                     <div className="mt-2 flex items-center gap-2 text-amber-700">
                                       <Flag className="h-4 w-4" />
-                                      <span className="text-sm">{flaggedAnswers.get(question.id)}</span>
+                                      <span className="text-sm">{flaggedAnswers.get(question.id)?.reason}</span>
                                       <Button
                                         variant="ghost"
                                         size="sm"
