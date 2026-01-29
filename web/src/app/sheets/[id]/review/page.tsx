@@ -284,12 +284,6 @@ export default function ReviewPage() {
     const supabase = createClient()
 
     try {
-      // Update sheet status to flagged
-      await supabase
-        .from('sheets')
-        .update({ status: 'flagged', modified_at: new Date().toISOString() })
-        .eq('id', sheetId)
-
       // Create sheet_status record with observations
       await supabase
         .from('sheet_statuses')
@@ -300,27 +294,24 @@ export default function ReviewPage() {
           completed: false
         })
 
-      // Create answer rejections for flagged answers
-      console.log('Creating rejections for', flaggedAnswers.size, 'questions')
-      console.log('Available answers:', data.answers.length)
-      for (const [questionId, reason] of flaggedAnswers) {
-        const answer = data.answers.find(a => a.question_id === questionId)
-        console.log('Looking for question:', questionId, 'Found answer:', answer?.id)
-        if (answer) {
-          const { error: insertError } = await supabase
-            .from('answer_rejections')
-            .insert({
-              answer_id: answer.id,
-              reason
-            })
-          if (insertError) {
-            console.error('Failed to insert rejection:', insertError)
-          } else {
-            console.log('Inserted rejection for answer:', answer.id)
-          }
-        } else {
-          console.error('No answer found for question:', questionId)
-        }
+      // Create answer rejections via API (bypasses RLS)
+      const rejections = Array.from(flaggedAnswers.entries()).map(([questionId, reason]) => ({
+        questionId,
+        reason
+      }))
+      
+      const rejectResponse = await fetch('/api/sheets/reject-answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheetId, rejections })
+      })
+      
+      if (!rejectResponse.ok) {
+        const errorData = await rejectResponse.json()
+        console.error('Failed to create rejections:', errorData)
+      } else {
+        const result = await rejectResponse.json()
+        console.log('Rejections created:', result)
       }
 
       // Get supplier info for notification
