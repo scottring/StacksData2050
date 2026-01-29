@@ -49,7 +49,7 @@ interface ListTableColumn {
   id: string
   name: string
   order_number: number | null
-  parent_table_id: string | null
+  question_id: string | null
   response_type: string | null
 }
 
@@ -132,14 +132,14 @@ export function SimpleSheetEditor({
   }, [choices])
 
   // Group columns by parent_table_id (list_table_id)
-  const columnsByTableId = useMemo(() => {
+  const columnsByQuestionId = useMemo(() => {
     const map = new Map<string, ListTableColumn[]>()
     listTableColumns.forEach(col => {
-      if (col.parent_table_id) {
-        if (!map.has(col.parent_table_id)) {
-          map.set(col.parent_table_id, [])
+      if (col.question_id) {
+        if (!map.has(col.question_id)) {
+          map.set(col.question_id, [])
         }
-        map.get(col.parent_table_id)!.push(col)
+        map.get(col.question_id)!.push(col)
       }
     })
     // Sort each array by order_number
@@ -496,9 +496,9 @@ export function SimpleSheetEditor({
     )
   }
 
-  function renderListTable(questionId: string, questionAnswers: ViewAnswer[], listTableId: string | null) {
+  function renderListTable(questionId: string, questionAnswers: ViewAnswer[]) {
     // Get columns from the listTableColumns prop
-    const tableColumns = listTableId ? columnsByTableId.get(listTableId) || [] : []
+    const tableColumns = columnsByQuestionId.get(questionId) || []
     
     // Group existing answers by row, then by column
     const rows = new Map<string, Map<string, ViewAnswer>>()
@@ -760,7 +760,7 @@ export function SimpleSheetEditor({
                 </CardHeader>
                 <CardContent>
                   {isListTable ? (
-                    renderListTable(questionId, q.answers, q.list_table_id)
+                    renderListTable(questionId, q.answers)
                   ) : (
                     renderInput(
                       questionId,

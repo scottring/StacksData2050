@@ -59,14 +59,15 @@ export default async function SheetEditPage({
     .select("id, content, question_id")
     .order("order_number")
 
-  // Fetch ALL list_table_columns
+  // Fetch ALL list_table_columns (linked via question_id)
   const { data: listTableColumns } = await supabase
     .from("list_table_columns")
-    .select("id, name, order_number, parent_table_id, response_type")
-    .order("parent_table_id")
+    .select("id, name, order_number, question_id, response_type")
+    .not("question_id", "is", null)
+    .order("question_id")
     .order("order_number")
 
-  // Fetch questions with their section/subsection info (including list_table_id)
+  // Fetch questions with their section/subsection info
   let questionsWithSections: any[] = []
   
   if (taggedQuestionIds.length > 0) {
@@ -82,7 +83,6 @@ export default async function SheetEditPage({
           response_type,
           section_sort_number,
           order_number,
-          list_table_id,
           subsections(
             id,
             name,
@@ -154,7 +154,6 @@ export default async function SheetEditPage({
       section_sort_number: q._sectionSort,
       subsection_sort_number: q._subsectionSort,
       question_order: q._questionOrder,
-      list_table_id: q.list_table_id || null,
       text_value: null,
       text_area_value: null,
       number_value: null,
