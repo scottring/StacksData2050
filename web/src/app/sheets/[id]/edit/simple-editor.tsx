@@ -138,6 +138,7 @@ export function SimpleSheetEditor({
   const [saving, setSaving] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
+  const [rejectionResponses, setRejectionResponses] = useState<Map<string, string>>(new Map())
 
   // Check if editing is allowed based on status
   // Locked when: submitted (waiting for review), approved, or completed
@@ -403,6 +404,21 @@ export function SimpleSheetEditor({
     try {
       // Save first
       await handleSave()
+      
+      // Save rejection responses if any
+      if (rejectionResponses.size > 0) {
+        const responses = Array.from(rejectionResponses.entries())
+          .filter(([_, response]) => response.trim())
+          .map(([questionId, response]) => ({ questionId, response }))
+        
+        if (responses.length > 0) {
+          await fetch('/api/sheets/respond-rejection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sheetId, responses })
+          })
+        }
+      }
       
       // Update sheet status to 'submitted'
       const response = await fetch('/api/sheets/submit', {
@@ -891,9 +907,20 @@ export function SimpleSheetEditor({
                     <div className="mt-2 p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
                       <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
                         <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium text-sm">Revision Requested</p>
                           <p className="text-sm mt-1">{getRejectionReason(rejections, questionId)}</p>
+                          <div className="mt-3">
+                            <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                              Your Response (optional - explain if you disagree or need clarification)
+                            </label>
+                            <textarea
+                              className="mt-1 w-full min-h-[60px] rounded-md border border-amber-300 bg-white dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-900 dark:text-amber-100 placeholder:text-amber-400"
+                              placeholder="Add your response to this feedback..."
+                              value={rejectionResponses.get(questionId) || ''}
+                              onChange={(e) => setRejectionResponses(prev => new Map(prev).set(questionId, e.target.value))}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
