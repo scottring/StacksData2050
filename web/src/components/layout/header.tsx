@@ -43,7 +43,7 @@ export function Header({ title }: HeaderProps) {
         // Fetch user profile from public.users
         const { data: profile } = await supabase
           .from('users')
-          .select('first_name, last_name, email, company_id, role')
+          .select('full_name, email, company_id, role')
           .eq('id', authUser.id)
           .single()
 
@@ -59,8 +59,8 @@ export function Header({ title }: HeaderProps) {
 
         setUser({
           email: profile?.email || authUser.email || '',
-          firstName: profile?.first_name || null,
-          lastName: profile?.last_name || null,
+          firstName: profile?.full_name?.split(" ")[0] || null,
+          lastName: profile?.full_name?.split(" ").slice(1).join(" ") || null,
           companyName,
           role: profile?.role || null,
         })

@@ -229,8 +229,14 @@ export default function IncomingRequestsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {request.processed ? (
-                        <Badge variant="secondary">Processed</Badge>
+                      {request.sheet?.status === "submitted" ? (
+                        <Badge className="bg-blue-100 text-blue-800">Submitted</Badge>
+                      ) : request.sheet?.status === "approved" ? (
+                        <Badge className="bg-green-100 text-green-800">Approved</Badge>
+                      ) : request.sheet?.status === "in_progress" ? (
+                        <Badge className="bg-yellow-100 text-yellow-800">In Progress</Badge>
+                      ) : request.sheet?.status === "flagged" ? (
+                        <Badge className="bg-red-100 text-red-800">Needs Revision</Badge>
                       ) : (
                         <Badge variant="outline">Pending</Badge>
                       )}

@@ -239,10 +239,16 @@ export default function OutgoingRequestsPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {request.processed ? (
-                        <Badge variant="secondary">Processed</Badge>
+                      {request.sheet?.status === "submitted" ? (
+                        <Badge className="bg-blue-100 text-blue-800">Ready for Review</Badge>
+                      ) : request.sheet?.status === "approved" ? (
+                        <Badge className="bg-green-100 text-green-800">Approved</Badge>
+                      ) : request.sheet?.status === "in_progress" ? (
+                        <Badge className="bg-yellow-100 text-yellow-800">In Progress</Badge>
+                      ) : request.sheet?.status === "flagged" ? (
+                        <Badge className="bg-amber-100 text-amber-800">Revision Requested</Badge>
                       ) : (
-                        <Badge variant="outline">Pending</Badge>
+                        <Badge variant="outline">Awaiting Response</Badge>
                       )}
                     </TableCell>
                     <TableCell>

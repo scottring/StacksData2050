@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal } from 'lucide-react'
 
 interface ViewAnswer {
   id: string
@@ -123,6 +123,7 @@ export function SimpleSheetEditor({
   const [addedRows, setAddedRows] = useState<Map<string, string[]>>(new Map())
 
   const [saving, setSaving] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
 
   // Group choices by question
@@ -336,7 +337,7 @@ export function SimpleSheetEditor({
             answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
             value: data.value,
             type: mapResponseType(data.type),
-            list_table_row_id: rowId.startsWith('temp-') ? undefined : rowId,
+            list_table_row_id: rowId,  // Send temp- IDs too, server will handle them
             list_table_column_id: columnId,
             is_new_row: rowId.startsWith('temp-'),
           })
@@ -373,6 +374,37 @@ export function SimpleSheetEditor({
       setSaveStatus('error')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!confirm('Submit this response to the customer? They will be notified to review your answers.')) {
+      return
+    }
+    
+    setSubmitting(true)
+    try {
+      // Save first
+      await handleSave()
+      
+      // Update sheet status to 'submitted'
+      const response = await fetch('/api/sheets/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheet_id: sheetId }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit')
+      }
+      
+      // Redirect to dashboard
+      window.location.href = '/dashboard?submitted=true'
+    } catch (error) {
+      console.error('Submit error:', error)
+      alert('Failed to submit. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -712,6 +744,14 @@ export function SimpleSheetEditor({
               <Save className="h-4 w-4 mr-2" />
             )}
             {saving ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
+          </Button>
+          <Button onClick={handleSubmit} disabled={saving || submitting} variant="default" className="bg-green-600 hover:bg-green-700">
+            {submitting ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <SendHorizontal className="h-4 w-4 mr-2" />
+            )}
+            {submitting ? 'Submitting...' : 'Submit to Customer'}
           </Button>
         </div>
 

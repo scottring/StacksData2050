@@ -45,13 +45,12 @@ export default async function SheetEditPage({
   }
 
   // Fetch all answers from the view
-  const { data: answers } = await supabase
+  const { data: answers, error: answersError } = await supabase
     .from("sheet_answers_display")
     .select("*")
     .eq("sheet_id", sheetId)
-    .order("section_sort_number")
-    .order("subsection_sort_number")
-    .order("order_number")
+  
+  // Debug removed
 
   // Fetch choices for dropdown questions (for branching (disabled))
   const { data: choices } = await supabase
