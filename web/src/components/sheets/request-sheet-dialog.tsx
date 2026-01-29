@@ -89,12 +89,25 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       if (supplierMode === 'new') {
         // Generate unique token
         const token = crypto.randomUUID()
-        // Create invitation record
+        
+        // Create company FIRST so we can link invitation to it
+        const { data: newSupplierCompany, error: companyError } = await supabase
+          .from('companies')
+          .insert({
+            name: formData.newSupplierCompanyName || `Invited: ${formData.newSupplierEmail}`,
+          })
+          .select()
+          .single()
+        if (companyError) throw companyError
+        supplierCompanyId = newSupplierCompany.id
+
+        // Create invitation record with company_id linked
         const { data: invitation, error: inviteError } = await supabase
           .from('invitations')
           .insert({
             email: formData.newSupplierEmail,
             company_name: formData.newSupplierCompanyName || null,
+            company_id: newSupplierCompany.id, // Link to the company we just created
             token,
             created_by: user.id,
             expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -103,18 +116,6 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           .single()
         if (inviteError) throw inviteError
         invitationId = invitation.id
-        // Create placeholder company (will be replaced when supplier signs up)
-        const { data: placeholderCompany, error: companyError } = await supabase
-          .from('companies')
-          .insert({
-            name: formData.newSupplierCompanyName || `Invited: ${formData.newSupplierEmail}`,
-            
-            
-          })
-          .select()
-          .single()
-        if (companyError) throw companyError
-        supplierCompanyId = placeholderCompany.id
         // Send invitation email via API route
         try {
           await fetch('/api/invitations/send', {
