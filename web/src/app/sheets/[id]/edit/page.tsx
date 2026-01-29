@@ -65,25 +65,36 @@ export default async function SheetEditPage({
     .order("order_number")
 
   // === Fetch rejections if sheet is flagged ===
-  let rejections: { question_id: string; reason: string }[] = []
+  let rejections: { question_id: string; rounds: { reason: string; response: string | null; created_at: string }[] }[] = []
   if (sheet.status === 'flagged') {
     // Get all answer IDs for this sheet
     const answerIds = answers?.map(a => a.id).filter(Boolean) || []
     if (answerIds.length > 0) {
       const { data: rejectionsData } = await supabase
         .from("answer_rejections")
-        .select("answer_id, reason")
+        .select("answer_id, reason, response, created_at")
         .in("answer_id", answerIds)
+        .order("created_at")
       
-      // Map rejections to question IDs
+      // Group rejections by question_id
       if (rejectionsData) {
-        rejections = rejectionsData.map(r => {
+        const byQuestion = new Map<string, { reason: string; response: string | null; created_at: string }[]>()
+        rejectionsData.forEach(r => {
           const answer = answers?.find(a => a.id === r.answer_id)
-          return {
-            question_id: answer?.question_id || '',
-            reason: r.reason || 'Revision requested'
+          if (answer?.question_id) {
+            const existing = byQuestion.get(answer.question_id) || []
+            existing.push({
+              reason: r.reason || 'Revision requested',
+              response: r.response || null,
+              created_at: r.created_at
+            })
+            byQuestion.set(answer.question_id, existing)
           }
-        }).filter(r => r.question_id)
+        })
+        rejections = Array.from(byQuestion.entries()).map(([question_id, rounds]) => ({
+          question_id,
+          rounds
+        }))
       }
     }
   }

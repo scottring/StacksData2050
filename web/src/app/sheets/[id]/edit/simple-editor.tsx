@@ -59,9 +59,15 @@ interface BranchingData {
   parentQuestionId: string | null
 }
 
+interface RejectionRound {
+  reason: string
+  response: string | null
+  created_at: string
+}
+
 interface Rejection {
   question_id: string
-  reason: string
+  rounds: RejectionRound[]
 }
 
 interface SimpleSheetEditorProps {
@@ -90,9 +96,9 @@ function getDisplayValue(answer: ViewAnswer): string {
 }
 
 // Get rejection reason for a question
-function getRejectionReason(rejections: Rejection[], questionId: string): string | null {
+function getRejectionRounds(rejections: Rejection[], questionId: string): RejectionRound[] {
   const rejection = rejections.find(r => r.question_id === questionId)
-  return rejection?.reason || null
+  return rejection?.rounds || []
 }
 
 export function SimpleSheetEditor({
@@ -903,24 +909,40 @@ export function SimpleSheetEditor({
                   {q.question_content && q.question_name && (
                     <p className="text-sm text-muted-foreground">{q.question_content}</p>
                   )}
-                  {getRejectionReason(rejections, questionId) && (
+                  {getRejectionRounds(rejections, questionId).length > 0 && (
                     <div className="mt-2 p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
                       <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
                         <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                         <div className="flex-1">
-                          <p className="font-medium text-sm">Revision Requested</p>
-                          <p className="text-sm mt-1">{getRejectionReason(rejections, questionId)}</p>
-                          <div className="mt-3">
-                            <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                              Your Response (optional - explain if you disagree or need clarification)
-                            </label>
-                            <textarea
-                              className="mt-1 w-full min-h-[60px] rounded-md border border-amber-300 bg-white dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-900 dark:text-amber-100 placeholder:text-amber-400"
-                              placeholder="Add your response to this feedback..."
-                              value={rejectionResponses.get(questionId) || ''}
-                              onChange={(e) => setRejectionResponses(prev => new Map(prev).set(questionId, e.target.value))}
-                            />
+                          <p className="font-medium text-sm">Revision History</p>
+                          <div className="mt-2 space-y-3">
+                            {getRejectionRounds(rejections, questionId).map((round, idx) => (
+                              <div key={idx} className="pb-2 border-b border-amber-200 dark:border-amber-700 last:border-0">
+                                <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                                  <span className="font-medium">Round {idx + 1}</span>
+                                  <span>•</span>
+                                  <span>{new Date(round.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <p className="text-sm mt-1"><span className="font-medium">Customer:</span> {round.reason}</p>
+                                {round.response && (
+                                  <p className="text-sm mt-1 text-blue-800 dark:text-blue-200"><span className="font-medium">Your response:</span> {round.response}</p>
+                                )}
+                              </div>
+                            ))}
                           </div>
+                          {getRejectionRounds(rejections, questionId).some(r => !r.response) && (
+                            <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
+                              <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                Your Response (optional)
+                              </label>
+                              <textarea
+                                className="mt-1 w-full min-h-[60px] rounded-md border border-amber-300 bg-white dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-900 dark:text-amber-100 placeholder:text-amber-400"
+                                placeholder="Add your response to this feedback..."
+                                value={rejectionResponses.get(questionId) || ''}
+                                onChange={(e) => setRejectionResponses(prev => new Map(prev).set(questionId, e.target.value))}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
