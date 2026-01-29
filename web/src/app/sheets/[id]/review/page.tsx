@@ -263,6 +263,17 @@ export default function ReviewPage() {
     })
   }
 
+  // Check if question has an unresolved flag (latest round has no response)
+  const isQuestionFlagged = (questionId: string): boolean => {
+    const rounds = flaggedAnswers.get(questionId)
+    if (!rounds || rounds.length === 0) return false
+    const latest = rounds[rounds.length - 1]
+    return latest.response === null
+  }
+
+  // Count questions with unresolved flags
+  const unresolvedFlagCount = Array.from(flaggedAnswers.keys()).filter(qId => isQuestionFlagged(qId)).length
+
   const handleFlagAnswer = (questionId: string) => {
     if (flagReason.trim()) {
       setFlaggedAnswers(prev => {
@@ -324,7 +335,7 @@ export default function ReviewPage() {
   }
 
   const handleRequestRevision = async () => {
-    if (!data || flaggedAnswers.size === 0) return
+    if (!data || unresolvedFlagCount === 0) return
     setSaving(true)
 
     const supabase = createClient()
@@ -391,7 +402,7 @@ export default function ReviewPage() {
               supplierEmail: supplierUsers[0].email,
               supplierName: supplierUsers[0].full_name,
               productName: data.sheet.name,
-              flaggedCount: flaggedAnswers.size,
+              flaggedCount: unresolvedFlagCount,
               observations: observations || null,
             })
           }).catch(console.error)
@@ -625,22 +636,22 @@ export default function ReviewPage() {
               <div>
                 <p className="font-medium">Review Progress</p>
                 <p className="text-sm text-muted-foreground">
-                  {flaggedAnswers.size} answers flagged for revision
+                  {unresolvedFlagCount} answers flagged for revision
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
                   onClick={handleRequestRevision}
-                  disabled={saving || flaggedAnswers.size === 0}
+                  disabled={saving || unresolvedFlagCount === 0}
                   className="text-amber-600 border-amber-300 hover:bg-amber-50"
                 >
                   <AlertTriangle className="h-4 w-4 mr-2" />
-                  Request Revision ({flaggedAnswers.size})
+                  Request Revision ({unresolvedFlagCount})
                 </Button>
                 <Button
                   onClick={handleApprove}
-                  disabled={saving || flaggedAnswers.size > 0}
+                  disabled={saving || unresolvedFlagCount > 0}
                   className="bg-green-600 hover:bg-green-700"
                 >
                   <ThumbsUp className="h-4 w-4 mr-2" />
@@ -696,7 +707,7 @@ export default function ReviewPage() {
                 <CardContent className="space-y-6">
                   {directQuestions.map((question, idx) => {
                     const answer = answers.find(a => a.question_id === question.id)
-                    const isFlagged = flaggedAnswers.has(question.id)
+                    const isFlagged = isQuestionFlagged(question.id)
 
                     return (
                       <div
@@ -780,7 +791,7 @@ export default function ReviewPage() {
                       <div className="space-y-4 pl-4 border-l-2 border-muted">
                         {subQuestions.map((question, idx) => {
                           const answer = answers.find(a => a.question_id === question.id)
-                          const isFlagged = flaggedAnswers.has(question.id)
+                          const isFlagged = isQuestionFlagged(question.id)
 
                           return (
                             <div
@@ -869,15 +880,15 @@ export default function ReviewPage() {
           <CardContent className="py-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                {flaggedAnswers.size > 0
-                  ? `${flaggedAnswers.size} answer(s) flagged - click "Request Revision" to send back to supplier`
+                {unresolvedFlagCount > 0
+                  ? `${unresolvedFlagCount} answer(s) flagged - click "Request Revision" to send back to supplier`
                   : 'No issues found - click "Approve" to complete the review'}
               </p>
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
                   onClick={handleRequestRevision}
-                  disabled={saving || flaggedAnswers.size === 0}
+                  disabled={saving || unresolvedFlagCount === 0}
                   className="text-amber-600 border-amber-300 hover:bg-amber-50"
                 >
                   {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <AlertTriangle className="h-4 w-4 mr-2" />}
@@ -885,7 +896,7 @@ export default function ReviewPage() {
                 </Button>
                 <Button
                   onClick={handleApprove}
-                  disabled={saving || flaggedAnswers.size > 0}
+                  disabled={saving || unresolvedFlagCount > 0}
                   className="bg-green-600 hover:bg-green-700"
                 >
                   {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ThumbsUp className="h-4 w-4 mr-2" />}
