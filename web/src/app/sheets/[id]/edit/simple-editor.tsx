@@ -55,7 +55,7 @@ interface ListTableColumn {
 
 interface BranchingData {
   dependentNoShow: boolean
-  parentChoiceId: string | null
+  
   parentQuestionId: string | null
 }
 

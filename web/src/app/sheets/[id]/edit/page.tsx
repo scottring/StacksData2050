@@ -83,6 +83,8 @@ export default async function SheetEditPage({
           response_type,
           section_sort_number,
           order_number,
+          dependent_no_show,
+          subsection_id,
           subsections(
             id,
             name,
@@ -107,23 +109,47 @@ export default async function SheetEditPage({
 
   // Build lookup map and add computed sort values
   const questionSectionMap: Record<string, { sectionName: string; subsectionName: string; sectionId: string }> = {}
-  
-  // Build branching data map: questionId -> { dependentNoShow, parentChoiceId, parentQuestionId }
+  // Build branching data: for dependent questions, find their parent (first question in same subsection)
   const branchingData: Record<string, { 
     dependentNoShow: boolean
-    parentChoiceId: string | null
     parentQuestionId: string | null 
   }> = {}
   
-  // Create a map from choice_id to its parent question_id
-  const choiceToQuestionMap = new Map<string, string>()
-  choices?.forEach(c => {
-    if (false && c.id && c.parent_question_id) {
-      choiceToQuestionMap.set(c.id, c.parent_question_id)
+  // First, find the first question in each subsection (by order_number)
+  const subsectionFirstQuestion = new Map<string, string>()
+  const questionsBySubsection = new Map<string, any[]>()
+  
+  questionsWithSections.forEach((q: any) => {
+    if (q.subsection_id) {
+      if (!questionsBySubsection.has(q.subsection_id)) {
+        questionsBySubsection.set(q.subsection_id, [])
+      }
+      questionsBySubsection.get(q.subsection_id)!.push(q)
+    }
+  })
+  
+  // For each subsection, find the first question (lowest order_number)
+  questionsBySubsection.forEach((questions, subsectionId) => {
+    const sorted = questions.sort((a, b) => (a.order_number || 999) - (b.order_number || 999))
+    if (sorted.length > 0) {
+      subsectionFirstQuestion.set(subsectionId, sorted[0].id)
+    }
+  })
+  
+  // Build branchingData for dependent questions
+  questionsWithSections.forEach((q: any) => {
+    if (q.dependent_no_show && q.subsection_id) {
+      const parentId = subsectionFirstQuestion.get(q.subsection_id)
+      if (parentId && parentId !== q.id) {
+        branchingData[q.id] = {
+          dependentNoShow: true,
+          parentQuestionId: parentId
+        }
+      }
     }
   })
 
-  // Process questions to add proper sort values
+
   const processedQuestions = questionsWithSections.map((q: any) => {
     const subsection = q.subsections
     const section = subsection?.sections
@@ -138,18 +164,6 @@ export default async function SheetEditPage({
         sectionName: section.name || "",
         subsectionName: subsection.name || "",
         sectionId: section.id || ""
-      }
-    }
-    
-    // Store branching data
-    if (false && (q.dependent_no_show || q.parent_choice_id)) {
-      const parentQuestionId = q.parent_choice_id 
-        ? choiceToQuestionMap.get(q.parent_choice_id) || null
-        : null
-      branchingData[q.id] = {
-        dependentNoShow: q.dependent_no_show || false,
-        parentChoiceId: q.parent_choice_id || null,
-        parentQuestionId
       }
     }
     
