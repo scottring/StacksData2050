@@ -760,7 +760,7 @@ export default function ReviewPage() {
                                   onClick={() => handleUnflag(question.id)}
                                   className="text-xs h-6 text-amber-600"
                                 >
-                                  Remove latest flag
+                                  Approve answer
                                 </Button>
                               </div>
                             )}
@@ -856,7 +856,7 @@ export default function ReviewPage() {
                                         onClick={() => handleUnflag(question.id)}
                                         className="text-xs h-6 text-amber-600"
                                       >
-                                        Remove latest flag
+                                        Approve answer
                                       </Button>
                                     </div>
                                   )}
