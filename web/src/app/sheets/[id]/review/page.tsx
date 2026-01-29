@@ -65,6 +65,7 @@ interface Answer {
   boolean_value: boolean | null
   date_value: string | null
   choice_id: string | null
+  choice_content: string | null
   sheet_id: string | null
   list_table_row_id?: string | null
   list_table_column_id?: string | null
@@ -148,7 +149,7 @@ export default function ReviewPage() {
         supabase.from('subsections').select('*').order('order_number'),
         supabase.from('questions').select('*').order('order_number'),
         supabase.from('choices').select('*').order('order_number'),
-        supabase.from('answers').select('*').eq('sheet_id', sheetId),
+        supabase.from('sheet_answers_display').select('*').eq('sheet_id', sheetId),
         supabase.from('list_table_columns').select('id, name, order_number, question_id').order('order_number')
       ])
 
@@ -375,6 +376,12 @@ export default function ReviewPage() {
       case 'select one':
       case 'select one radio':
       case 'select multiple':
+      case 'choice':
+        // Use choice_content directly from the view
+        if (answer.choice_content) {
+          return answer.choice_content
+        }
+        // Fallback to choice_id lookup
         if (answer.choice_id && data) {
           const choice = data.choices.find(c => c.id === answer.choice_id)
           return choice?.content || 'Selected'
