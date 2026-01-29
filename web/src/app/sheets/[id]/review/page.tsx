@@ -66,6 +66,9 @@ interface Answer {
   date_value: string | null
   choice_id: string | null
   sheet_id: string | null
+  list_table_row_id?: string | null
+  list_table_column_id?: string | null
+  list_table_column_name?: string | null
 }
 
 interface AnswerRejection {
@@ -337,18 +340,81 @@ export default function ReviewPage() {
         return 'Not answered'
       case 'list table':
       case 'list_table':
-        // List tables are stored cell-by-cell, count answers with this question_id
-        const listAnswers = answers.filter(a => a.question_id === question.id && a.list_table_row_id)
-        const uniqueRows = new Set(listAnswers.map(a => a.list_table_row_id))
-        if (uniqueRows.size > 0) {
-          return `${uniqueRows.size} row(s) of data entered`
-        }
-        return 'No data'
+        // List tables rendered separately - return placeholder
+        return '__LIST_TABLE__'
       case 'single text line':
       case 'text':
       default:
         return answer.text_value || 'Not answered'
     }
+  }
+
+  // Render list table as actual table
+  const renderListTable = (question: Question) => {
+    const listAnswers = answers.filter(a => a.question_id === question.id && a.list_table_row_id)
+    if (listAnswers.length === 0) {
+      return <p className="text-sm text-muted-foreground italic">No data entered</p>
+    }
+
+    // Group by row
+    const rows = new Map<string, Map<string, Answer>>()
+    const columnIds = new Set<string>()
+    
+    listAnswers.forEach(a => {
+      if (!a.list_table_row_id || !a.list_table_column_id) return
+      if (!rows.has(a.list_table_row_id)) {
+        rows.set(a.list_table_row_id, new Map())
+      }
+      rows.get(a.list_table_row_id)!.set(a.list_table_column_id, a)
+      columnIds.add(a.list_table_column_id)
+    })
+
+    // Get column names from first row's answers
+    const columnNames = new Map<string, string>()
+    const firstRow = rows.values().next().value
+    if (firstRow) {
+      firstRow.forEach((a: Answer, colId: string) => {
+        columnNames.set(colId, (a as any).list_table_column_name || `Col ${colId.slice(0,4)}`)
+      })
+    }
+
+    const sortedColumns = Array.from(columnIds)
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm border">
+          <thead className="bg-muted">
+            <tr>
+              {sortedColumns.map(colId => (
+                <th key={colId} className="border px-3 py-2 text-left font-medium">
+                  {columnNames.get(colId) || 'Column'}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from(rows.entries()).map(([rowId, rowData]) => (
+              <tr key={rowId}>
+                {sortedColumns.map(colId => {
+                  const answer = rowData.get(colId)
+                  return (
+                    <td key={colId} className="border px-3 py-2">
+                      {answer?.text_value || '-'}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  // Check if question is a list table
+  const isListTable = (question: Question) => {
+    const rt = (question.response_type || question.question_type || '').toLowerCase()
+    return rt === 'list table' || rt === 'list_table'
   }
 
   if (loading) {
@@ -536,7 +602,11 @@ export default function ReviewPage() {
                               {question.required && <span className="text-red-500 ml-1">*</span>}
                             </p>
                             <div className="mt-2 p-3 bg-muted/50 rounded-md">
-                              <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
+                              {isListTable(question) ? (
+                                renderListTable(question)
+                              ) : (
+                                <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
+                              )}
                             </div>
                             {isFlagged && (
                               <div className="mt-2 flex items-center gap-2 text-amber-700">
@@ -615,7 +685,11 @@ export default function ReviewPage() {
                                     {idx + 1}. {question.content || question.name}
                                   </p>
                                   <div className="mt-2 p-3 bg-muted/50 rounded-md">
-                                    <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
+                                    {isListTable(question) ? (
+                                      renderListTable(question)
+                                    ) : (
+                                      <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
+                                    )}
                                   </div>
                                   {isFlagged && (
                                     <div className="mt-2 flex items-center gap-2 text-amber-700">
