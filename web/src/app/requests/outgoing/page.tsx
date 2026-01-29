@@ -76,8 +76,7 @@ export default function OutgoingRequestsPage() {
           processed,
           created_at,
           sheet:sheets(id, name, status),
-          reader_company:companies!requesting_from_id(id, name),
-          
+          reader_company:companies!requesting_from_id(id, name)
         `)
       
       // Super admins see all requests, others only see their company's
@@ -92,28 +91,16 @@ export default function OutgoingRequestsPage() {
         console.error('Error details:', JSON.stringify(error, null, 2))
       }
 
-      // Fetch tags separately (FK relationship not in schema cache)
       const requestIds = requestData?.map((r: any) => r.id) || []
       let tagsByRequest: Record<string, string[]> = {}
-      
       if (requestIds.length > 0) {
-        const { data: tagsData } = await supabase
-          .from("request_tags")
-          .select("request_id, tag:tags(name)")
-          .in("request_id", requestIds)
-        
+        const { data: tagsData } = await supabase.from("request_tags").select("request_id, tag:tags(name)").in("request_id", requestIds)
         tagsData?.forEach((t: any) => {
           if (!tagsByRequest[t.request_id]) tagsByRequest[t.request_id] = []
           if (t.tag?.name) tagsByRequest[t.request_id].push(t.tag.name)
         })
       }
-
-      // Merge tags into requests
-      const requestsWithTags = requestData?.map((r: any) => ({
-        ...r,
-        request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } }))
-      }))
-
+      const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } })) }))
       setRequests((requestsWithTags as any) || [])
       setLoading(false)
     }
