@@ -94,11 +94,21 @@ export default function OutgoingRequestsPage() {
       const requestIds = requestData?.map((r: any) => r.id) || []
       let tagsByRequest: Record<string, string[]> = {}
       if (requestIds.length > 0) {
-        const { data: tagsData } = await supabase.from("request_tags").select("request_id, tag:tags(name)").in("request_id", requestIds)
-        tagsData?.forEach((t: any) => {
-          if (!tagsByRequest[t.request_id]) tagsByRequest[t.request_id] = []
-          if (t.tag?.name) tagsByRequest[t.request_id].push(t.tag.name)
-        })
+        // Step 1: Get request_tags (FK to tags not in schema cache, so we fetch separately)
+        const { data: rtData } = await supabase.from("request_tags").select("request_id, tag_id").in("request_id", requestIds)
+        const tagIds = [...new Set(rtData?.map((rt: any) => rt.tag_id) || [])]
+        
+        // Step 2: Get tag names
+        if (tagIds.length > 0) {
+          const { data: tagsData } = await supabase.from("tags").select("id, name").in("id", tagIds)
+          const tagNameMap = new Map(tagsData?.map((t: any) => [t.id, t.name]) || [])
+          
+          rtData?.forEach((rt: any) => {
+            if (!tagsByRequest[rt.request_id]) tagsByRequest[rt.request_id] = []
+            const name = tagNameMap.get(rt.tag_id)
+            if (name) tagsByRequest[rt.request_id].push(name)
+          })
+        }
       }
       const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } })) }))
       setRequests((requestsWithTags as any) || [])
