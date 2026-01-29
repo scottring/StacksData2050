@@ -37,6 +37,14 @@ export async function POST(request: NextRequest) {
     for (const rejection of rejections) {
       const answerId = questionToAnswer.get(rejection.questionId)
       if (answerId) {
+        // First, resolve any existing unresolved flags for this answer
+        await supabase
+          .from('answer_rejections')
+          .update({ resolved_at: new Date().toISOString() })
+          .eq('answer_id', answerId)
+          .is('resolved_at', null)
+        
+        // Then insert the new flag
         const { error } = await supabase
           .from('answer_rejections')
           .insert({

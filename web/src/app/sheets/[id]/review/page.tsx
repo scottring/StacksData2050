@@ -77,6 +77,7 @@ interface AnswerRejection {
   answer_id: string
   reason: string
   response: string | null
+  resolved_at: string | null
   rejected_by: string | null
   created_at: string
 }
@@ -118,7 +119,7 @@ export default function ReviewPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
   const [observations, setObservations] = useState('')
-  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, Array<{ reason: string; response: string | null; created_at: string }>>>(new Map())
+  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, Array<{ reason: string; response: string | null; resolved_at: string | null; created_at: string }>>>(new Map())
   const [showFlagInput, setShowFlagInput] = useState<string | null>(null)
   const [flagReason, setFlagReason] = useState('')
 
@@ -186,7 +187,7 @@ export default function ReviewPage() {
       }
 
       // Pre-populate flagged answers from existing rejections (all rounds)
-      const flaggedMap = new Map<string, Array<{ reason: string; response: string | null; created_at: string }>>()
+      const flaggedMap = new Map<string, Array<{ reason: string; response: string | null; resolved_at: string | null; created_at: string }>>()
       // Sort by created_at to maintain conversation order
       const sortedRejections = [...existingRejections].sort((a, b) => 
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -195,7 +196,7 @@ export default function ReviewPage() {
         const answer = answers?.find(a => a.id === r.answer_id)
         if (answer?.question_id) {
           const existing = flaggedMap.get(answer.question_id) || []
-          existing.push({ reason: r.reason, response: r.response, created_at: r.created_at })
+          existing.push({ reason: r.reason, response: r.response, resolved_at: r.resolved_at, created_at: r.created_at })
           flaggedMap.set(answer.question_id, existing)
         }
       })
@@ -263,12 +264,12 @@ export default function ReviewPage() {
     })
   }
 
-  // Check if question has an unresolved flag (latest round has no response)
+  // Check if question has an active flag (not resolved by manufacturer)
   const isQuestionFlagged = (questionId: string): boolean => {
     const rounds = flaggedAnswers.get(questionId)
     if (!rounds || rounds.length === 0) return false
-    const latest = rounds[rounds.length - 1]
-    return latest.response === null
+    // A question is flagged if ANY round is not resolved
+    return rounds.some(r => r.resolved_at === null)
   }
 
   // Count questions with unresolved flags
@@ -279,7 +280,7 @@ export default function ReviewPage() {
       setFlaggedAnswers(prev => {
         const next = new Map(prev)
         const existing = next.get(questionId) || []
-        existing.push({ reason: flagReason, response: null, created_at: new Date().toISOString() })
+        existing.push({ reason: flagReason, response: null, resolved_at: null, created_at: new Date().toISOString() })
         next.set(questionId, existing)
         return next
       })
@@ -288,19 +289,28 @@ export default function ReviewPage() {
     }
   }
 
-  const handleUnflag = (questionId: string) => {
-    setFlaggedAnswers(prev => {
-      const next = new Map(prev)
-      const existing = next.get(questionId) || []
-      // Remove the last (most recent) flag
-      if (existing.length > 1) {
-        existing.pop()
-        next.set(questionId, existing)
-      } else {
-        next.delete(questionId)
-      }
-      return next
+  const handleUnflag = async (questionId: string) => {
+    // Call API to resolve all flags for this question
+    const response = await fetch('/api/sheets/resolve-flag', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheetId, questionId })
     })
+    
+    if (response.ok) {
+      // Update local state - mark all rounds as resolved
+      setFlaggedAnswers(prev => {
+        const next = new Map(prev)
+        const existing = next.get(questionId)
+        if (existing) {
+          const updated = existing.map(r => ({ ...r, resolved_at: new Date().toISOString() }))
+          next.set(questionId, updated)
+        }
+        return next
+      })
+    } else {
+      console.error('Failed to resolve flag')
+    }
   }
 
   const handleApprove = async () => {
