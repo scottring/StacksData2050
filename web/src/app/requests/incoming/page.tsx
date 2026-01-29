@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,7 @@ interface IncomingRequest {
   id: string
   processed: boolean
   created_at: string
+  sheet_id: string | null
   sheet: {
     id: string
     name: string
@@ -43,74 +44,133 @@ export default function IncomingRequestsPage() {
   const [requests, setRequests] = useState<IncomingRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [companyId, setCompanyId] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchRequests() {
-      const supabase = createClient()
+  const fetchRequests = useCallback(async () => {
+    const supabase = createClient()
 
-      // Get current user's company
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-
-      if (!userData?.company_id) {
-        setLoading(false)
-        return
-      }
-
-      // Fetch requests where we are the supplier (requesting_from_id)
-      const { data: requestData, error } = await supabase
-        .from('requests')
-        .select(`
-          id,
-          processed,
-          created_at,
-          sheet:sheets(id, name, status),
-          owner_company:companies!requestor_id(id, name)
-          
-        `)
-        .eq('requesting_from_id', userData.company_id)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error('Error fetching incoming requests:', error)
-        console.error('Error details:', JSON.stringify(error, null, 2))
-      }
-
-      const requestIds = requestData?.map((r: any) => r.id) || []
-      let tagsByRequest: Record<string, string[]> = {}
-      if (requestIds.length > 0) {
-        // Step 1: Get request_tags (FK to tags not in schema cache, so we fetch separately)
-        const { data: rtData } = await supabase.from("request_tags").select("request_id, tag_id").in("request_id", requestIds)
-        const tagIds = [...new Set(rtData?.map((rt: any) => rt.tag_id) || [])]
-        
-        // Step 2: Get tag names
-        if (tagIds.length > 0) {
-          const { data: tagsData } = await supabase.from("tags").select("id, name").in("id", tagIds)
-          const tagNameMap = new Map(tagsData?.map((t: any) => [t.id, t.name]) || [])
-          
-          rtData?.forEach((rt: any) => {
-            if (!tagsByRequest[rt.request_id]) tagsByRequest[rt.request_id] = []
-            const name = tagNameMap.get(rt.tag_id)
-            if (name) tagsByRequest[rt.request_id].push(name)
-          })
-        }
-      }
-      const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } })) }))
-      setRequests((requestsWithTags as any) || [])
+    // Get current user's company
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
       setLoading(false)
+      return
     }
 
-    fetchRequests()
+    const { data: userData } = await supabase
+      .from('users')
+      .select('company_id')
+      .eq('id', user.id)
+      .single()
+
+    if (!userData?.company_id) {
+      setLoading(false)
+      return
+    }
+
+    setCompanyId(userData.company_id)
+
+    // Fetch requests where we are the supplier (requesting_from_id)
+    const { data: requestData, error } = await supabase
+      .from('requests')
+      .select(`
+        id,
+        processed,
+        created_at,
+        sheet_id,
+        sheet:sheets(id, name, status),
+        owner_company:companies!requestor_id(id, name)
+        
+      `)
+      .eq('requesting_from_id', userData.company_id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching incoming requests:', error)
+      console.error('Error details:', JSON.stringify(error, null, 2))
+    }
+
+    const requestIds = requestData?.map((r: any) => r.id) || []
+    let tagsByRequest: Record<string, string[]> = {}
+    if (requestIds.length > 0) {
+      // Step 1: Get request_tags (FK to tags not in schema cache, so we fetch separately)
+      const { data: rtData } = await supabase.from("request_tags").select("request_id, tag_id").in("request_id", requestIds)
+      const tagIds = [...new Set(rtData?.map((rt: any) => rt.tag_id) || [])]
+      
+      // Step 2: Get tag names
+      if (tagIds.length > 0) {
+        const { data: tagsData } = await supabase.from("tags").select("id, name").in("id", tagIds)
+        const tagNameMap = new Map(tagsData?.map((t: any) => [t.id, t.name]) || [])
+        
+        rtData?.forEach((rt: any) => {
+          if (!tagsByRequest[rt.request_id]) tagsByRequest[rt.request_id] = []
+          const name = tagNameMap.get(rt.tag_id)
+          if (name) tagsByRequest[rt.request_id].push(name)
+        })
+      }
+    }
+    const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } })) }))
+    setRequests((requestsWithTags as any) || [])
+    setLoading(false)
   }, [])
+
+  useEffect(() => {
+    fetchRequests()
+  }, [fetchRequests])
+
+  // Realtime subscription for sheet status updates
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // Get sheet IDs we care about
+    const sheetIds = requests.map(r => r.sheet?.id).filter(Boolean) as string[]
+    if (sheetIds.length === 0) return
+
+    const channel = supabase
+      .channel('incoming-requests-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'sheets',
+        },
+        (payload) => {
+          // Check if this sheet is in our list
+          if (sheetIds.includes(payload.new.id)) {
+            // Update the specific request's sheet status
+            setRequests(prev => prev.map(r => {
+              if (r.sheet?.id === payload.new.id) {
+                return {
+                  ...r,
+                  sheet: {
+                    ...r.sheet!,
+                    status: payload.new.status
+                  }
+                }
+              }
+              return r
+            }))
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'requests',
+        },
+        (payload) => {
+          // New request came in - refetch to get all the joined data
+          fetchRequests()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [requests, fetchRequests])
 
   const filteredRequests = requests.filter(r =>
     r.sheet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
