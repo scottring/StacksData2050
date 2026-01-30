@@ -49,6 +49,7 @@ export default async function SheetEditPage({
     .from("sheet_answers_display")
     .select("*")
     .eq("sheet_id", sheetId)
+  console.log("DEBUG: answers loaded:", answers?.length, "error:", answersError)
 
   // Fetch choices for dropdown questions (for branching (disabled))
   const { data: choices } = await supabase

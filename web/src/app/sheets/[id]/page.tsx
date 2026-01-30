@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil } from 'lucide-react'
+import { Pencil, Upload } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 
@@ -328,7 +328,7 @@ export default async function SheetViewPage({
           </div>
           <div className="ml-auto flex items-center gap-3">
             <Badge variant="outline">{sheet.status || 'draft'}</Badge>
-            <Link href={`/sheets/${sheetId}/edit`}>
+            <Link href={`/sheets/${sheetId}/import`}><Button size="sm" variant="outline"><Upload className="h-4 w-4 mr-2" />Import Excel</Button></Link><Link href={`/sheets/${sheetId}/edit`}>
               <Button size="sm">
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit Sheet
