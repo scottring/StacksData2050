@@ -1,0 +1,487 @@
+{
+  "1619621325168x638528879039348700": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C20",
+    "additionalCells": []
+  },
+  "1619621372505x846593549490716700": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C21",
+    "additionalCells": []
+  },
+  "1619621454948x378957201355571200": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C22",
+    "additionalCells": []
+  },
+  "1619621490579x669219526109560800": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C23",
+    "additionalCells": []
+  },
+  "1619621541276x684844897419395100": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C24",
+    "additionalCells": []
+  },
+  "1619623188374x546767029957558300": {
+    "sheet": "Ecolabels",
+    "cell": "G9",
+    "additionalCells": []
+  },
+  "1619624170183x762144571524907000": {
+    "sheet": "Ecolabels",
+    "cell": "G12",
+    "additionalCells": []
+  },
+  "1619634435694x275434400776192000": {
+    "sheet": "Ecolabels",
+    "cell": "G18",
+    "additionalCells": []
+  },
+  "1619638587403x496721535091867650": {
+    "sheet": "Ecolabels",
+    "cell": "G21",
+    "additionalCells": []
+  },
+  "1619638800567x474660305440866300": {
+    "sheet": "Ecolabels",
+    "cell": "G24",
+    "additionalCells": []
+  },
+  "1619638997051x666626079211126800": {
+    "sheet": "Ecolabels",
+    "cell": "G27",
+    "additionalCells": []
+  },
+  "1619639151339x950601845945401300": {
+    "sheet": "Ecolabels",
+    "cell": "G30",
+    "additionalCells": []
+  },
+  "1621985785314x409047933516775400": {
+    "sheet": "Biocides",
+    "cell": "E4",
+    "additionalCells": []
+  },
+  "1621986483500x603202081932705800": {
+    "sheet": "Biocides",
+    "cell": "E22",
+    "additionalCells": []
+  },
+  "1621986546899x807355772183511000": {
+    "sheet": "Biocides",
+    "cell": "E25",
+    "additionalCells": []
+  },
+  "1621986578624x711412660436992000": {
+    "sheet": "Biocides",
+    "cell": "E28",
+    "additionalCells": []
+  },
+  "1621986618754x612909981889200100": {
+    "sheet": "Biocides",
+    "cell": "E31",
+    "additionalCells": []
+  },
+  "1626102501586x526758862548369400": {
+    "sheet": "Ecolabels",
+    "cell": "G39",
+    "additionalCells": []
+  },
+  "1626102875342x712097337373098000": {
+    "sheet": "Ecolabels",
+    "cell": "G42",
+    "additionalCells": []
+  },
+  "1626102925283x622296060494610400": {
+    "sheet": "Ecolabels",
+    "cell": "G45",
+    "additionalCells": []
+  },
+  "1626102952650x371078978227666940": {
+    "sheet": "Ecolabels",
+    "cell": "G48",
+    "additionalCells": []
+  },
+  "1626111516172x804540904782954500": {
+    "sheet": "Ecolabels",
+    "cell": "G36",
+    "additionalCells": []
+  },
+  "1626116201015x776129854998839300": {
+    "sheet": "Biocides",
+    "cell": "E34",
+    "additionalCells": []
+  },
+  "1626116261396x973304674592751600": {
+    "sheet": "Biocides",
+    "cell": "E37",
+    "additionalCells": []
+  },
+  "1626116336068x489286111663226900": {
+    "sheet": "Biocides",
+    "cell": "E40",
+    "additionalCells": []
+  },
+  "1626116356221x511754218555834400": {
+    "sheet": "Biocides",
+    "cell": "E43",
+    "additionalCells": []
+  },
+  "1626116701206x626240791925489700": {
+    "sheet": "Food Contact",
+    "cell": "G6",
+    "additionalCells": []
+  },
+  "1626116844842x485480729141313540": {
+    "sheet": "Food Contact",
+    "cell": "G12",
+    "additionalCells": []
+  },
+  "1626124371585x622092321730068500": {
+    "sheet": "Food Contact",
+    "cell": "G97",
+    "additionalCells": []
+  },
+  "1626173190332x708066882492825600": {
+    "sheet": "Food Contact",
+    "cell": "G4",
+    "additionalCells": []
+  },
+  "1626189547256x231570893582893060": {
+    "sheet": "Food Contact",
+    "cell": "G18",
+    "additionalCells": []
+  },
+  "1626190804002x533327665093410800": {
+    "sheet": "Food Contact",
+    "cell": "G48",
+    "additionalCells": []
+  },
+  "1626190988704x872732496729735200": {
+    "sheet": "Food Contact",
+    "cell": "G78",
+    "additionalCells": []
+  },
+  "1626191731089x430854087087226900": {
+    "sheet": "Food Contact",
+    "cell": "G63",
+    "additionalCells": []
+  },
+  "1626198551841x903898258735104000": {
+    "sheet": "Food Contact",
+    "cell": "G112",
+    "additionalCells": []
+  },
+  "1626199238888x857552667199144000": {
+    "sheet": "Food Contact",
+    "cell": "G128",
+    "additionalCells": []
+  },
+  "1626199514075x367942783088984060": {
+    "sheet": "Food Contact",
+    "cell": "G144",
+    "additionalCells": []
+  },
+  "1626200941043x617934114828582900": {
+    "sheet": "Food Contact",
+    "cell": "G182",
+    "additionalCells": []
+  },
+  "1626201431213x202308079100362750": {
+    "sheet": "Food Contact",
+    "cell": "G216",
+    "additionalCells": []
+  },
+  "1626201889592x492544201623339000": {
+    "sheet": "Food Contact",
+    "cell": "G246",
+    "additionalCells": []
+  },
+  "1626201894522x309963734746398700": {
+    "sheet": "Food Contact",
+    "cell": "G261",
+    "additionalCells": []
+  },
+  "1626201898503x598466939115012100": {
+    "sheet": "Food Contact",
+    "cell": "G276",
+    "additionalCells": []
+  },
+  "1626201902274x639555289466536000": {
+    "sheet": "Food Contact",
+    "cell": "G291",
+    "additionalCells": []
+  },
+  "1626201906578x429784231845560300": {
+    "sheet": "Food Contact",
+    "cell": "G306",
+    "additionalCells": []
+  },
+  "1626201912055x972102984047263700": {
+    "sheet": "Food Contact",
+    "cell": "G321",
+    "additionalCells": []
+  },
+  "1626268794752x990927635819003900": {
+    "sheet": "Food Contact",
+    "cell": "G342",
+    "additionalCells": []
+  },
+  "1626269641256x429826345988259840": {
+    "sheet": "Food Contact",
+    "cell": "G363",
+    "additionalCells": []
+  },
+  "1626380401114x269186611915522050": {
+    "sheet": "Food Contact",
+    "cell": "G381",
+    "additionalCells": []
+  },
+  "1626380695602x879191236367089700": {
+    "sheet": "Food Contact",
+    "cell": "G384",
+    "additionalCells": []
+  },
+  "1626381398503x555247315050823700": {
+    "sheet": "Food Contact",
+    "cell": "G444",
+    "additionalCells": []
+  },
+  "1626381544713x400490379180245000": {
+    "sheet": "Food Contact",
+    "cell": "G399",
+    "additionalCells": []
+  },
+  "1626381997320x241467692268912640": {
+    "sheet": "Food Contact",
+    "cell": "G414",
+    "additionalCells": []
+  },
+  "1626382042073x730998571745148900": {
+    "sheet": "Food Contact",
+    "cell": "G429",
+    "additionalCells": []
+  },
+  "1626383300285x541189284342530050": {
+    "sheet": "PIDSL",
+    "cell": "G5",
+    "additionalCells": []
+  },
+  "1626383607568x922116530507350000": {
+    "sheet": "PIDSL",
+    "cell": "G20",
+    "additionalCells": []
+  },
+  "1626383612067x870604669095247900": {
+    "sheet": "PIDSL",
+    "cell": "G35",
+    "additionalCells": []
+  },
+  "1626383615230x403509945349701600": {
+    "sheet": "PIDSL",
+    "cell": "G50",
+    "additionalCells": []
+  },
+  "‭1700145049820;746878204809314300‬": {
+    "sheet": "PIDSL",
+    "cell": "G65",
+    "additionalCells": []
+  },
+  "1626383622042x484961083907112960": {
+    "sheet": "PIDSL",
+    "cell": "G80",
+    "additionalCells": []
+  },
+  "1626383625331x317091944538046460": {
+    "sheet": "PIDSL",
+    "cell": "G95",
+    "additionalCells": []
+  },
+  "1626383629312x526305258346905600": {
+    "sheet": "PIDSL",
+    "cell": "G110",
+    "additionalCells": []
+  },
+  "1626383632963x288540109843726340": {
+    "sheet": "PIDSL",
+    "cell": "G125",
+    "additionalCells": []
+  },
+  "1626383636667x161847961977880580": {
+    "sheet": "PIDSL",
+    "cell": "G140",
+    "additionalCells": []
+  },
+  "1626383639903x226118295270981630": {
+    "sheet": "PIDSL",
+    "cell": "G170",
+    "additionalCells": []
+  },
+  "1626448101716x522774716660842500": {
+    "sheet": "Additional Requirements",
+    "cell": "C6",
+    "additionalCells": []
+  },
+  "1626458258700x138544486555582460": {
+    "sheet": "Additional Requirements",
+    "cell": "C7",
+    "additionalCells": []
+  },
+  "1626471396833x473131697298735100": {
+    "sheet": "Food Contact",
+    "cell": "G336",
+    "additionalCells": []
+  },
+  "1626472948615x901255028023492600": {
+    "sheet": "Food Contact",
+    "cell": "G345",
+    "additionalCells": []
+  },
+  "1626473666173x785202483143639000": {
+    "sheet": "Food Contact",
+    "cell": "G348",
+    "additionalCells": []
+  },
+  "1626480412846x791534007930060800": {
+    "sheet": "Additional Requirements",
+    "cell": "C11",
+    "additionalCells": []
+  },
+  "1626481478313x330373050311639040": {
+    "sheet": "Additional Requirements",
+    "cell": "C23",
+    "additionalCells": []
+  },
+  "1626481672716x481238196044955650": {
+    "sheet": "Additional Requirements",
+    "cell": "C40",
+    "additionalCells": []
+  },
+  "1626481886973x671318618467205100": {
+    "sheet": "Additional Requirements",
+    "cell": "C45",
+    "additionalCells": []
+  },
+  "1626481965144x248697304247173120": {
+    "sheet": "Additional Requirements",
+    "cell": "C48",
+    "additionalCells": []
+  },
+  "1626482319180x968685284853809200": {
+    "sheet": "Additional Requirements",
+    "cell": "C53",
+    "additionalCells": []
+  },
+  "1626482841903x892265448749662200": {
+    "sheet": "Additional Requirements",
+    "cell": "C85",
+    "additionalCells": []
+  },
+  "1626482991292x530446354806210600": {
+    "sheet": "Additional Requirements",
+    "cell": "C102",
+    "additionalCells": []
+  },
+  "1626483240019x635862078743904300": {
+    "sheet": "Additional Requirements",
+    "cell": "C121",
+    "additionalCells": []
+  },
+  "1626483270778x261931222969352200": {
+    "sheet": "Additional Requirements",
+    "cell": "C123",
+    "additionalCells": []
+  },
+  "1626483324447x323417408953122800": {
+    "sheet": "Additional Requirements",
+    "cell": "C128",
+    "additionalCells": []
+  },
+  "1626483498134x813429069980106800": {
+    "sheet": "Additional Requirements",
+    "cell": "C145",
+    "additionalCells": []
+  },
+  "1629074131436x448084693794947100": {
+    "sheet": "Food Contact",
+    "cell": "G33",
+    "additionalCells": []
+  },
+  "1629228186397x376271944859254800": {
+    "sheet": "Biocides",
+    "cell": "E19",
+    "additionalCells": []
+  },
+  "1629232529183x224145075481346050": {
+    "sheet": "Food Contact",
+    "cell": "G231",
+    "additionalCells": []
+  },
+  "1630526932420x882981471942344700": {
+    "sheet": "Additional Requirements",
+    "cell": "C119",
+    "additionalCells": []
+  },
+  "1634140423088x249376945720000500": {
+    "sheet": "Additional Requirements",
+    "cell": "C68",
+    "additionalCells": []
+  },
+  "1634917315645x902432494304624600": {
+    "sheet": "PIDSL",
+    "cell": "G35",
+    "additionalCells": []
+  },
+  "1634783580228x389918001254629400": {
+    "sheet": "Food Contact",
+    "cell": "G348",
+    "additionalCells": []
+  },
+  "1634917517585x514874822988136450": {
+    "sheet": "PIDSL",
+    "cell": "G65",
+    "additionalCells": []
+  },
+  "1644491804137x515224054314827800": {
+    "sheet": "Supplier Product Contact",
+    "cell": "C32",
+    "additionalCells": []
+  },
+  "1682445736427x610075389819879400": {
+    "sheet": "Ecolabels",
+    "cell": "G6",
+    "additionalCells": []
+  },
+  "1682450213040x957334719003623400": {
+    "sheet": "Ecolabels",
+    "cell": "G51",
+    "additionalCells": []
+  },
+  "1682450399724x750908019257114600": {
+    "sheet": "Ecolabels",
+    "cell": "G54",
+    "additionalCells": []
+  },
+  "1682450682340x350639047884406800": {
+    "sheet": "PIDSL",
+    "cell": "G155",
+    "additionalCells": []
+  },
+  "1682545915273x562222831746416640": {
+    "sheet": "Food Contact",
+    "cell": "G160",
+    "additionalCells": []
+  },
+  "1682551815162x701163624175239200": {
+    "sheet": "Food Contact",
+    "cell": "G197",
+    "additionalCells": []
+  },
+  "1682552569934x286461405716807680": {
+    "sheet": "Food Contact",
+    "cell": "G462",
+    "additionalCells": []
+  }
+}

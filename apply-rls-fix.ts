@@ -1,67 +1,128 @@
-import { supabase } from './src/migration/supabase-client.js';
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+import * as fs from 'fs'
+import * as path from 'path'
+import { fileURLToPath } from 'url'
 
-async function applyRLSFix() {
-  console.log('=== Applying RLS Policy Fix ===\n');
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-  const sqlStatements = [
-    // Choices table
-    `DROP POLICY IF EXISTS "Enable read access for all users" ON choices;`,
-    `DROP POLICY IF EXISTS "Enable read access for authenticated users" ON choices;`,
-    `DROP POLICY IF EXISTS "choices_select_policy" ON choices;`,
-    `ALTER TABLE choices ENABLE ROW LEVEL SECURITY;`,
-    `CREATE POLICY "Enable read access for all users" ON choices FOR SELECT USING (true);`,
-    
-    // Answers table
-    `DROP POLICY IF EXISTS "Enable read access for all users" ON answers;`,
-    `DROP POLICY IF EXISTS "Enable read access for authenticated users" ON answers;`,
-    `DROP POLICY IF EXISTS "answers_select_policy" ON answers;`,
-    `ALTER TABLE answers ENABLE ROW LEVEL SECURITY;`,
-    `CREATE POLICY "Enable read access for all users" ON answers FOR SELECT USING (true);`,
-  ];
+dotenv.config()
 
-  console.log('Executing SQL statements...\n');
+async function applyFix() {
+  const url = process.env.SUPABASE_URL!
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-  for (const sql of sqlStatements) {
-    const shortSql = sql.length > 80 ? sql.substring(0, 77) + '...' : sql;
-    console.log(`Executing: ${shortSql}`);
-    
-    const { data, error } = await supabase.rpc('exec_sql', { sql });
-    
+  console.log('Applying RLS fix migration...\n')
+
+  const supabase = createClient(url, serviceKey)
+
+  // Read the migration file
+  const migrationPath = path.join(__dirname, 'web', 'supabase', 'migrations', '20260130_fix_rls_for_trial.sql')
+  const sql = fs.readFileSync(migrationPath, 'utf-8')
+
+  // Split into individual statements (simple approach)
+  // For complex migrations, you'd want to use a proper SQL parser
+  const statements = sql
+    .split(/;\s*\n/)
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !s.startsWith('--'))
+
+  console.log(`Found ${statements.length} SQL statements to execute\n`)
+
+  // Execute key steps manually using Supabase APIs
+
+  // Step 1: Add is_super_admin column
+  console.log('Step 1: Adding is_super_admin column...')
+  const { error: col1Error } = await supabase.rpc('exec_sql', {
+    sql: `
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'users' AND column_name = 'is_super_admin'
+        ) THEN
+          ALTER TABLE users ADD COLUMN is_super_admin BOOLEAN DEFAULT false;
+        END IF;
+      END $$;
+    `
+  })
+
+  if (col1Error) {
+    // Try alternative approach
+    console.log('  RPC not available, trying direct query...')
+
+    // Check if column exists first
+    const { data: colCheck } = await supabase
+      .from('users')
+      .select('*')
+      .limit(1)
+      .single()
+
+    if (colCheck && !('is_super_admin' in colCheck)) {
+      console.log('  Column does not exist. Need to add via Supabase Dashboard SQL Editor.')
+      console.log('  Run this SQL:')
+      console.log('    ALTER TABLE users ADD COLUMN is_super_admin BOOLEAN DEFAULT false;')
+    } else if (colCheck && 'is_super_admin' in colCheck) {
+      console.log('  ✅ Column already exists')
+    }
+  } else {
+    console.log('  ✅ Done')
+  }
+
+  // Step 2: Update demo users
+  console.log('\nStep 2: Setting up demo user roles...')
+
+  const demoUsers = [
+    { email: 'kaisa.herranen@upm.com', role: 'admin' },
+    { email: 'christian.torborg@sappi.com', role: 'admin' },
+    { email: 'tiia.aho@kemira.com', role: 'editor' },
+    { email: 'abdessamad.arbaoui@omya.com', role: 'editor' },
+  ]
+
+  for (const u of demoUsers) {
+    const { error } = await supabase
+      .from('users')
+      .update({ role: u.role })
+      .eq('email', u.email)
+
     if (error) {
-      console.error(`  ✗ Error: ${error.message}`);
-      
-      // Try alternative approach using query
-      const queryResult = await supabase.from('_migration_id_map').select('id').limit(0);
-      if (queryResult.error?.message?.includes('exec_sql')) {
-        console.log('\n⚠️  Cannot execute SQL via RPC. Please run the SQL manually:');
-        console.log('\nOption 1: Via Supabase Dashboard SQL Editor');
-        console.log('  Go to: https://supabase.com/dashboard/project/yrguoooxamecsjtkfqcw/sql');
-        console.log('  And run the contents of: fix-rls-policies.sql\n');
-        console.log('Option 2: Via psql');
-        console.log('  psql -h db.yrguoooxamecsjtkfqcw.supabase.co -p 5432 -d postgres -U postgres -f fix-rls-policies.sql\n');
-        return;
-      }
+      console.log(`  ❌ Failed to update ${u.email}:`, error.message)
     } else {
-      console.log('  ✓ Success');
+      console.log(`  ✅ ${u.email} -> ${u.role}`)
     }
   }
 
-  console.log('\n=== Verifying Policies ===\n');
+  // Step 3: Verify current state
+  console.log('\nStep 3: Verifying current state...')
 
-  // Verify by trying to read data
-  const { count: choicesCount } = await supabase
-    .from('choices')
-    .select('*', { count: 'exact', head: true });
+  const { data: users } = await supabase
+    .from('users')
+    .select('email, role, is_super_admin, company_id')
+    .in('email', demoUsers.map(u => u.email))
 
-  const { count: answersCount } = await supabase
-    .from('answers')
-    .select('*', { count: 'exact', head: true });
+  console.log('Demo users:')
+  users?.forEach(u => {
+    console.log(`  ${u.email}: role=${u.role}, super=${u.is_super_admin}, company=${u.company_id}`)
+  })
 
-  console.log(`Choices: ${choicesCount} rows accessible`);
-  console.log(`Answers: ${answersCount} rows accessible`);
+  // Check if is_super_admin column exists now
+  const { data: userCheck } = await supabase
+    .from('users')
+    .select('is_super_admin')
+    .limit(1)
+    .single()
 
-  console.log('\n✓ RLS policies applied successfully!');
-  console.log('\nNote: Test with an anonymous client to confirm public access works.');
+  if (userCheck && 'is_super_admin' in userCheck) {
+    console.log('\n✅ is_super_admin column exists')
+  } else {
+    console.log('\n❌ is_super_admin column STILL MISSING - run the SQL in Supabase Dashboard')
+  }
+
+  console.log('\n=== IMPORTANT ===')
+  console.log('The full RLS policy fix requires running SQL in the Supabase Dashboard.')
+  console.log('Go to: https://supabase.com/dashboard/project/yrguoooxamecsjtkfqcw/sql')
+  console.log('And run the contents of: web/supabase/migrations/20260130_fix_rls_for_trial.sql')
 }
 
-applyRLSFix();
+applyFix().catch(console.error)

@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Search, CheckCircle2, AlertTriangle, Loader2, Info, ExternalLink, Sparkles } from 'lucide-react'
-import { lookupCAS, checkRegulatoryStatus, validateCASChecksum, type ChemicalData, type RegulatoryFlags } from '@/lib/pubchem'
+import { lookupCAS, lookupByName, autocompleteChemical, checkRegulatoryStatus, validateCASChecksum, type ChemicalData, type RegulatoryFlags, type AutocompleteSuggestion } from '@/lib/pubchem'
 
 interface CASLookupProps {
   onSelect?: (data: ChemicalData) => void
@@ -341,13 +342,16 @@ export function InlineCASLookup({ value, onChange, onChemicalFound }: InlineCASL
   const [looking, setLooking] = useState(false)
   const [chemicalName, setChemicalName] = useState<string | null>(null)
   const [hasWarnings, setHasWarnings] = useState(false)
+  const [lastLookedUp, setLastLookedUp] = useState<string | null>(null)
 
-  const handleBlur = async () => {
-    if (!value.trim() || value === chemicalName) return
+  const doLookup = async () => {
+    const trimmedValue = value.trim()
+    if (!trimmedValue || trimmedValue === lastLookedUp) return
 
     setLooking(true)
+    setLastLookedUp(trimmedValue)
     try {
-      const data = await lookupCAS(value)
+      const data = await lookupCAS(trimmedValue)
       if (data) {
         setChemicalName(data.name)
         const flags = await checkRegulatoryStatus(data.cas, data.name)
@@ -355,38 +359,230 @@ export function InlineCASLookup({ value, onChange, onChemicalFound }: InlineCASL
         if (onChemicalFound) {
           onChemicalFound(data)
         }
+      } else {
+        setChemicalName(null)
       }
     } catch (err) {
       console.error('CAS lookup failed:', err)
+      setChemicalName(null)
     } finally {
       setLooking(false)
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      doLookup()
+    }
+  }
+
   return (
-    <div className="space-y-2">
-      <div className="flex gap-2 items-center">
+    <div className="space-y-1">
+      <div className="flex gap-1 items-center">
         <Input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onBlur={handleBlur}
-          placeholder="CAS Number"
-          className="font-mono"
+          onBlur={doLookup}
+          onKeyDown={handleKeyDown}
+          placeholder="e.g., 50-00-0"
+          className="h-8 text-sm font-mono"
         />
-        {looking && (
+        {looking ? (
           <Loader2 className="h-4 w-4 animate-spin text-emerald-600 flex-shrink-0" />
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            onClick={doLookup}
+            title="Lookup CAS number"
+          >
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </Button>
         )}
       </div>
       {chemicalName && (
-        <div className="flex items-center gap-2 text-sm animate-in fade-in slide-in-from-top-1 duration-200">
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
-          <span className="text-neutral-600 dark:text-neutral-400 truncate">{chemicalName}</span>
+        <div className="flex items-center gap-1.5 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+          <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+          <span className="text-muted-foreground truncate">{chemicalName}</span>
           {hasWarnings && (
-            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800 text-xs px-2 py-0.5">
-              Review Required
+            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800 text-xs px-1.5 py-0">
+              ⚠
             </Badge>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Inline Chemical Search - Autocomplete for chemical names with reverse lookup
+ */
+interface InlineChemicalSearchProps {
+  value: string
+  onChange: (value: string) => void
+  onChemicalFound?: (data: ChemicalData) => void
+  disabled?: boolean
+}
+
+export function InlineChemicalSearch({ value, onChange, onChemicalFound, disabled }: InlineChemicalSearchProps) {
+  const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [casNumber, setCasNumber] = useState<string | null>(null)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Update dropdown position when showing suggestions
+  useEffect(() => {
+    if (showSuggestions && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      })
+    }
+  }, [showSuggestions])
+
+  // Debounced autocomplete
+  const handleInputChange = (newValue: string) => {
+    onChange(newValue)
+    setCasNumber(null)
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    if (newValue.trim().length < 2) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true)
+      try {
+        const results = await autocompleteChemical(newValue)
+        setSuggestions(results)
+        setShowSuggestions(results.length > 0)
+      } catch (err) {
+        console.error('Autocomplete failed:', err)
+      } finally {
+        setLoading(false)
+      }
+    }, 300)
+  }
+
+  const handleSelectSuggestion = async (suggestion: AutocompleteSuggestion) => {
+    onChange(suggestion.name)
+    setShowSuggestions(false)
+    setSuggestions([])
+    setLoading(true)
+
+    try {
+      const data = await lookupByName(suggestion.name)
+      if (data) {
+        setCasNumber(data.cas)
+        if (onChemicalFound) {
+          onChemicalFound(data)
+        }
+      }
+    } catch (err) {
+      console.error('Lookup failed:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBlur = () => {
+    // Delay hiding suggestions to allow click to register
+    setTimeout(() => setShowSuggestions(false), 200)
+  }
+
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowSuggestions(false)
+    } else if (e.key === 'Enter' && value.trim()) {
+      e.preventDefault()
+      setShowSuggestions(false)
+      setLoading(true)
+      try {
+        const data = await lookupByName(value)
+        if (data) {
+          setCasNumber(data.cas)
+          onChange(data.name)
+          if (onChemicalFound) {
+            onChemicalFound(data)
+          }
+        }
+      } catch (err) {
+        console.error('Lookup failed:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <div className="flex gap-1 items-center">
+        <Input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          placeholder="Type chemical name..."
+          className="h-8 text-sm"
+          disabled={disabled}
+        />
+        {loading && (
+          <Loader2 className="h-4 w-4 animate-spin text-emerald-600 shrink-0" />
+        )}
+      </div>
+
+      {/* Autocomplete dropdown - rendered in portal to avoid overflow clipping */}
+      {showSuggestions && suggestions.length > 0 && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed z-[9999] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg max-h-48 overflow-y-auto"
+          style={{
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width,
+          }}
+        >
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
+              onMouseDown={(e) => {
+                e.preventDefault() // Prevent blur before click registers
+                handleSelectSuggestion(suggestion)
+              }}
+            >
+              <Search className="h-3 w-3 text-neutral-400 shrink-0" />
+              <span className="truncate">{suggestion.name}</span>
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+
+      {/* Show CAS number when found */}
+      {casNumber && (
+        <div className="flex items-center gap-1.5 text-xs mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+          <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+          <span className="text-muted-foreground font-mono">{casNumber}</span>
         </div>
       )}
     </div>

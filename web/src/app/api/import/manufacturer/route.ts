@@ -306,7 +306,6 @@ export async function POST(request: NextRequest) {
           .single()
         
         if (companyError || !newCompany) {
-          console.error('Company create error:', companyError)
           return NextResponse.json({ error: 'Failed to create supplier company' }, { status: 500 })
         }
         supplierCompanyId = newCompany.id
@@ -345,7 +344,7 @@ export async function POST(request: NextRequest) {
       
       const record: any = {
         sheet_id: newSheet.id,
-        question_id: answer.questionId,
+        parent_question_id: answer.questionId,
         company_id: supplierCompanyId,
         created_at: new Date().toISOString()
       }
@@ -364,8 +363,8 @@ export async function POST(request: NextRequest) {
     const batchSize = 100
     for (let i = 0; i < answersToInsert.length; i += batchSize) {
       const batch = answersToInsert.slice(i, i + batchSize)
-      console.log("Inserting batch:", batch.length); const { error } = await supabase.from('answers').insert(batch)
-      if (error) console.error("Answer insert error:", error); else inserted += batch.length
+      const { error } = await supabase.from('answers').insert(batch)
+      if (!error) inserted += batch.length
     }
     
     return NextResponse.json({

@@ -22,6 +22,7 @@ interface AnswerInput {
   value: string | number | boolean | null
   type: string
   clarification?: string
+  additional_notes?: string
   list_table_row_id?: string
   list_table_column_id?: string
 }
@@ -134,6 +135,7 @@ export async function POST(request: NextRequest) {
         value,
         type,
         clarification,
+        additional_notes,
         list_table_row_id,
         list_table_column_id,
       } = input
@@ -156,6 +158,10 @@ export async function POST(request: NextRequest) {
 
         if (clarification !== undefined) {
           answerData.clarification = clarification
+        }
+
+        if (additional_notes !== undefined) {
+          answerData.additional_notes = additional_notes
         }
 
         if (list_table_row_id) {

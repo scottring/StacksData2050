@@ -1,54 +1,100 @@
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
-import path from 'path'
-import { fileURLToPath } from 'url'
+dotenv.config()
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-dotenv.config({ path: path.join(__dirname, '.env') })
-
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 async function main() {
-  const sheetId = '1038e05e-f492-4bf3-a101-bb7593142bb1'
+  // Check Ecolabels section
+  const { data: ecoSection } = await supabase
+    .from('sections')
+    .select('id')
+    .eq('name', 'Ecolabels')
+    .single()
 
-  const { data: answers } = await supabase
-    .from('answers')
-    .select('id, parent_question_id, text_value')
-    .eq('sheet_id', sheetId)
+  console.log('=== ECOLABELS SUBSECTIONS ===')
+  const { data: ecoSubs } = await supabase
+    .from('subsections')
+    .select('id, name, order_number')
+    .eq('section_id', ecoSection!.id)
+    .order('order_number')
 
-  console.log('Total answers:', answers?.length)
-
-  // Count answers per question
-  const questionCounts = new Map()
-  answers?.forEach(a => {
-    const qid = a.parent_question_id || 'null'
-    questionCounts.set(qid, (questionCounts.get(qid) || 0) + 1)
+  ecoSubs?.forEach(s => {
+    console.log(`${s.order_number}. ${s.name}`)
+    console.log(`   ID: ${s.id}`)
   })
 
-  const duplicates = Array.from(questionCounts.entries()).filter(([_, count]) => count > 1)
+  // Check for duplicate questions by name
+  console.log('\n=== CHECKING FOR DUPLICATE QUESTIONS ===')
 
-  console.log('\nQuestions with multiple answers:', duplicates.length)
+  for (const sub of ecoSubs || []) {
+    const { data: questions } = await supabase
+      .from('questions')
+      .select('id, name, order_number')
+      .eq('subsection_id', sub.id)
+      .order('order_number')
 
-  if (duplicates.length > 0) {
-    console.log('\nDuplicate answers:')
-    duplicates.forEach(([qid, count]) => {
-      const shortQid = String(qid).substring(0, 8)
-      console.log(`  Question ${shortQid}...: ${count} answers`)
-
-      const dupes = answers?.filter(a => a.parent_question_id === qid)
-      dupes?.forEach(a => {
-        const shortId = a.id.substring(0, 8)
-        const shortVal = a.text_value?.substring(0, 40) || 'empty'
-        console.log(`    - ${shortId}...: ${shortVal}...`)
-      })
+    console.log(`\n${sub.name} (${questions?.length} questions):`)
+    questions?.forEach(q => {
+      console.log(`  ${q.order_number}. ${(q.name || '').substring(0, 50)}`)
     })
   }
 
-  // Count unique questions
-  console.log('\nUnique questions answered:', questionCounts.size)
+  // Check Biocides too
+  console.log('\n=== BIOCIDES SUBSECTIONS ===')
+  const { data: bioSection } = await supabase
+    .from('sections')
+    .select('id')
+    .eq('name', 'Biocides')
+    .single()
+
+  const { data: bioSubs } = await supabase
+    .from('subsections')
+    .select('id, name, order_number')
+    .eq('section_id', bioSection!.id)
+    .order('order_number')
+
+  bioSubs?.forEach(s => {
+    console.log(`${s.order_number}. ${s.name}`)
+  })
+
+  for (const sub of bioSubs || []) {
+    const { data: questions } = await supabase
+      .from('questions')
+      .select('id, name, order_number')
+      .eq('subsection_id', sub.id)
+      .order('order_number')
+
+    console.log(`\n${sub.name} (${questions?.length} questions):`)
+    questions?.forEach(q => {
+      console.log(`  ${q.order_number}. ${(q.name || '').substring(0, 50)}`)
+    })
+  }
+
+  // Check for any questions with duplicate names across the system
+  console.log('\n=== CHECKING FOR GLOBAL DUPLICATE QUESTION NAMES ===')
+  const { data: allQuestions } = await supabase
+    .from('questions')
+    .select('id, name, subsection_id')
+
+  const nameCount = new Map<string, number>()
+  allQuestions?.forEach(q => {
+    const name = q.name || ''
+    nameCount.set(name, (nameCount.get(name) || 0) + 1)
+  })
+
+  const duplicates = Array.from(nameCount.entries()).filter(([_, count]) => count > 1)
+  if (duplicates.length > 0) {
+    console.log('Found duplicate question names:')
+    duplicates.forEach(([name, count]) => {
+      console.log(`  "${name.substring(0, 50)}..." appears ${count} times`)
+    })
+  } else {
+    console.log('No duplicate question names found')
+  }
 }
 
-main()
+main().catch(console.error)

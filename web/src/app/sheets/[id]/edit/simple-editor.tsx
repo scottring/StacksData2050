@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +15,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle } from 'lucide-react'
+import { InlineCASLookup, InlineChemicalSearch } from '@/components/sheets/cas-lookup'
+import { InlineCommentButton } from '@/components/sheets/question-comments'
+import { InlineAttachmentButton } from '@/components/sheets/question-attachments'
 
 interface ViewAnswer {
   id: string
@@ -37,6 +40,7 @@ interface ViewAnswer {
   list_table_column_id: string | null
   list_table_column_name: string | null
   list_table_column_order: number | null
+  additional_notes: string | null
 }
 
 interface Choice {
@@ -51,6 +55,7 @@ interface ListTableColumn {
   order_number: number | null
   question_id: string | null
   response_type: string | null
+  choice_options: string[] | null
 }
 
 interface BranchingData {
@@ -145,6 +150,31 @@ export function SimpleSheetEditor({
   const [submitting, setSubmitting] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
   const [rejectionResponses, setRejectionResponses] = useState<Map<string, string>>(new Map())
+  const [additionalNotes, setAdditionalNotes] = useState<Map<string, string>>(() => {
+    // Load existing additional_notes from answers
+    const map = new Map()
+    answers.forEach(a => {
+      if (a.additional_notes && !a.list_table_row_id) {
+        map.set(a.question_id, a.additional_notes)
+      }
+    })
+    return map
+  })
+  const [showNotesField, setShowNotesField] = useState<Set<string>>(() => {
+    // Pre-show notes fields for questions that have existing notes
+    const set = new Set<string>()
+    answers.forEach(a => {
+      if (a.additional_notes && !a.list_table_row_id) {
+        set.add(a.question_id)
+      }
+    })
+    return set
+  })
+
+  // Autosave refs
+  const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const lastSavedValuesRef = useRef<string>('')
+  const isAutosavingRef = useRef(false)
 
   // Check if editing is allowed based on status
   // Locked when: submitted (waiting for review), approved, or completed
@@ -235,19 +265,27 @@ export function SimpleSheetEditor({
       if (!branching?.dependentNoShow || !branching?.parentQuestionId) {
         return false
       }
-      
+
       // Get the parent question's current answer
       const parentValue = localValues.get(branching.parentQuestionId)
-      if (!parentValue) {
-        // No answer yet - show the question (default behavior)
-        return false
+
+      // Check if there's an existing saved answer for the parent
+      const parentQuestion = sortedQuestions.find(([id]) => id === branching.parentQuestionId)
+      const savedParentAnswer = parentQuestion?.[1]?.answers?.[0]
+      const savedValue = savedParentAnswer ? getDisplayValue(savedParentAnswer) : null
+
+      // Use local value if available, otherwise use saved value
+      const answerValue = (parentValue?.value ?? savedValue)?.toString().toLowerCase()
+
+      // Hide dependent questions unless parent answered Yes/true
+      if (!answerValue) {
+        return true // No answer yet - hide by default
       }
-      
-      const answerValue = parentValue.value?.toString().toLowerCase()
-      // Hide if parent answered No or no or false
-      return answerValue === 'no' || answerValue === 'false' || answerValue === ''
+
+      // Show only if parent answered Yes or true
+      return !(answerValue === 'yes' || answerValue === 'true')
     }
-  }, [branchingData, localValues])
+  }, [branchingData, localValues, sortedQuestions])
 
   // Filter sortedQuestions to exclude hidden dependent questions
   const visibleQuestions = useMemo(() => {
@@ -284,6 +322,185 @@ export function SimpleSheetEditor({
     });
     return names;
   }, [sortedQuestions, questionSectionMap]);
+
+  // Compute display numbers for questions, with sub-numbers for dependent questions
+  const questionDisplayNumbers = useMemo(() => {
+    const numbers = new Map<string, string>()
+
+    // Track visual order per subsection (section.subsection -> current order)
+    const subsectionOrder = new Map<string, number>()
+    // Track sub-index for dependent questions per parent
+    const dependentSubIndex = new Map<string, number>()
+
+    sortedQuestions.forEach(([questionId, q]) => {
+      const branching = branchingData[questionId]
+      const sectionNum = q.section_sort_number
+      const subsectionNum = q.subsection_sort_number
+
+      if (!sectionNum || !subsectionNum) return
+
+      const subsectionKey = `${sectionNum}.${subsectionNum}`
+
+      if (branching?.dependentNoShow && branching?.parentQuestionId) {
+        // This is a dependent question - use parent's number + sub-index
+        const parentNumber = numbers.get(branching.parentQuestionId)
+        if (parentNumber) {
+          // Increment sub-index for this parent
+          const currentSubIndex = (dependentSubIndex.get(branching.parentQuestionId) || 0) + 1
+          dependentSubIndex.set(branching.parentQuestionId, currentSubIndex)
+          numbers.set(questionId, `${parentNumber}.${currentSubIndex}`)
+        }
+      } else {
+        // Non-dependent question - increment the visual order for this subsection
+        const currentOrder = (subsectionOrder.get(subsectionKey) || 0) + 1
+        subsectionOrder.set(subsectionKey, currentOrder)
+        const displayNumber = `${sectionNum}.${subsectionNum}.${currentOrder}`
+        numbers.set(questionId, displayNumber)
+      }
+    })
+
+    return numbers
+  }, [sortedQuestions, branchingData])
+
+  // Silent autosave function
+  const performAutosave = useCallback(async () => {
+    // Don't autosave if nothing has changed or if we're already saving
+    if ((localValues.size === 0 && additionalNotes.size === 0) || isAutosavingRef.current || saving) return
+
+    // Create a snapshot of current values to check for changes
+    const currentSnapshot = JSON.stringify({
+      values: Array.from(localValues.entries()),
+      notes: Array.from(additionalNotes.entries()),
+    })
+    if (currentSnapshot === lastSavedValuesRef.current) return
+
+    isAutosavingRef.current = true
+
+    try {
+      const answersToSave: any[] = []
+
+      localValues.forEach((data, key) => {
+        if (key.includes('|')) {
+          const [questionId, rowId, columnId] = key.split('|')
+          answersToSave.push({
+            question_id: questionId,
+            answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
+            value: data.value,
+            type: data.type === 'dropdown' ? 'text' : data.type,
+            list_table_row_id: rowId,
+            list_table_column_id: columnId,
+            is_new_row: rowId.startsWith('temp-'),
+          })
+        } else {
+          answersToSave.push({
+            question_id: key,
+            answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
+            value: data.value,
+            type: data.type === 'dropdown' ? 'text' : data.type,
+            additional_notes: additionalNotes.get(key) || null,
+          })
+        }
+      })
+
+      // Also save additional notes for questions that have them but weren't otherwise modified
+      additionalNotes.forEach((notes, questionId) => {
+        if (!answersToSave.some(a => a.question_id === questionId && !a.list_table_row_id)) {
+          answersToSave.push({
+            question_id: questionId,
+            additional_notes: notes,
+            type: 'text',
+          })
+        }
+      })
+
+      if (answersToSave.length === 0) return
+
+      const response = await fetch('/api/answers/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheet_id: sheetId,
+          answers: answersToSave,
+        }),
+      })
+
+      if (response.ok) {
+        lastSavedValuesRef.current = currentSnapshot
+        // Don't clear temp rows during autosave - they're still needed in UI
+        // They'll be cleared on page refresh or manual save
+        // Brief "saved" indicator
+        setSaveStatus('saved')
+        setTimeout(() => setSaveStatus('idle'), 1500)
+      }
+    } catch (error) {
+      // Silent fail for autosave - don't disrupt the user
+      console.error('Autosave error:', error)
+    } finally {
+      isAutosavingRef.current = false
+    }
+  }, [localValues, additionalNotes, saving, sheetId])
+
+  // Debounced autosave effect - triggers 2 seconds after last change
+  useEffect(() => {
+    if (!canEdit || (localValues.size === 0 && additionalNotes.size === 0)) return
+
+    // Clear existing timer
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current)
+    }
+
+    // Set new timer
+    autosaveTimerRef.current = setTimeout(() => {
+      performAutosave()
+    }, 2000)
+
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current)
+      }
+    }
+  }, [localValues, additionalNotes, canEdit, performAutosave])
+
+  // Save on page unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (localValues.size > 0 && canEdit) {
+        // Use sendBeacon for reliable save on page close
+        const answersToSave: any[] = []
+        localValues.forEach((data, key) => {
+          if (key.includes('|')) {
+            const [questionId, rowId, columnId] = key.split('|')
+            answersToSave.push({
+              question_id: questionId,
+              answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
+              value: data.value,
+              type: data.type === 'dropdown' ? 'text' : data.type,
+              list_table_row_id: rowId,
+              list_table_column_id: columnId,
+              is_new_row: rowId.startsWith('temp-'),
+            })
+          } else {
+            answersToSave.push({
+              question_id: key,
+              answer_id: data.answerId?.startsWith('placeholder-') ? undefined : data.answerId,
+              value: data.value,
+              type: data.type === 'dropdown' ? 'text' : data.type,
+            })
+          }
+        })
+
+        if (answersToSave.length > 0) {
+          navigator.sendBeacon(
+            '/api/answers/batch',
+            JSON.stringify({ sheet_id: sheetId, answers: answersToSave })
+          )
+        }
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [localValues, canEdit, sheetId])
 
   const handleValueChange = (questionId: string, value: any, type: string, answerId?: string) => {
     setLocalValues(prev => {
@@ -390,8 +607,8 @@ export function SimpleSheetEditor({
       }
 
       setSaveStatus('saved')
-      // Clear temp rows after successful save (they now have real IDs)
-      setAddedRows(new Map())
+      // Keep temp rows visible - they're saved but still needed in UI
+      // Page refresh will show the real IDs from the database
       setTimeout(() => setSaveStatus('idle'), 2000)
     } catch (error) {
       console.error('Save error:', error)
@@ -608,6 +825,162 @@ export function SimpleSheetEditor({
     )
   }
 
+  // Helper function to detect CAS Number columns
+  function isCASColumn(name: string): boolean {
+    const lower = name.toLowerCase()
+    return lower.includes('cas number') ||
+           lower.includes('cas registry') ||
+           lower.includes('cas no') ||
+           lower === 'cas'
+  }
+
+  // Helper function to detect Chemical Name columns
+  function isChemicalNameColumn(name: string): boolean {
+    const lower = name.toLowerCase()
+    return (lower.includes('chemical') && lower.includes('name')) ||
+           (lower.includes('substance') && lower.includes('name')) ||
+           lower === 'chemical name' ||
+           lower === 'substance name' ||
+           lower === 'chemical' ||
+           lower === 'substance'
+  }
+
+  // Render a smart cell based on column type
+  function renderListTableCell(
+    questionId: string,
+    rowId: string,
+    col: { id: string; name: string; order: number },
+    tableColumns: ListTableColumn[],
+    displayValue: string,
+    answerId?: string
+  ) {
+    // Find the full column definition to get response_type and choice_options
+    const columnDef = tableColumns.find(c => c.id === col.id)
+    const responseType = columnDef?.response_type?.toLowerCase()
+    const choiceOptions = columnDef?.choice_options
+
+    // Number input for concentration columns
+    if (responseType === 'number') {
+      return (
+        <Input
+          type="number"
+          step="0.001"
+          min="0"
+          value={displayValue}
+          onChange={(e) => handleListTableChange(
+            questionId,
+            rowId,
+            col.id,
+            e.target.value,
+            'number',
+            answerId
+          )}
+          className="h-8 text-sm"
+          disabled={!canEdit}
+        />
+      )
+    }
+
+    // Dropdown for units columns
+    if (responseType === 'dropdown' && choiceOptions && choiceOptions.length > 0) {
+      return (
+        <select
+          value={displayValue}
+          onChange={(e) => handleListTableChange(
+            questionId,
+            rowId,
+            col.id,
+            e.target.value,
+            'text',
+            answerId
+          )}
+          disabled={!canEdit}
+          className="h-8 w-full text-sm rounded-md border border-input bg-background px-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <option value="">Select...</option>
+          {choiceOptions.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+      )
+    }
+
+    // CAS Number lookup
+    if (isCASColumn(col.name)) {
+      return (
+        <InlineCASLookup
+          value={displayValue}
+          onChange={(value) => handleListTableChange(
+            questionId,
+            rowId,
+            col.id,
+            value,
+            'text',
+            answerId
+          )}
+          onChemicalFound={(data) => {
+            // Auto-fill chemical name column if empty
+            const chemicalNameCol = tableColumns.find(c => isChemicalNameColumn(c.name))
+            if (chemicalNameCol && chemicalNameCol.id !== col.id) {
+              const nameKey = `${questionId}|${rowId}|${chemicalNameCol.id}`
+              const existingValue = localValues.get(nameKey)?.value
+              if (!existingValue) {
+                handleListTableChange(questionId, rowId, chemicalNameCol.id, data.name, 'text')
+              }
+            }
+          }}
+        />
+      )
+    }
+
+    // Chemical Name with autocomplete and reverse lookup
+    if (isChemicalNameColumn(col.name)) {
+      return (
+        <InlineChemicalSearch
+          value={displayValue}
+          onChange={(value) => handleListTableChange(
+            questionId,
+            rowId,
+            col.id,
+            value,
+            'text',
+            answerId
+          )}
+          onChemicalFound={(data) => {
+            // Auto-fill CAS number column if found and empty
+            const casCol = tableColumns.find(c => isCASColumn(c.name))
+            if (casCol && data.cas) {
+              const casKey = `${questionId}|${rowId}|${casCol.id}`
+              const existingCas = localValues.get(casKey)?.value
+              if (!existingCas) {
+                handleListTableChange(questionId, rowId, casCol.id, data.cas, 'text')
+              }
+            }
+          }}
+          disabled={!canEdit}
+        />
+      )
+    }
+
+    // Default: text input
+    return (
+      <Input
+        value={displayValue}
+        onChange={(e) => handleListTableChange(
+          questionId,
+          rowId,
+          col.id,
+          e.target.value,
+          'text',
+          answerId
+        )}
+        className="h-8 text-sm"
+        placeholder="Enter value..."
+        disabled={!canEdit}
+      />
+    )
+  }
+
   function renderListTable(questionId: string, questionAnswers: ViewAnswer[]) {
     // Get columns from the listTableColumns prop
     const tableColumns = columnsByQuestionId.get(questionId) || []
@@ -678,19 +1051,7 @@ export function SimpleSheetEditor({
 
                     return (
                       <td key={col.id} className="border px-2 py-1">
-                        <Input
-                          value={displayValue}
-                          onChange={(e) => handleListTableChange(
-                            questionId,
-                            rowId,
-                            col.id,
-                            e.target.value,
-                            'text',
-                            answer?.id
-                          )}
-                          className="h-8 text-sm"
-                          disabled={!canEdit}
-                        />
+                        {renderListTableCell(questionId, rowId, col, tableColumns, displayValue, answer?.id)}
                       </td>
                     )
                   })}
@@ -718,20 +1079,7 @@ export function SimpleSheetEditor({
 
                     return (
                       <td key={col.id} className="border px-2 py-1">
-                        <Input
-                          value={displayValue}
-                          onChange={(e) => handleListTableChange(
-                            questionId,
-                            rowId,
-                            col.id,
-                            e.target.value,
-                            'text',
-                            undefined
-                          )}
-                          className="h-8 text-sm"
-                          placeholder="Enter value..."
-                          disabled={!canEdit}
-                        />
+                        {renderListTableCell(questionId, rowId, col, tableColumns, displayValue, undefined)}
                       </td>
                     )
                   })}
@@ -790,15 +1138,19 @@ export function SimpleSheetEditor({
           <Badge variant="outline">{sheetStatus || 'Draft'}</Badge>
           {canEdit ? (
             <>
-              <Button onClick={handleSave} disabled={saving}>
+              {/* Subtle autosave indicator */}
+              {saveStatus === 'saved' && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1 animate-in fade-in duration-300">
+                  <Check className="h-3 w-3 text-green-600" />
+                  Saved
+                </span>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving} className="text-muted-foreground">
                 {saving ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : saveStatus === 'saved' ? (
-                  <Check className="h-4 w-4 mr-2 text-green-600" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-4 w-4" />
                 )}
-                {saving ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save'}
               </Button>
               <Button onClick={handleSubmit} disabled={saving || submitting} variant="default" className="bg-green-600 hover:bg-green-700">
                 {submitting ? (
@@ -886,9 +1238,9 @@ export function SimpleSheetEditor({
                       {/* Questions in this subsection */}
                       <div className="space-y-4 pl-2">
                       {questions.map(([questionId, q]) => {
-            const questionNumber = q.section_sort_number && q.subsection_sort_number && q.question_order
-              ? `${q.section_sort_number}.${q.subsection_sort_number}.${q.question_order}`
-              : null
+            const questionNumber = questionDisplayNumbers.get(questionId) || null
+            const branching = branchingData[questionId]
+            const isDependent = branching?.dependentNoShow && branching?.parentQuestionId
 
             const isListTable = q.response_type?.toLowerCase() === 'list table'
             const questionChoices = choicesByQuestion.get(questionId) || []
@@ -898,15 +1250,21 @@ export function SimpleSheetEditor({
             const currentValue = localData?.value ?? (singleAnswer ? getDisplayValue(singleAnswer) : '')
 
             return (
-              <Card key={questionId}>
+              <Card key={questionId} className={isDependent ? 'ml-6 border-l-4 border-l-primary/40 bg-muted/20' : ''}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium flex items-start gap-2">
-                    {questionNumber && (
-                      <Badge variant="secondary" className="shrink-0">{questionNumber}</Badge>
-                    )}
-                    <span>{q.question_name || q.question_content || 'Unnamed question'}</span>
-                  </CardTitle>
-                  {q.question_content && q.question_name && (
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-base font-medium flex items-start gap-2 flex-1">
+                      {questionNumber && (
+                        <Badge variant="secondary" className="shrink-0">{questionNumber}</Badge>
+                      )}
+                      <span>{q.question_name || q.question_content || 'Unnamed question'}</span>
+                    </CardTitle>
+                    <div className="flex items-center gap-1">
+                      <InlineAttachmentButton sheetId={sheetId} questionId={questionId} />
+                      <InlineCommentButton sheetId={sheetId} questionId={questionId} />
+                    </div>
+                  </div>
+                  {q.question_content && q.question_name && q.question_content !== q.question_name && (
                     <p className="text-sm text-muted-foreground">{q.question_content}</p>
                   )}
                   {getRejectionRounds(rejections, questionId).length > 0 && (
@@ -960,6 +1318,35 @@ export function SimpleSheetEditor({
                       localData?.answerId || singleAnswer?.id,
                       singleAnswer?.choice_content
                     )
+                  )}
+
+                  {/* Optional additional notes for Ecolabels section (section 2) */}
+                  {q.section_sort_number === 2 && !isListTable && (
+                    <div className="mt-3">
+                      {showNotesField.has(questionId) ? (
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium text-muted-foreground">
+                            Additional comments or limitations (optional)
+                          </label>
+                          <textarea
+                            className="w-full min-h-[60px] rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            placeholder="Please specify applicable limitations and/or provide additional comment, if any."
+                            value={additionalNotes.get(questionId) || ''}
+                            onChange={(e) => setAdditionalNotes(prev => new Map(prev).set(questionId, e.target.value))}
+                            disabled={!canEdit}
+                          />
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowNotesField(prev => new Set(prev).add(questionId))}
+                          className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+                          disabled={!canEdit}
+                        >
+                          + Add comment or specify limitations
+                        </button>
+                      )}
+                    </div>
                   )}
                 </CardContent>
               </Card>

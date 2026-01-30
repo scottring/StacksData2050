@@ -34,59 +34,29 @@ export async function lookupCAS(casNumber: string): Promise<ChemicalData | null>
     const cleanCAS = casNumber.trim().replace(/\s+/g, '')
 
     // Validate CAS format (xxx-xx-x or xxxxxx-xx-x)
+    // Return null silently for invalid formats (don't throw - user may still be typing)
     if (!/^\d{2,7}-\d{2}-\d$/.test(cleanCAS)) {
-      throw new Error('Invalid CAS number format')
+      return null
     }
 
-    // PubChem PUG REST API endpoint
-    // Search by name (CAS number as name) to get compound ID
-    const searchUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(cleanCAS)}/cids/JSON`
+    // Use our API route to avoid CORS issues with PubChem
+    const url = `/api/pubchem/lookup?cas=${encodeURIComponent(cleanCAS)}`
+    const response = await fetch(url)
 
-    const searchResponse = await fetch(searchUrl)
-    if (!searchResponse.ok) {
+    if (!response.ok) {
       console.warn(`PubChem search failed for CAS ${cleanCAS}`)
       return null
     }
 
-    const searchData = await searchResponse.json()
-    const cid = searchData?.IdentifierList?.CID?.[0]
-
-    if (!cid) {
+    const data = await response.json()
+    if (!data) {
       return null
     }
 
-    // Fetch detailed compound data
-    const compoundUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/property/MolecularFormula,MolecularWeight,IUPACName,InChIKey/JSON`
-    const synonymsUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/synonyms/JSON`
-
-    const [compoundResponse, synonymsResponse] = await Promise.all([
-      fetch(compoundUrl),
-      fetch(synonymsUrl)
-    ])
-
-    if (!compoundResponse.ok) {
-      console.warn(`Failed to fetch compound data for CID ${cid}`)
-      return null
-    }
-
-    const compoundData = await compoundResponse.json()
-    const synonymsData = synonymsResponse.ok ? await synonymsResponse.json() : null
-
-    const properties = compoundData?.PropertyTable?.Properties?.[0]
-    const synonyms = synonymsData?.InformationList?.Information?.[0]?.Synonym || []
-
-    // Find the most common/preferred name (usually first synonym that's not CAS)
-    const preferredName = synonyms.find((s: string) => !s.match(/^\d{2,7}-\d{2}-\d$/)) || synonyms[0]
-
+    // Ensure we return the clean CAS that was requested
     return {
+      ...data,
       cas: cleanCAS,
-      name: preferredName || 'Unknown',
-      molecularFormula: properties?.MolecularFormula,
-      molecularWeight: properties?.MolecularWeight,
-      iupacName: properties?.IUPACName,
-      synonyms: synonyms.slice(0, 10), // First 10 synonyms
-      inchiKey: properties?.InChIKey,
-      pubchemCid: cid,
     }
   } catch (error) {
     console.error('Error looking up CAS number:', error)
@@ -213,4 +183,59 @@ export function validateCASChecksum(cas: string): boolean {
   })
 
   return (sum % 10) === checkDigit
+}
+
+/**
+ * Autocomplete chemical names using PubChem API
+ * Returns up to 10 suggestions
+ */
+export interface AutocompleteSuggestion {
+  name: string
+  cid: number
+}
+
+export async function autocompleteChemical(query: string): Promise<AutocompleteSuggestion[]> {
+  try {
+    const trimmed = query.trim()
+    if (trimmed.length < 2) return []
+
+    // Use our API route to avoid CORS issues with PubChem
+    const url = `/api/pubchem/autocomplete?q=${encodeURIComponent(trimmed)}`
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      return []
+    }
+
+    const suggestions = await response.json()
+    return suggestions || []
+  } catch (error) {
+    console.error('Autocomplete error:', error)
+    return []
+  }
+}
+
+/**
+ * Lookup chemical by name and return full data including CAS number
+ */
+export async function lookupByName(chemicalName: string): Promise<ChemicalData | null> {
+  try {
+    const trimmed = chemicalName.trim()
+    if (!trimmed) return null
+
+    // Use our API route to avoid CORS issues with PubChem
+    const url = `/api/pubchem/lookup?name=${encodeURIComponent(trimmed)}`
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      console.warn('Lookup API failed:', response.status)
+      return null
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Error looking up chemical by name:', error)
+    return null
+  }
 }

@@ -17,6 +17,7 @@ import {
   ShieldAlert,
   Inbox,
   Send,
+  FileUp,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -42,6 +43,11 @@ const customerNavItems: NavItem[] = [
     title: 'Outgoing Requests',
     href: '/requests/outgoing',
     icon: Send,
+  },
+  {
+    title: 'Import Workbooks',
+    href: '/import',
+    icon: FileUp,
   },
 ]
 

@@ -172,11 +172,12 @@ export default async function SheetViewPage({
       const aSection = a.section_sort_number ?? 999
       const bSection = b.section_sort_number ?? 999
       if (aSection !== bSection) return aSection - bSection
-      
+
       const aSubsection = a.subsection_sort_number ?? 999
       const bSubsection = b.subsection_sort_number ?? 999
       if (aSubsection !== bSubsection) return aSubsection - bSubsection
-      
+
+      return 0
     })
 
   // Group answers by question

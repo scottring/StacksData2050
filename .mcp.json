@@ -13,7 +13,10 @@
     },
     "supabase": {
       "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=yrguoooxamecsjtkfqcw"
+      "url": "https://mcp.supabase.com/mcp?project_ref=yrguoooxamecsjtkfqcw",
+      "headers": {
+        "Authorization": "Bearer sbp_e9654d869f882a9b30e9e830eda39535f5cc32e8"
+      }
     }
   }
 }

@@ -59,7 +59,7 @@ export default async function SheetEditPage({
   // Fetch ALL list_table_columns (linked via question_id)
   const { data: listTableColumns } = await supabase
     .from("list_table_columns")
-    .select("id, name, order_number, question_id, response_type")
+    .select("id, name, order_number, question_id, response_type, choice_options")
     .not("question_id", "is", null)
     .order("question_id")
     .order("order_number")
@@ -141,16 +141,15 @@ export default async function SheetEditPage({
 
   // Build lookup map and add computed sort values
   const questionSectionMap: Record<string, { sectionName: string; subsectionName: string; sectionId: string }> = {}
-  // Build branching data: for dependent questions, find their parent (first question in same subsection)
-  const branchingData: Record<string, { 
+  // Build branching data: for dependent questions, find their parent (previous non-dependent question)
+  const branchingData: Record<string, {
     dependentNoShow: boolean
-    parentQuestionId: string | null 
+    parentQuestionId: string | null
   }> = {}
-  
-  // First, find the first question in each subsection (by order_number)
-  const subsectionFirstQuestion = new Map<string, string>()
+
+  // Group questions by subsection and sort by order_number
   const questionsBySubsection = new Map<string, any[]>()
-  
+
   questionsWithSections.forEach((q: any) => {
     if (q.subsection_id) {
       if (!questionsBySubsection.has(q.subsection_id)) {
@@ -159,26 +158,28 @@ export default async function SheetEditPage({
       questionsBySubsection.get(q.subsection_id)!.push(q)
     }
   })
-  
-  // For each subsection, find the first question (lowest order_number)
-  questionsBySubsection.forEach((questions, subsectionId) => {
+
+  // For each subsection, link dependent questions to their immediate parent (previous non-dependent question)
+  questionsBySubsection.forEach((questions) => {
+    // Sort by order_number
     const sorted = questions.sort((a, b) => (a.order_number || 999) - (b.order_number || 999))
-    if (sorted.length > 0) {
-      subsectionFirstQuestion.set(subsectionId, sorted[0].id)
-    }
-  })
-  
-  // Build branchingData for dependent questions
-  questionsWithSections.forEach((q: any) => {
-    if (q.dependent_no_show && q.subsection_id) {
-      const parentId = subsectionFirstQuestion.get(q.subsection_id)
-      if (parentId && parentId !== q.id) {
-        branchingData[q.id] = {
-          dependentNoShow: true,
-          parentQuestionId: parentId
+
+    let lastNonDependentId: string | null = null
+
+    sorted.forEach((q) => {
+      if (q.dependent_no_show) {
+        // This is a dependent question - link to the last non-dependent question
+        if (lastNonDependentId) {
+          branchingData[q.id] = {
+            dependentNoShow: true,
+            parentQuestionId: lastNonDependentId
+          }
         }
+      } else {
+        // This is a non-dependent question - update the tracker
+        lastNonDependentId = q.id
       }
-    }
+    })
   })
 
 
@@ -238,6 +239,7 @@ export default async function SheetEditPage({
       list_table_column_id: null,
       list_table_column_name: null,
       list_table_column_order: null,
+      additional_notes: null,
     }))
 
   // Combine existing answers with placeholders
