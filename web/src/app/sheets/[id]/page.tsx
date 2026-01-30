@@ -346,7 +346,7 @@ export default async function SheetViewPage({
               {/* Section Header */}
               <div className="sticky top-0 bg-background z-10 py-3 border-b border-primary/20">
                 <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-                  <span className="bg-primary text-primary-foreground px-2 py-0.5 rounded text-sm">{sectionNum}</span>
+                  {sectionNum > 0 && <span className="bg-primary text-primary-foreground px-2 py-0.5 rounded text-sm">{sectionNum}</span>}
                   {sectionNames.get(sectionNum) || `Section ${sectionNum}`}
                 </h2>
               </div>
@@ -367,9 +367,15 @@ export default async function SheetViewPage({
                     {/* Questions */}
                     <div className="space-y-4 pl-2">
                       {questions.map(([questionId, q]) => {
-                        const questionNumber = q.section_sort_number && q.subsection_sort_number && q.question_order
-                          ? `${q.section_sort_number}.${q.subsection_sort_number}.${q.question_order}`
-                          : null
+const questionNumber = (() => {
+                          const s = q.section_sort_number
+                          const ss = q.subsection_sort_number
+                          const o = q.question_order
+                          if (s && ss && o) return `${s}.${ss}.${o}`
+                          if (s && o) return `${s}.${o}`
+                          if (o) return String(o)
+                          return null
+                        })()
                         const isListTable = q.response_type?.toLowerCase() === 'list table'
                         const singleAnswer = q.answers[0]
 
@@ -382,7 +388,7 @@ export default async function SheetViewPage({
                                 )}
                                 <span>{q.question_name || q.question_content || 'Unnamed question'}</span>
                               </CardTitle>
-                              {q.question_content && q.question_name && (
+                              {q.question_content && q.question_name && q.question_content !== q.question_name && (
                                 <p className="text-sm text-muted-foreground">{q.question_content}</p>
                               )}
                             </CardHeader>
