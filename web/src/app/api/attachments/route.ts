@@ -40,13 +40,7 @@ export async function GET(request: NextRequest) {
       file_size,
       mime_type,
       created_at,
-      user_id,
-      users!question_attachments_user_id_fkey (
-        id,
-        email,
-        first_name,
-        last_name
-      )
+      user_id
     `)
     .eq('sheet_id', sheetId)
     .order('created_at', { ascending: false })
@@ -155,13 +149,7 @@ export async function POST(request: NextRequest) {
       file_size,
       mime_type,
       created_at,
-      user_id,
-      users!question_attachments_user_id_fkey (
-        id,
-        email,
-        first_name,
-        last_name
-      )
+      user_id
     `)
     .single()
 

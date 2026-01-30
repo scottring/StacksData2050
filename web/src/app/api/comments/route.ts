@@ -20,17 +20,7 @@ export async function GET(request: NextRequest) {
       content,
       created_at,
       updated_at,
-      user_id,
-      users!question_comments_user_id_fkey (
-        id,
-        email,
-        first_name,
-        last_name,
-        company_id,
-        companies!users_company_id_fkey (
-          name
-        )
-      )
+      user_id
     `)
     .eq('sheet_id', sheetId)
     .order('created_at', { ascending: true })
@@ -82,17 +72,7 @@ export async function POST(request: NextRequest) {
       question_id,
       content,
       created_at,
-      user_id,
-      users!question_comments_user_id_fkey (
-        id,
-        email,
-        first_name,
-        last_name,
-        company_id,
-        companies!users_company_id_fkey (
-          name
-        )
-      )
+      user_id
     `)
     .single()
 
