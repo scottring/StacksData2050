@@ -82,9 +82,6 @@ export default async function SheetViewPage({
     .from('sheet_answers_display')
     .select('*')
     .eq('sheet_id', sheetId)
-    .order('section_sort_number')
-    .order('subsection_sort_number')
-    .order('order_number')
 
   // Fetch questions with their section/subsection info (only tagged ones)
   let questionsWithSections: any[] = []
@@ -180,7 +177,6 @@ export default async function SheetViewPage({
       const bSubsection = b.subsection_sort_number ?? 999
       if (aSubsection !== bSubsection) return aSubsection - bSubsection
       
-      return (a.question_order ?? a.order_number ?? 999) - (b.question_order ?? b.order_number ?? 999)
     })
 
   // Group answers by question
