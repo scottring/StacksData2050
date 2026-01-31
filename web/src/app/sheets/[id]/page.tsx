@@ -313,6 +313,87 @@ export default async function SheetViewPage({
   const companyName = (sheet as any).companies?.name || 'Unknown'
   const sortedSections = Array.from(sections.entries()).sort((a, b) => a[0] - b[0])
 
+  // === Fetch custom questions for this sheet ===
+  // First, find the request associated with this sheet
+  const { data: request } = await supabase
+    .from('requests')
+    .select('id, requestor_id')
+    .eq('sheet_id', sheetId)
+    .single()
+
+  let customQuestions: Array<{
+    id: string
+    question_text: string
+    response_type: string
+    choices: string[] | null
+    hint: string | null
+    required: boolean
+    sort_order: number
+  }> = []
+  let customAnswers: Array<{
+    id: string
+    company_question_id: string
+    value: string | null
+  }> = []
+  let requestingCompanyName = ''
+
+  if (request) {
+    // Fetch custom questions linked to this request
+    const { data: requestCustomQuestions } = await supabase
+      .from('request_custom_questions')
+      .select(`
+        id,
+        sort_order,
+        company_question_id,
+        company_questions (
+          id,
+          company_id,
+          question_text,
+          response_type,
+          choices,
+          hint,
+          required
+        )
+      `)
+      .eq('request_id', request.id)
+      .order('sort_order')
+
+    if (requestCustomQuestions) {
+      customQuestions = requestCustomQuestions
+        .filter(rcq => rcq.company_questions)
+        .map(rcq => ({
+          id: (rcq.company_questions as any).id,
+          question_text: (rcq.company_questions as any).question_text,
+          response_type: (rcq.company_questions as any).response_type,
+          choices: (rcq.company_questions as any).choices,
+          hint: (rcq.company_questions as any).hint,
+          required: (rcq.company_questions as any).required,
+          sort_order: rcq.sort_order
+        }))
+    }
+
+    // Fetch existing custom answers for this sheet
+    const { data: existingCustomAnswers } = await supabase
+      .from('custom_question_answers')
+      .select('id, company_question_id, value')
+      .eq('sheet_id', sheetId)
+
+    customAnswers = existingCustomAnswers || []
+
+    // Get the requesting company name for the header
+    if (request.requestor_id) {
+      const { data: requestingCompany } = await supabase
+        .from('companies')
+        .select('name')
+        .eq('id', request.requestor_id)
+        .single()
+      requestingCompanyName = requestingCompany?.name || ''
+    }
+  }
+
+  // Create a map for quick answer lookup
+  const customAnswerMap = new Map(customAnswers.map(ca => [ca.company_question_id, ca.value]))
+
   return (
     <AppLayout title={sheet.name}>
       <div className="space-y-6">
@@ -412,11 +493,59 @@ const questionNumber = (() => {
           ))}
         </div>
 
-        {sortedQuestions.length === 0 && (
+        {sortedQuestions.length === 0 && customQuestions.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            {tagIds.length === 0 
+            {tagIds.length === 0
               ? 'No tags selected for this sheet. Add tags to see questions.'
               : 'No questions found for the selected tags.'}
+          </div>
+        )}
+
+        {/* Custom Questions Section */}
+        {customQuestions.length > 0 && (
+          <div className="space-y-4 mt-8">
+            <div className="sticky top-0 bg-background z-10 py-3 border-b border-purple-300/50">
+              <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2">
+                <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-sm">+</span>
+                Additional Questions from {requestingCompanyName || 'Customer'}
+              </h2>
+            </div>
+
+            <div className="space-y-4 pl-2">
+              {customQuestions.map((cq, index) => {
+                const answer = customAnswerMap.get(cq.id)
+                let displayValue = answer || ''
+
+                // Format yes/no values for display
+                if (cq.response_type === 'yes_no' && answer) {
+                  displayValue = answer === 'true' ? 'Yes' : answer === 'false' ? 'No' : answer
+                }
+
+                return (
+                  <Card key={cq.id} className="border-purple-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base font-medium flex items-start gap-2">
+                        <Badge variant="secondary" className="shrink-0 bg-purple-100 text-purple-800">
+                          {index + 1}
+                        </Badge>
+                        <span>
+                          {cq.question_text}
+                          {cq.required && <span className="text-red-500 ml-1">*</span>}
+                        </span>
+                      </CardTitle>
+                      {cq.hint && (
+                        <p className="text-sm text-muted-foreground">{cq.hint}</p>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <div className="bg-muted/50 rounded px-3 py-2">
+                        {displayValue || <span className="text-muted-foreground italic">No answer</span>}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>

@@ -22,6 +22,7 @@ import {
   Cloud,
   Database,
   Zap,
+  MessageSquarePlus,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -98,6 +99,31 @@ export default function SettingsPage() {
               <Badge className="bg-green-100 text-green-700">Verified</Badge>
               <span className="text-sm text-muted-foreground">Association member since 2021</span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Custom Questions */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <MessageSquarePlus className="h-5 w-5 text-muted-foreground" />
+              <CardTitle>Custom Questions</CardTitle>
+            </div>
+            <CardDescription>
+              Create custom questions to include in supplier requests
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add your own questions to gather specific information from suppliers
+              alongside the standard questionnaire.
+            </p>
+            <Link href="/settings/questions">
+              <Button variant="outline" className="w-full">
+                Manage Custom Questions
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 

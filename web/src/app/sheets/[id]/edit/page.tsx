@@ -266,6 +266,72 @@ export default async function SheetEditPage({
 
   const companyName = (sheet as any).companies?.name || "Unknown"
 
+  // === Fetch custom questions for this sheet ===
+  // First, find the request associated with this sheet
+  const { data: request } = await supabase
+    .from("requests")
+    .select("id, requestor_id")
+    .eq("sheet_id", sheetId)
+    .single()
+
+  let customQuestions: any[] = []
+  let customAnswers: any[] = []
+  let requestingCompanyName = ""
+
+  if (request) {
+    // Fetch custom questions linked to this request
+    const { data: requestCustomQuestions } = await supabase
+      .from("request_custom_questions")
+      .select(`
+        id,
+        sort_order,
+        company_question_id,
+        company_questions (
+          id,
+          company_id,
+          question_text,
+          response_type,
+          choices,
+          hint,
+          required
+        )
+      `)
+      .eq("request_id", request.id)
+      .order("sort_order")
+
+    if (requestCustomQuestions) {
+      customQuestions = requestCustomQuestions
+        .filter(rcq => rcq.company_questions)
+        .map(rcq => ({
+          id: (rcq.company_questions as any).id,
+          question_text: (rcq.company_questions as any).question_text,
+          response_type: (rcq.company_questions as any).response_type,
+          choices: (rcq.company_questions as any).choices,
+          hint: (rcq.company_questions as any).hint,
+          required: (rcq.company_questions as any).required,
+          sort_order: rcq.sort_order
+        }))
+    }
+
+    // Fetch existing custom answers for this sheet
+    const { data: existingCustomAnswers } = await supabase
+      .from("custom_question_answers")
+      .select("id, company_question_id, value")
+      .eq("sheet_id", sheetId)
+
+    customAnswers = existingCustomAnswers || []
+
+    // Get the requesting company name for the header
+    if (request.requestor_id) {
+      const { data: requestingCompany } = await supabase
+        .from("companies")
+        .select("name")
+        .eq("id", request.requestor_id)
+        .single()
+      requestingCompanyName = requestingCompany?.name || ""
+    }
+  }
+
   return (
     <SimpleSheetEditor
       sheetId={sheetId}
@@ -278,6 +344,9 @@ export default async function SheetEditPage({
       listTableColumns={listTableColumns || []}
       branchingData={branchingData}
       rejections={rejections}
+      customQuestions={customQuestions}
+      customAnswers={customAnswers}
+      requestingCompanyName={requestingCompanyName}
     />
   )
 }

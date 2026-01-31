@@ -19,7 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle2 } from 'lucide-react'
+import { Loader2, CheckCircle2, Settings } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
 import { TagMultiSelect } from '@/components/ui/tag-multi-select'
 type Company = Database['public']['Tables']['companies']['Row']
@@ -29,6 +31,12 @@ interface TagOption {
   name: string | null
   description: string | null
 }
+interface CompanyQuestion {
+  id: string
+  question_text: string
+  response_type: 'text' | 'yes_no' | 'choice'
+  required: boolean
+}
 interface RequestSheetDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -36,6 +44,7 @@ interface RequestSheetDialogProps {
 export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogProps) {
   const [suppliers, setSuppliers] = useState<Company[]>([])
   const [tags, setTags] = useState<TagOption[]>([])
+  const [customQuestions, setCustomQuestions] = useState<CompanyQuestion[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -44,6 +53,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     productName: '',
     supplierId: '',
     selectedTags: [] as string[],
+    selectedCustomQuestions: [] as string[],
     newSupplierEmail: '',
     newSupplierCompanyName: '',
   })
@@ -66,8 +76,14 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       .from('tags')
       .select('id, name, description')
       .order('name')
+    // Fetch custom questions for this company
+    const customQuestionsResponse = await fetch('/api/company-questions')
+    const customQuestionsData = customQuestionsResponse.ok
+      ? await customQuestionsResponse.json()
+      : []
     setSuppliers(supplierData || [])
     setTags(tagData || [])
+    setCustomQuestions(customQuestionsData || [])
     setLoading(false)
   }
   async function handleSubmit(e: React.FormEvent) {
@@ -186,6 +202,20 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           console.error('Error linking tags to sheet:', sheetTagError)
         }
       }
+      // Link selected custom questions to request
+      if (formData.selectedCustomQuestions.length > 0) {
+        const customQuestionInserts = formData.selectedCustomQuestions.map((questionId, index) => ({
+          request_id: newRequest.id,
+          company_question_id: questionId,
+          sort_order: index
+        }))
+        const { error: customQError } = await supabase
+          .from('request_custom_questions')
+          .insert(customQuestionInserts)
+        if (customQError) {
+          console.error('Error linking custom questions to request:', customQError)
+        }
+      }
       // If invitation, link request to invitation
       if (supplierMode === 'new' && invitationId) {
         await supabase
@@ -238,6 +268,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           productName: '',
           supplierId: '',
           selectedTags: [],
+          selectedCustomQuestions: [],
           newSupplierEmail: '',
           newSupplierCompanyName: '',
         })
@@ -411,6 +442,67 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                 Select which question sets to include in this request
               </p>
             </div>
+            {/* Custom Questions Section */}
+            {customQuestions.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Custom Questions</Label>
+                  <Link
+                    href="/settings/questions"
+                    className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    target="_blank"
+                  >
+                    <Settings className="h-3 w-3" />
+                    Manage
+                  </Link>
+                </div>
+                <div className="border rounded-md divide-y max-h-[150px] overflow-y-auto">
+                  {customQuestions.map((question) => (
+                    <label
+                      key={question.id}
+                      className="flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={formData.selectedCustomQuestions.includes(question.id)}
+                        onCheckedChange={(checked) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            selectedCustomQuestions: checked
+                              ? [...prev.selectedCustomQuestions, question.id]
+                              : prev.selectedCustomQuestions.filter(id => id !== question.id)
+                          }))
+                        }}
+                        disabled={submitting}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm leading-tight">
+                        {question.question_text}
+                        {question.required && (
+                          <span className="text-red-500 ml-1">*</span>
+                        )}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Select additional questions to include in this request
+                </p>
+              </div>
+            )}
+            {customQuestions.length === 0 && (
+              <div className="text-center py-3 border rounded-md bg-muted/50">
+                <p className="text-sm text-muted-foreground">
+                  No custom questions available.{' '}
+                  <Link
+                    href="/settings/questions"
+                    className="text-primary hover:underline"
+                    target="_blank"
+                  >
+                    Create some
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button

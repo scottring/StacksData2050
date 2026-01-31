@@ -75,6 +75,22 @@ interface Rejection {
   rounds: RejectionRound[]
 }
 
+interface CustomQuestion {
+  id: string
+  question_text: string
+  response_type: 'text' | 'yes_no' | 'choice'
+  choices: string[] | null
+  hint: string | null
+  required: boolean
+  sort_order: number
+}
+
+interface CustomAnswer {
+  id: string
+  company_question_id: string
+  value: string | null
+}
+
 interface SimpleSheetEditorProps {
   sheetId: string
   sheetName: string
@@ -86,6 +102,9 @@ interface SimpleSheetEditorProps {
   listTableColumns: ListTableColumn[]
   branchingData?: Record<string, BranchingData>
   rejections?: Rejection[]
+  customQuestions?: CustomQuestion[]
+  customAnswers?: CustomAnswer[]
+  requestingCompanyName?: string
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -117,6 +136,9 @@ export function SimpleSheetEditor({
   listTableColumns,
   branchingData = {},
   rejections = [],
+  customQuestions = [],
+  customAnswers = [],
+  requestingCompanyName = '',
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -169,6 +191,17 @@ export function SimpleSheetEditor({
       }
     })
     return set
+  })
+
+  // Custom question values state
+  const [customValues, setCustomValues] = useState<Map<string, string>>(() => {
+    const map = new Map<string, string>()
+    customAnswers.forEach(ca => {
+      if (ca.value !== null) {
+        map.set(ca.company_question_id, ca.value)
+      }
+    })
+    return map
   })
 
   // Autosave refs
@@ -365,12 +398,13 @@ export function SimpleSheetEditor({
   // Silent autosave function
   const performAutosave = useCallback(async () => {
     // Don't autosave if nothing has changed or if we're already saving
-    if ((localValues.size === 0 && additionalNotes.size === 0) || isAutosavingRef.current || saving) return
+    if ((localValues.size === 0 && additionalNotes.size === 0 && customValues.size === 0) || isAutosavingRef.current || saving) return
 
     // Create a snapshot of current values to check for changes
     const currentSnapshot = JSON.stringify({
       values: Array.from(localValues.entries()),
       notes: Array.from(additionalNotes.entries()),
+      customValues: Array.from(customValues.entries()),
     })
     if (currentSnapshot === lastSavedValuesRef.current) return
 
@@ -425,6 +459,25 @@ export function SimpleSheetEditor({
       })
 
       if (response.ok) {
+        // Also save custom answers inline
+        if (customValues.size > 0) {
+          for (const [questionId, value] of customValues) {
+            try {
+              await fetch('/api/custom-answers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sheet_id: sheetId,
+                  company_question_id: questionId,
+                  value,
+                }),
+              })
+            } catch (err) {
+              console.error('Error saving custom answer:', err)
+            }
+          }
+        }
+
         lastSavedValuesRef.current = currentSnapshot
         // Don't clear temp rows during autosave - they're still needed in UI
         // They'll be cleared on page refresh or manual save
@@ -438,11 +491,11 @@ export function SimpleSheetEditor({
     } finally {
       isAutosavingRef.current = false
     }
-  }, [localValues, additionalNotes, saving, sheetId])
+  }, [localValues, additionalNotes, customValues, saving, sheetId])
 
   // Debounced autosave effect - triggers 2 seconds after last change
   useEffect(() => {
-    if (!canEdit || (localValues.size === 0 && additionalNotes.size === 0)) return
+    if (!canEdit || (localValues.size === 0 && additionalNotes.size === 0 && customValues.size === 0)) return
 
     // Clear existing timer
     if (autosaveTimerRef.current) {
@@ -459,7 +512,7 @@ export function SimpleSheetEditor({
         clearTimeout(autosaveTimerRef.current)
       }
     }
-  }, [localValues, additionalNotes, canEdit, performAutosave])
+  }, [localValues, additionalNotes, customValues, canEdit, performAutosave])
 
   // Save on page unload
   useEffect(() => {
@@ -562,6 +615,39 @@ export function SimpleSheetEditor({
     setSaveStatus('idle')
   }
 
+  // Handler for custom question value changes
+  const handleCustomValueChange = (questionId: string, value: string) => {
+    setCustomValues(prev => {
+      const next = new Map(prev)
+      next.set(questionId, value)
+      return next
+    })
+    setSaveStatus('idle')
+  }
+
+  // Save custom answers helper (for manual save)
+  const saveCustomAnswersInline = async () => {
+    if (customValues.size === 0) return true
+
+    try {
+      for (const [questionId, value] of customValues) {
+        await fetch('/api/custom-answers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sheet_id: sheetId,
+            company_question_id: questionId,
+            value,
+          }),
+        })
+      }
+      return true
+    } catch (error) {
+      console.error('Error saving custom answers:', error)
+      return false
+    }
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setSaveStatus('idle')
@@ -605,6 +691,9 @@ export function SimpleSheetEditor({
       if (!response.ok) {
         throw new Error('Failed to save')
       }
+
+      // Also save custom answers
+      await saveCustomAnswersInline()
 
       setSaveStatus('saved')
       // Keep temp rows visible - they're saved but still needed in UI
@@ -1360,9 +1449,90 @@ export function SimpleSheetEditor({
           })()}
         </div>
 
-        {visibleQuestions.length === 0 && (
+        {visibleQuestions.length === 0 && customQuestions.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             No answers found for this sheet. The sheet may not have any data yet.
+          </div>
+        )}
+
+        {/* Custom Questions Section */}
+        {customQuestions.length > 0 && (
+          <div className="space-y-4 mt-8">
+            <div className="sticky top-0 bg-background z-10 py-3 border-b border-purple-300/50">
+              <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2">
+                <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-sm">+</span>
+                Additional Questions from {requestingCompanyName || 'Customer'}
+              </h2>
+            </div>
+
+            <div className="space-y-4 pl-2">
+              {customQuestions.map((cq, index) => {
+                const currentValue = customValues.get(cq.id) || ''
+
+                return (
+                  <Card key={cq.id} className="border-purple-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base font-medium flex items-start gap-2">
+                        <Badge variant="secondary" className="shrink-0 bg-purple-100 text-purple-800">
+                          {index + 1}
+                        </Badge>
+                        <span>
+                          {cq.question_text}
+                          {cq.required && <span className="text-red-500 ml-1">*</span>}
+                        </span>
+                      </CardTitle>
+                      {cq.hint && (
+                        <p className="text-sm text-muted-foreground">{cq.hint}</p>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      {/* Render input based on response_type */}
+                      {cq.response_type === 'text' && (
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => handleCustomValueChange(cq.id, e.target.value)}
+                          placeholder="Enter your answer..."
+                          disabled={!canEdit}
+                        />
+                      )}
+                      {cq.response_type === 'yes_no' && (
+                        <Select
+                          value={currentValue}
+                          onValueChange={(v) => handleCustomValueChange(cq.id, v)}
+                          disabled={!canEdit}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="true">Yes</SelectItem>
+                            <SelectItem value="false">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                      {cq.response_type === 'choice' && cq.choices && cq.choices.length > 0 && (
+                        <Select
+                          value={currentValue}
+                          onValueChange={(v) => handleCustomValueChange(cq.id, v)}
+                          disabled={!canEdit}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cq.choices.map((choice) => (
+                              <SelectItem key={choice} value={choice}>
+                                {choice}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>
