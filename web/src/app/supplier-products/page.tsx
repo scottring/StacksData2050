@@ -36,39 +36,25 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-interface Product {
-  id: string
-  product_name: string | null
-  requestor_id: string | null
-  requesting_from_id: string | null
-  sheet_id: string | null
-  processed: boolean | null
-  manufacturer_marked_as_provided: boolean | null
-  show_as_removed: boolean | null
-  created_at: string | null
-  modified_at: string | null
-}
-
 interface Company {
   id: string
   name: string
 }
 
-interface Sheet {
+interface SheetProduct {
   id: string
   name: string
   status: string | null
-}
-
-interface ProductWithDetails extends Product {
-  requestor: Company | null
+  company_id: string | null
+  requesting_company_id: string | null
+  created_at: string | null
+  modified_at: string | null
   supplier: Company | null
-  sheet: Sheet | null
 }
 
 export default function ProductsPage() {
   const router = useRouter()
-  const [products, setProducts] = useState<ProductWithDetails[]>([])
+  const [products, setProducts] = useState<SheetProduct[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -93,41 +79,41 @@ export default function ProductsPage() {
         .eq('id', user.id)
         .single()
 
-      setUserCompanyId(userProfile?.company_id || null)
+      const companyId = userProfile?.company_id || null
+      setUserCompanyId(companyId)
 
-      // Fetch requests (products)
-      const { data: requestsData, error: requestsError } = await supabase
-        .from('requests')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (requestsError) {
-        console.error('Error fetching requests:', requestsError)
+      if (!companyId) {
+        setLoading(false)
+        return
       }
 
-      // Fetch companies
+      // Fetch companies first for mapping
       const { data: companiesData } = await supabase
         .from('companies')
         .select('id, name')
         .order('name')
 
-      // Fetch sheets
-      const { data: sheetsData } = await supabase
-        .from('sheets')
-        .select('id, name, status')
-
       const companyMap = new Map((companiesData || []).map(c => [c.id, c]))
-      const sheetMap = new Map((sheetsData || []).map(s => [s.id, s]))
 
-      // Combine data
-      const productsWithDetails: ProductWithDetails[] = (requestsData || []).map(req => ({
-        ...req,
-        requestor: req.requestor_id ? companyMap.get(req.requestor_id) || null : null,
-        supplier: req.requesting_from_id ? companyMap.get(req.requesting_from_id) || null : null,
-        sheet: req.sheet_id ? sheetMap.get(req.sheet_id) || null : null
+      // Fetch sheets where user's company is the REQUESTOR (customer)
+      // These are products they've requested from suppliers
+      const { data: sheetsData, error: sheetsError } = await supabase
+        .from('sheets')
+        .select('id, name, status, company_id, requesting_company_id, created_at, modified_at')
+        .eq('requesting_company_id', companyId)
+        .order('modified_at', { ascending: false })
+
+      if (sheetsError) {
+        console.error('Error fetching sheets:', sheetsError)
+      }
+
+      // Map sheets to products with supplier info
+      const sheetProducts: SheetProduct[] = (sheetsData || []).map(sheet => ({
+        ...sheet,
+        supplier: sheet.company_id ? companyMap.get(sheet.company_id) || null : null
       }))
 
-      setProducts(productsWithDetails)
+      setProducts(sheetProducts)
       setCompanies(companiesData || [])
       setLoading(false)
     }
@@ -146,39 +132,38 @@ export default function ProductsPage() {
   const filteredProducts = products.filter(p => {
     // Search filter
     const matchesSearch = searchQuery === '' ||
-      p.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.supplier?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.requestor?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.supplier?.name?.toLowerCase().includes(searchQuery.toLowerCase())
 
     // Status filter
     let matchesStatus = true
     if (filterStatus === 'completed') {
-      matchesStatus = p.processed === true || p.manufacturer_marked_as_provided === true
+      matchesStatus = p.status === 'completed' || p.status === 'approved'
+    } else if (filterStatus === 'in_progress') {
+      matchesStatus = p.status === 'in_progress'
     } else if (filterStatus === 'pending') {
-      matchesStatus = !p.processed && !p.manufacturer_marked_as_provided && !p.show_as_removed
-    } else if (filterStatus === 'removed') {
-      matchesStatus = p.show_as_removed === true
+      matchesStatus = p.status === 'pending' || !p.status
     }
 
     // Supplier filter
     const matchesSupplier = filterSupplier === 'all' ||
-      p.requesting_from_id === filterSupplier
+      p.company_id === filterSupplier
 
     return matchesSearch && matchesStatus && matchesSupplier
   })
 
   // Get status info
-  const getProductStatus = (product: ProductWithDetails) => {
-    if (product.show_as_removed) {
-      return { label: 'Removed', icon: AlertCircle, className: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' }
-    }
-    if (product.processed || product.manufacturer_marked_as_provided) {
+  const getProductStatus = (product: SheetProduct) => {
+    if (product.status === 'completed' || product.status === 'approved') {
       return { label: 'Complete', icon: CheckCircle2, className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' }
     }
-    if (product.sheet?.status === 'in_progress') {
+    if (product.status === 'in_progress') {
       return { label: 'In Progress', icon: Clock, className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }
     }
-    return { label: 'Pending', icon: Clock, className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' }
+    if (product.status === 'pending') {
+      return { label: 'Pending', icon: Clock, className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' }
+    }
+    return { label: 'Draft', icon: AlertCircle, className: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' }
   }
 
   // Format date
@@ -194,9 +179,9 @@ export default function ProductsPage() {
   // Calculate stats
   const stats = {
     total: products.length,
-    completed: products.filter(p => p.processed || p.manufacturer_marked_as_provided).length,
-    pending: products.filter(p => !p.processed && !p.manufacturer_marked_as_provided && !p.show_as_removed).length,
-    removed: products.filter(p => p.show_as_removed).length
+    completed: products.filter(p => p.status === 'completed' || p.status === 'approved').length,
+    inProgress: products.filter(p => p.status === 'in_progress').length,
+    pending: products.filter(p => p.status === 'pending' || !p.status).length
   }
 
   return (
@@ -240,17 +225,17 @@ export default function ProductsPage() {
           </div>
           <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-600" />
+              <span className="text-sm text-muted-foreground">In Progress</span>
+            </div>
+            <p className="text-2xl font-bold mt-2">{stats.inProgress}</p>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-amber-600" />
               <span className="text-sm text-muted-foreground">Pending</span>
             </div>
             <p className="text-2xl font-bold mt-2">{stats.pending}</p>
-          </div>
-          <div className="rounded-lg border bg-card p-4">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-gray-500" />
-              <span className="text-sm text-muted-foreground">Removed</span>
-            </div>
-            <p className="text-2xl font-bold mt-2">{stats.removed}</p>
           </div>
         </div>
 
@@ -274,8 +259,8 @@ export default function ProductsPage() {
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="removed">Removed</SelectItem>
             </SelectContent>
           </Select>
 
@@ -306,16 +291,15 @@ export default function ProductsPage() {
               <TableRow>
                 <TableHead className="w-[300px]">Product</TableHead>
                 <TableHead className="w-[200px]">Supplier</TableHead>
-                <TableHead className="w-[200px]">Requested By</TableHead>
                 <TableHead className="w-[120px]">Status</TableHead>
-                <TableHead className="w-[120px]">Date</TableHead>
+                <TableHead className="w-[120px]">Last Updated</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
+                  <TableCell colSpan={5} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Loader2 className="h-8 w-8 animate-spin" />
                       <span>Loading products...</span>
@@ -324,7 +308,7 @@ export default function ProductsPage() {
                 </TableRow>
               ) : filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
+                  <TableCell colSpan={5} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Package className="h-12 w-12 opacity-30" />
                       <span>No products found</span>
@@ -345,11 +329,7 @@ export default function ProductsPage() {
                     <TableRow
                       key={product.id}
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => {
-                        if (product.sheet_id) {
-                          router.push(`/sheets/${product.sheet_id}`)
-                        }
-                      }}
+                      onClick={() => router.push(`/sheets/${product.id}`)}
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -358,13 +338,8 @@ export default function ProductsPage() {
                           </div>
                           <div>
                             <div className="font-medium">
-                              {product.product_name || 'Unnamed Product'}
+                              {product.name || 'Unnamed Product'}
                             </div>
-                            {product.sheet && (
-                              <div className="text-sm text-muted-foreground">
-                                {product.sheet.name}
-                              </div>
-                            )}
                           </div>
                         </div>
                       </TableCell>
@@ -379,20 +354,13 @@ export default function ProductsPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {product.requestor ? (
-                          <span>{product.requestor.name}</span>
-                        ) : (
-                          <span className="text-muted-foreground">Unknown</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
                         <Badge className={status.className}>
                           <StatusIcon className="h-3 w-3 mr-1" />
                           {status.label}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {formatDate(product.created_at)}
+                        {formatDate(product.modified_at || product.created_at)}
                       </TableCell>
                       <TableCell>
                         <ChevronRight className="h-5 w-5 text-muted-foreground" />

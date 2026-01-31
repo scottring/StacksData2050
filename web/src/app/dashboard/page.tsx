@@ -710,31 +710,41 @@ export default function DashboardPage() {
           modifiedAt: s.modified_at
         }))
 
-      // Fetch request metrics early so we can include them in stats
-      const { data: incomingRequests } = await supabase
+      // Fetch request metrics (table may not exist yet)
+      let pendingIncoming = 0
+      let pendingOutgoing = 0
+      let incomingTotal = 0
+      let outgoingTotal = 0
+
+      const { data: incomingRequests, error: reqError } = await supabase
         .from('requests')
         .select('id, status')
         .eq('reader_company_id', companyId)
 
-      const { data: outgoingRequests } = await supabase
-        .from('requests')
-        .select('id, status')
-        .eq('owner_company_id', companyId)
+      if (!reqError) {
+        const { data: outgoingRequests } = await supabase
+          .from('requests')
+          .select('id, status')
+          .eq('owner_company_id', companyId)
 
-      const pendingIncoming = incomingRequests?.filter(r =>
-        r.status === 'created' || r.status === 'reviewed'
-      ).length || 0
+        pendingIncoming = incomingRequests?.filter(r =>
+          r.status === 'created' || r.status === 'reviewed'
+        ).length || 0
 
-      const pendingOutgoing = outgoingRequests?.filter(r =>
-        r.status === 'created' || r.status === 'reviewed'
-      ).length || 0
+        pendingOutgoing = outgoingRequests?.filter(r =>
+          r.status === 'created' || r.status === 'reviewed'
+        ).length || 0
 
-      console.log('📬 Request Metrics:', {
-        incomingTotal: incomingRequests?.length || 0,
-        pendingIncoming,
-        outgoingTotal: outgoingRequests?.length || 0,
-        pendingOutgoing
-      })
+        incomingTotal = incomingRequests?.length || 0
+        outgoingTotal = outgoingRequests?.length || 0
+
+        console.log('📬 Request Metrics:', {
+          incomingTotal,
+          pendingIncoming,
+          outgoingTotal,
+          pendingOutgoing
+        })
+      }
 
       setStats({
         supplierOpenTasks,
@@ -749,56 +759,63 @@ export default function DashboardPage() {
         recentSheets,
         pendingIncomingRequests: pendingIncoming,
         pendingOutgoingRequests: pendingOutgoing,
-        totalIncomingRequests: incomingRequests?.length || 0,
-        totalOutgoingRequests: outgoingRequests?.length || 0
+        totalIncomingRequests: incomingTotal,
+        totalOutgoingRequests: outgoingTotal
       })
 
       // Calculate compliance stats from customer sheets
       const compliance = calculateComplianceStats(customerSheets)
       setComplianceStats(compliance)
 
-      // Fetch chemical compliance stats
-      const { count: totalChemicals } = await supabase
-        .from('chemical_inventory')
-        .select('*', { count: 'exact', head: true })
+      // Fetch chemical compliance stats (tables may not exist yet)
+      try {
+        const { count: totalChemicals, error: invError } = await supabase
+          .from('chemical_inventory')
+          .select('*', { count: 'exact', head: true })
 
-      const { count: pfasCount } = await supabase
-        .from('chemical_inventory')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_pfas', true)
+        // Only proceed if the table exists (no error)
+        if (!invError) {
+          const { count: pfasCount } = await supabase
+            .from('chemical_inventory')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_pfas', true)
 
-      const { count: reachCount } = await supabase
-        .from('chemical_inventory')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_reach_svhc', true)
+          const { count: reachCount } = await supabase
+            .from('chemical_inventory')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_reach_svhc', true)
 
-      const { count: prop65Count } = await supabase
-        .from('chemical_inventory')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_prop65', true)
+          const { count: prop65Count } = await supabase
+            .from('chemical_inventory')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_prop65', true)
 
-      // Get sheet_chemicals and filter to only this company's sheets
-      // Use the already-fetched and deduplicated customerSheets
-      const customerSheetIds = new Set(customerSheets.map(s => s.id))
+          // Get sheet_chemicals and filter to only this company's sheets
+          const customerSheetIds = new Set(customerSheets.map(s => s.id))
 
-      const { data: sheetChemicals } = await supabase
-        .from('sheet_chemicals')
-        .select('sheet_id')
+          const { data: sheetChemicals } = await supabase
+            .from('sheet_chemicals')
+            .select('sheet_id')
 
-      // Only count sheets that belong to this company
-      const sheetsWithChemicals = new Set(
-        sheetChemicals
-          ?.filter(sc => customerSheetIds.has(sc.sheet_id))
-          .map(sc => sc.sheet_id) || []
-      ).size
+          // Only count sheets that belong to this company
+          const sheetsWithChemicals = new Set(
+            sheetChemicals
+              ?.filter(sc => customerSheetIds.has(sc.sheet_id))
+              .map(sc => sc.sheet_id) || []
+          ).size
 
-      setChemicalStats({
-        totalChemicals: totalChemicals || 0,
-        pfasCount: pfasCount || 0,
-        reachCount: reachCount || 0,
-        prop65Count: prop65Count || 0,
-        sheetsWithChemicals
-      })
+          setChemicalStats({
+            totalChemicals: totalChemicals || 0,
+            pfasCount: pfasCount || 0,
+            reachCount: reachCount || 0,
+            prop65Count: prop65Count || 0,
+            sheetsWithChemicals
+          })
+        }
+      } catch {
+        // Chemical tables don't exist yet - skip this section
+        console.log('Chemical compliance tables not available')
+      }
 
       setLoading(false)
     }
