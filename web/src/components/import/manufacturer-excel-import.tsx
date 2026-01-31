@@ -32,6 +32,15 @@ interface ImportPreview {
   issueCount: number
   answers: any[]
   issues: any[]
+  listTables?: {
+    rowCount: number
+    cellCount: number
+    tables: Array<{
+      questionNumber: string
+      description: string
+      rowsFound: number
+    }>
+  }
 }
 
 interface ImportResult {
@@ -41,6 +50,7 @@ interface ImportResult {
   supplierCompanyId: string
   supplierName: string
   answersImported: number
+  listTableCellsImported?: number
 }
 
 interface ManufacturerExcelImportProps {
@@ -131,8 +141,9 @@ export function ManufacturerExcelImport({
     }
   }
 
-  const readyAnswers = preview?.answers.filter((a: any) => 
-    a.mappedValue !== null && !a.hasIssue
+  // All answers with values will be imported (issues will be stored as text)
+  const readyAnswers = preview?.answers.filter((a: any) =>
+    a.mappedValue !== null
   ) || []
 
   return (
@@ -262,6 +273,28 @@ export function ManufacturerExcelImport({
               </div>
             </div>
 
+            {/* List Tables */}
+            {preview.listTables && preview.listTables.rowCount > 0 && (
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-medium flex items-center gap-2 mb-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  Table Data Found
+                </h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  {preview.listTables.rowCount} rows ({preview.listTables.cellCount} cells) from:
+                </p>
+                <div className="space-y-1">
+                  {preview.listTables.tables.filter(t => t.rowsFound > 0).map((table, i) => (
+                    <div key={i} className="text-sm flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">{table.questionNumber}</Badge>
+                      <span>{table.description}</span>
+                      <span className="text-muted-foreground">({table.rowsFound} rows)</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Issues */}
             {preview.issues.length > 0 && (
               <div className="space-y-2">
@@ -317,6 +350,7 @@ export function ManufacturerExcelImport({
                 ) : (
                   <>
                     Import {readyAnswers.length} Answers
+                    {preview?.listTables?.cellCount ? ` + ${preview.listTables.cellCount} Table Cells` : ''}
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </>
                 )}
@@ -331,7 +365,8 @@ export function ManufacturerExcelImport({
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                <strong>Sheet created!</strong> Imported {result.answersImported} answers for "{result.sheetName}" 
+                <strong>Sheet created!</strong> Imported {result.answersImported} answers
+                {result.listTableCellsImported ? ` + ${result.listTableCellsImported} table cells` : ''} for "{result.sheetName}"
                 from {result.supplierName}.
               </AlertDescription>
             </Alert>

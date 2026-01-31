@@ -38,6 +38,15 @@ interface ImportPreview {
     excelValue: string | null
     details: string
   }>
+  debug?: {
+    workbookSheets: string[]
+    sheetNameMapping: Record<string, string>
+    cellsChecked: number
+    valuesFound: number
+    sampleValues?: Array<{ question: string; value: string }>
+    cellLookupCount?: number
+    formulaMapCount?: number
+  }
 }
 
 interface ExcelImportProps {
@@ -106,7 +115,8 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
         body: JSON.stringify({
           sheetId,
           companyId,
-          answers: preview.answers.filter(a => !a.hasIssue && a.mappedValue !== null)
+          // Include all answers with values (issues will be imported as text)
+          answers: preview.answers.filter(a => a.mappedValue !== null)
         })
       })
       
@@ -127,7 +137,8 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
 
   const answersWithValues = preview?.answers.filter(a => a.mappedValue !== null && a.excelValue) || []
   const answersWithIssues = preview?.answers.filter(a => a.hasIssue) || []
-  const readyToImport = answersWithValues.filter(a => !a.hasIssue)
+  // All answers with values will be imported (issues will be stored as text)
+  const readyToImport = answersWithValues
 
   return (
     <Card className="w-full">
@@ -195,6 +206,25 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
         {/* Preview Results */}
         {preview && !importResult && (
           <div className="space-y-4">
+            {/* Debug Info */}
+            {preview.debug && (
+              <div className="p-3 bg-slate-100 rounded-lg text-xs font-mono space-y-1">
+                <div className="font-semibold mb-1">Debug Info:</div>
+                <div><strong>Workbook sheets:</strong> {preview.debug.workbookSheets?.join(', ')}</div>
+                <div><strong>Sheet mapping:</strong> {JSON.stringify(preview.debug.sheetNameMapping)}</div>
+                <div><strong>Formula map:</strong> {preview.debug.formulaMapCount} questions, <strong>Cell lookup:</strong> {preview.debug.cellLookupCount} mappings</div>
+                <div><strong>Cells checked:</strong> {preview.debug.cellsChecked}, <strong>Values found:</strong> {preview.debug.valuesFound}</div>
+                {preview.debug.sampleValues && preview.debug.sampleValues.length > 0 && (
+                  <div className="mt-2">
+                    <div className="font-semibold">Sample values found:</div>
+                    {preview.debug.sampleValues.map((s: any, i: number) => (
+                      <div key={i} className="ml-2 truncate">• {s.question}... = "{s.value}"</div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Summary Stats */}
             <div className="grid grid-cols-4 gap-4">
               <div className="p-3 bg-muted rounded-lg text-center">

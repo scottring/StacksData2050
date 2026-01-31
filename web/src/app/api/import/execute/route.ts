@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     const answersToInsert: any[] = []
     
     for (const answer of answers) {
+      // Skip if no question ID or no value - but allow answers with issues (they'll be stored as text)
       if (!answer.questionId || answer.mappedValue === null) continue
-      if (answer.hasIssue) continue // Skip answers with issues
       
       const record: any = {
         sheet_id: sheetId,

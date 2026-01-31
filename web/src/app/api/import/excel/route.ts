@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import * as XLSX from 'xlsx'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as os from 'os'
 
 // Types
 interface CellLookup {
@@ -104,37 +103,97 @@ function matchChoice(excelValue: string, choices: any[]): { choiceId: string; ch
   return null
 }
 
+interface ParseResult {
+  answers: ParsedAnswer[]
+  debug: {
+    workbookSheets: string[]
+    sheetNameMapping: Record<string, string>
+    cellsChecked: number
+    valuesFound: number
+    sampleValues: Array<{ question: string; value: string | null }>
+    cellLookupCount: number
+    formulaMapCount: number
+  }
+}
+
 // Parse Excel using formula map
 function parseExcelWithMap(
-  workbook: XLSX.WorkBook, 
+  workbook: XLSX.WorkBook,
   cellLookup: Record<string, CellLookup>,
   formulaMap: QuestionMapping[]
-): ParsedAnswer[] {
+): ParseResult {
   const answers: ParsedAnswer[] = []
-  
+
+  // Get all sheet names from the workbook for flexible matching
+  const workbookSheets = workbook.SheetNames
+  console.log('Workbook sheet names:', workbookSheets)
+
+  // Build a map from expected sheet names to actual sheet names
+  const sheetNameMap = new Map<string, string>()
+  const expectedSheets = ['Supplier Product Contact', 'Ecolabels', 'Biocides', 'Food Contact', 'PIDSL', 'Additional Requirements']
+
+  for (const expected of expectedSheets) {
+    // Try exact match first
+    if (workbookSheets.includes(expected)) {
+      sheetNameMap.set(expected, expected)
+      continue
+    }
+
+    // Try case-insensitive match
+    const lowerExpected = expected.toLowerCase()
+    for (const actual of workbookSheets) {
+      if (actual.toLowerCase() === lowerExpected) {
+        sheetNameMap.set(expected, actual)
+        break
+      }
+      // Try partial match (e.g., "HQ 2.1 - Food Contact" contains "Food Contact")
+      if (actual.toLowerCase().includes(lowerExpected)) {
+        sheetNameMap.set(expected, actual)
+        break
+      }
+    }
+  }
+
+  console.log('Sheet name mapping:', Object.fromEntries(sheetNameMap))
+
   function readCell(sheetName: string, cellRef: string): string | null {
     const normalizedName = sheetName.replace(/^'|'$/g, '')
-    const ws = workbook.Sheets[normalizedName]
-    if (!ws) return null
-    
+    // Use mapped sheet name if available
+    const actualSheetName = sheetNameMap.get(normalizedName) || normalizedName
+    const ws = workbook.Sheets[actualSheetName]
+    if (!ws) {
+      return null
+    }
+
     const cell = ws[cellRef]
-    if (!cell || cell.v === undefined) return null
-    return String(cell.v)
+    if (!cell) return null
+
+    // Try to get the formatted value (w) first, then raw value (v)
+    // This handles formulas better
+    if (cell.w !== undefined) return String(cell.w)
+    if (cell.v !== undefined) return String(cell.v)
+    return null
   }
-  
+
+  let valuesFound = 0
+  let cellsChecked = 0
+
   for (const q of formulaMap) {
     const lookup = cellLookup[q.bubbleId]
-    
+
     let value: string | null = null
     let additionalValues: string[] = []
-    
+
     if (lookup) {
+      cellsChecked++
       value = readCell(lookup.sheet, lookup.cell)
+      if (value) valuesFound++
+
       additionalValues = lookup.additionalCells
         .map(c => readCell(c.sheet, c.cell))
         .filter((v): v is string => v !== null)
     }
-    
+
     answers.push({
       bubbleId: q.bubbleId,
       section: q.section,
@@ -145,8 +204,27 @@ function parseExcelWithMap(
       additionalValues
     })
   }
-  
-  return answers
+
+  console.log(`Cells checked: ${cellsChecked}, Values found: ${valuesFound}`)
+
+  // Collect sample values found for debugging
+  const sampleValues = answers
+    .filter(a => a.value !== null)
+    .slice(0, 10)
+    .map(a => ({ question: a.question.substring(0, 40), value: a.value }))
+
+  return {
+    answers,
+    debug: {
+      workbookSheets,
+      sheetNameMapping: Object.fromEntries(sheetNameMap),
+      cellsChecked,
+      valuesFound,
+      sampleValues,
+      cellLookupCount: Object.keys(cellLookup).length,
+      formulaMapCount: formulaMap.length
+    }
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -158,17 +236,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
     
-    // Save file temporarily
+    // Read directly from buffer (no temp file needed)
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const tempPath = path.join(os.tmpdir(), `upload-${Date.now()}.xlsx`)
-    fs.writeFileSync(tempPath, buffer)
-    
-    // Read Excel
-    const workbook = XLSX.readFile(tempPath)
-    
-    // Clean up temp file
-    fs.unlinkSync(tempPath)
+    const workbook = XLSX.read(buffer, { type: 'buffer' })
     
     // Load formula map and cell lookup
     // For now, read from the stacks directory - in production would be bundled
@@ -181,7 +252,9 @@ export async function POST(request: NextRequest) {
     )
     
     // Parse Excel
-    const parsedAnswers = parseExcelWithMap(workbook, cellLookup, formulaMap)
+    const parseResult = parseExcelWithMap(workbook, cellLookup, formulaMap)
+    const parsedAnswers = parseResult.answers
+    const debug = parseResult.debug
     
     // Load Supabase data for mapping
     const supabase = await createClient()
@@ -308,7 +381,7 @@ export async function POST(request: NextRequest) {
       a.mappedValue !== null && !isPlaceholder(a.excelValue)
     ).length
     
-    const preview: ImportPreview = {
+    const preview = {
       success: true,
       fileName: file.name,
       totalQuestions: parsedAnswers.length,
@@ -316,9 +389,10 @@ export async function POST(request: NextRequest) {
       answeredQuestions: answeredCount,
       issueCount: issues.length,
       answers: mappedAnswers,
-      issues
+      issues,
+      debug
     }
-    
+
     return NextResponse.json(preview)
     
   } catch (error: any) {

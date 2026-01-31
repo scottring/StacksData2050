@@ -39,6 +39,7 @@ import { createClient } from '@/lib/supabase/client'
 interface Company {
   id: string
   name: string
+  logo_url: string | null
 }
 
 interface SheetProduct {
@@ -90,7 +91,7 @@ export default function ProductsPage() {
       // Fetch companies first for mapping
       const { data: companiesData } = await supabase
         .from('companies')
-        .select('id, name')
+        .select('id, name, logo_url')
         .order('name')
 
       const companyMap = new Map((companiesData || []).map(c => [c.id, c]))
@@ -345,8 +346,18 @@ export default function ProductsPage() {
                       </TableCell>
                       <TableCell>
                         {product.supplier ? (
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                              {product.supplier.logo_url ? (
+                                <img
+                                  src={product.supplier.logo_url}
+                                  alt={product.supplier.name}
+                                  className="h-6 w-6 object-contain"
+                                />
+                              ) : (
+                                <Building2 className="h-4 w-4 text-muted-foreground" />
+                              )}
+                            </div>
                             <span>{product.supplier.name}</span>
                           </div>
                         ) : (

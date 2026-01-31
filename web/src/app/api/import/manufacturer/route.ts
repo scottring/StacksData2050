@@ -54,6 +54,37 @@ interface ParsedAnswer {
   additionalValues: string[]
 }
 
+// List table mapping types
+interface ListTableColumnMapping {
+  excelCol: string
+  columnId: string
+  name: string
+}
+
+interface ListTableMapping {
+  questionBubbleId: string
+  questionNumber: string
+  description: string
+  excelSheet: string
+  dataStartRow: number
+  maxRows: number
+  columns: ListTableColumnMapping[]
+}
+
+interface ListTableConfig {
+  description: string
+  tables: ListTableMapping[]
+}
+
+interface ParsedListTableRow {
+  questionBubbleId: string
+  rowIndex: number
+  cells: Array<{
+    columnId: string
+    value: string
+  }>
+}
+
 function isPlaceholder(value: string | null): boolean {
   if (!value) return true
   const trimmed = value.trim().toLowerCase()
@@ -82,8 +113,92 @@ function matchChoice(excelValue: string, choices: any[]): { choiceId: string; ch
   return null
 }
 
+// Parse list tables from Excel
+function parseListTables(
+  workbook: XLSX.WorkBook,
+  listTableConfig: ListTableConfig
+): ParsedListTableRow[] {
+  const rows: ParsedListTableRow[] = []
+
+  console.log('DEBUG: List table config has', listTableConfig.tables.length, 'tables')
+
+  for (const table of listTableConfig.tables) {
+    console.log(`DEBUG: Processing table ${table.questionNumber} - ${table.description}`)
+    console.log(`DEBUG:   Sheet: ${table.excelSheet}, StartRow: ${table.dataStartRow}, Columns: ${table.columns.length}`)
+
+    if (table.columns.length === 0) {
+      console.log('DEBUG:   Skipping - no columns defined')
+      continue
+    }
+
+    const ws = workbook.Sheets[table.excelSheet]
+    if (!ws) {
+      console.log(`DEBUG:   Sheet not found: ${table.excelSheet}`)
+      console.log('DEBUG:   Available sheets:', workbook.SheetNames)
+      continue
+    }
+
+    // Debug: show what's in the first few cells of the expected range
+    console.log('DEBUG:   Sampling cells from expected range:')
+    for (let i = 0; i < 3; i++) {
+      const sampleRow = table.dataStartRow + i
+      const samples: string[] = []
+      for (const col of table.columns.slice(0, 3)) {
+        const cellRef = `${col.excelCol}${sampleRow}`
+        const cell = ws[cellRef]
+        const val = cell?.w || cell?.v || '(empty)'
+        samples.push(`${cellRef}=${val}`)
+      }
+      console.log(`DEBUG:     Row ${sampleRow}: ${samples.join(', ')}`)
+    }
+
+    // Parse each row in the table
+    let rowsFoundForTable = 0
+    for (let rowOffset = 0; rowOffset < table.maxRows; rowOffset++) {
+      const excelRow = table.dataStartRow + rowOffset
+      const cells: Array<{ columnId: string; value: string }> = []
+      let hasAnyValue = false
+
+      // Read each column for this row
+      for (const col of table.columns) {
+        const cellRef = `${col.excelCol}${excelRow}`
+        const cell = ws[cellRef]
+
+        // Get value - try formatted (w) first, then raw (v)
+        let value: string | null = null
+        if (cell) {
+          if (cell.w !== undefined) value = String(cell.w).trim()
+          else if (cell.v !== undefined) value = String(cell.v).trim()
+        }
+
+        if (value && value !== '' && value !== '0' && value.toLowerCase() !== 'n/a') {
+          hasAnyValue = true
+          cells.push({
+            columnId: col.columnId,
+            value
+          })
+        }
+      }
+
+      // Only include rows that have at least one value
+      if (hasAnyValue && cells.length > 0) {
+        rowsFoundForTable++
+        rows.push({
+          questionBubbleId: table.questionBubbleId,
+          rowIndex: rowOffset,
+          cells
+        })
+      }
+    }
+    console.log(`DEBUG:   Found ${rowsFoundForTable} rows with data for this table`)
+  }
+
+  console.log(`DEBUG: Total parsed ${rows.length} list table rows`)
+  return rows
+}
+
 function parseExcelWithMap(
-  workbook: XLSX.WorkBook, 
+  workbook: XLSX.WorkBook,
   cellLookup: Record<string, CellLookup>,
   formulaMap: QuestionMapping[]
 ): ParsedAnswer[] {
@@ -134,12 +249,26 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
-    
+
+    console.log('DEBUG: File name:', file.name, 'size:', file.size, 'type:', file.type)
+
     // Read directly from buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    console.log('DEBUG: File size:', buffer.length, 'bytes')
+
     // Read XLSX from buffer directly
-    const workbook = XLSX.read(buffer, { type: "buffer" })
+    let workbook: XLSX.WorkBook
+    try {
+      workbook = XLSX.read(buffer, { type: "buffer" })
+      console.log('DEBUG: Workbook sheets:', workbook.SheetNames)
+    } catch (xlsxError: any) {
+      console.error('DEBUG: XLSX read error:', xlsxError)
+      return NextResponse.json({
+        error: `Failed to read Excel file: ${xlsxError.message}`,
+        details: xlsxError.stack
+      }, { status: 400 })
+    }
     
     
     
@@ -157,9 +286,22 @@ export async function POST(request: NextRequest) {
     const cellLookup: Record<string, CellLookup> = JSON.parse(
       fs.readFileSync(path.join(stacksDir, 'excel-cell-lookup.json'), 'utf-8')
     )
-    
-    // Parse Excel
+
+    // Load list table mapping
+    let listTableConfig: ListTableConfig = { description: '', tables: [] }
+    try {
+      listTableConfig = JSON.parse(
+        fs.readFileSync(path.join(stacksDir, 'excel-list-table-mapping.json'), 'utf-8')
+      )
+    } catch (e) {
+      console.log('No list table mapping found, skipping list tables')
+    }
+
+    // Parse Excel - regular answers
     const parsedAnswers = parseExcelWithMap(workbook, cellLookup, formulaMap)
+
+    // Parse list tables
+    const listTableRows = parseListTables(workbook, listTableConfig)
     
     // Load Supabase data
     const supabase = createAdminClient()
@@ -261,7 +403,10 @@ export async function POST(request: NextRequest) {
     // PREVIEW mode - just return the data
     if (action !== 'import') {
       const answersWithValues = mappedAnswers.filter(a => a.mappedValue !== null && !isPlaceholder(a.excelValue))
-      
+
+      // Count list table cells
+      const listTableCellCount = listTableRows.reduce((sum, row) => sum + row.cells.length, 0)
+
       return NextResponse.json({
         success: true,
         metadata,
@@ -271,7 +416,16 @@ export async function POST(request: NextRequest) {
         answeredQuestions: answersWithValues.length,
         issueCount: issues.length,
         answers: mappedAnswers,
-        issues
+        issues,
+        listTables: {
+          rowCount: listTableRows.length,
+          cellCount: listTableCellCount,
+          tables: listTableConfig.tables.map(t => ({
+            questionNumber: t.questionNumber,
+            description: t.description,
+            rowsFound: listTableRows.filter(r => r.questionBubbleId === t.questionBubbleId).length
+          }))
+        }
       })
     }
     
@@ -339,34 +493,130 @@ export async function POST(request: NextRequest) {
     
     // Insert answers
     const answersToInsert: any[] = []
+
+    // Debug: count answers by status
+    const debugCounts = {
+      total: mappedAnswers.length,
+      withQuestionId: 0,
+      withMappedValue: 0,
+      withBoth: 0,
+      skippedNoQuestionId: 0,
+      skippedNullValue: 0,
+    }
+
     for (const answer of mappedAnswers) {
-      if (!answer.questionId || answer.mappedValue === null || answer.hasIssue) continue
-      
+      if (answer.questionId) debugCounts.withQuestionId++
+      if (answer.mappedValue !== null) debugCounts.withMappedValue++
+      if (answer.questionId && answer.mappedValue !== null) debugCounts.withBoth++
+
+      // Skip if no question ID or no value
+      if (!answer.questionId) {
+        debugCounts.skippedNoQuestionId++
+        continue
+      }
+      if (answer.mappedValue === null) {
+        debugCounts.skippedNullValue++
+        continue
+      }
+
       const record: any = {
         sheet_id: newSheet.id,
-        parent_question_id: answer.questionId,
+        question_id: answer.questionId,
         company_id: supplierCompanyId,
         created_at: new Date().toISOString()
       }
-      
+
+      // If it's a choice type with a matched choice, use choice_id
+      // Otherwise (including choice mismatches), store as text_value
       if (answer.valueType === 'choice' && answer.choiceId) {
         record.choice_id = answer.choiceId
       } else {
         record.text_value = answer.mappedValue
       }
-      
+
       answersToInsert.push(record)
+    }
+
+    console.log('DEBUG Import counts:', debugCounts)
+    console.log('DEBUG answersToInsert length:', answersToInsert.length)
+    if (answersToInsert.length === 0 && mappedAnswers.length > 0) {
+      console.log('DEBUG First 5 mappedAnswers:', JSON.stringify(mappedAnswers.slice(0, 5), null, 2))
     }
     
     // Batch insert
     let inserted = 0
     const batchSize = 100
+    const insertErrors: string[] = []
     for (let i = 0; i < answersToInsert.length; i += batchSize) {
       const batch = answersToInsert.slice(i, i + batchSize)
       const { error } = await supabase.from('answers').insert(batch)
-      if (!error) inserted += batch.length
+      if (error) {
+        console.error('DEBUG Insert error:', error)
+        insertErrors.push(error.message)
+      } else {
+        inserted += batch.length
+      }
     }
-    
+    console.log('DEBUG Inserted:', inserted, 'Errors:', insertErrors)
+
+    // Insert list table answers
+    let listTableInserted = 0
+    if (listTableRows.length > 0) {
+      const listTableAnswers: any[] = []
+
+      // Group rows by question and assign unique row IDs
+      const rowIdsByQuestion = new Map<string, Map<number, string>>()
+
+      for (const row of listTableRows) {
+        // Get or create row ID map for this question
+        if (!rowIdsByQuestion.has(row.questionBubbleId)) {
+          rowIdsByQuestion.set(row.questionBubbleId, new Map())
+        }
+        const rowIds = rowIdsByQuestion.get(row.questionBubbleId)!
+
+        // Generate a unique row ID for this row index
+        if (!rowIds.has(row.rowIndex)) {
+          rowIds.set(row.rowIndex, crypto.randomUUID())
+        }
+        const listTableRowId = rowIds.get(row.rowIndex)!
+
+        // Get question ID from bubble ID
+        const question = questionByBubbleId.get(row.questionBubbleId)
+        if (!question) {
+          console.log(`Question not found for bubble ID: ${row.questionBubbleId}`)
+          continue
+        }
+
+        // Create answer records for each cell
+        for (const cell of row.cells) {
+          listTableAnswers.push({
+            sheet_id: newSheet.id,
+            question_id: question.id,
+            company_id: supplierCompanyId,
+            list_table_row_id: listTableRowId,
+            list_table_column_id: cell.columnId,
+            text_value: cell.value,
+            created_at: new Date().toISOString()
+          })
+        }
+      }
+
+      console.log('DEBUG List table answers to insert:', listTableAnswers.length)
+
+      // Batch insert list table answers
+      for (let i = 0; i < listTableAnswers.length; i += batchSize) {
+        const batch = listTableAnswers.slice(i, i + batchSize)
+        const { error } = await supabase.from('answers').insert(batch)
+        if (error) {
+          console.error('DEBUG List table insert error:', error)
+          insertErrors.push('List table: ' + error.message)
+        } else {
+          listTableInserted += batch.length
+        }
+      }
+      console.log('DEBUG List table inserted:', listTableInserted)
+    }
+
     return NextResponse.json({
       success: true,
       sheetId: newSheet.id,
@@ -374,6 +624,7 @@ export async function POST(request: NextRequest) {
       supplierCompanyId,
       supplierName: metadata.supplierName,
       answersImported: inserted,
+      listTableCellsImported: listTableInserted,
       issueCount: issues.length
     })
     
