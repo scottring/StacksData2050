@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Paperclip, Upload, Loader2, ChevronDown, ChevronUp, X, FileText, FileSpreadsheet, FileImage, File, Download, Trash2 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
@@ -96,11 +97,11 @@ export function QuestionAttachments({ sheetId, questionId, compact = true }: Que
         setAttachments(prev => [attachment, ...prev])
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to upload file')
+        toast.error(error.error || 'Failed to upload file')
       }
     } catch (error) {
       console.error('Failed to upload attachment:', error)
-      alert('Failed to upload file')
+      toast.error('Failed to upload file')
     } finally {
       setUploading(false)
       // Reset file input

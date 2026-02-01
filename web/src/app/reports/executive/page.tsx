@@ -50,22 +50,63 @@ export default function ExecutiveDashboard() {
     async function fetchData() {
       const supabase = createClient()
 
-      const [companiesRes, sheetsRes, answersRes] = await Promise.all([
-        supabase.from('companies').select('id', { count: 'exact', head: true }),
-        supabase.from('sheets').select('id, status'),
-        supabase.from('answers').select('id', { count: 'exact', head: true }),
-      ])
+      // Get current user and check access level
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setStats(prev => ({ ...prev, loading: false }))
+        return
+      }
 
-      const sheets = sheetsRes.data || []
-      const approved = sheets.filter(s => s.status === 'approved' || s.status === 'completed').length
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const companyId = userData?.company_id
+
+      // Get all sheets
+      const { data: allSheets } = await supabase
+        .from('sheets')
+        .select('id, company_id, requesting_company_id, status')
+
+      // Filter sheets based on access level
+      let sheets = allSheets || []
+      if (!isSuperAdmin && companyId) {
+        sheets = sheets.filter(
+          s => s.company_id === companyId || s.requesting_company_id === companyId
+        )
+      }
+
+      // Get related company count
+      const relatedCompanyIds = new Set<string>()
+      sheets.forEach(s => {
+        if (s.company_id) relatedCompanyIds.add(s.company_id)
+        if (s.requesting_company_id) relatedCompanyIds.add(s.requesting_company_id)
+      })
+
+      // Get answer count for relevant sheets
+      const sheetIds = sheets.map(s => s.id)
+      const { count: answerCount } = await supabase
+        .from('answers')
+        .select('*', { count: 'exact', head: true })
+        .in('sheet_id', sheetIds.length > 0 ? sheetIds : ['none'])
+
+      // Legacy/draft/imported count as approved
+      const approved = sheets.filter(s =>
+        s.status === 'approved' || s.status === 'completed' || s.status === 'draft' || s.status === 'imported' || !s.status
+      ).length
       const submitted = sheets.filter(s => s.status === 'submitted').length
-      const draft = sheets.filter(s => s.status === 'draft' || s.status === 'pending' || s.status === 'in_progress').length
+      const draft = sheets.filter(s => s.status === 'in_progress' || s.status === 'pending').length
       const flagged = sheets.filter(s => s.status === 'flagged' || s.status === 'rejected').length
 
       setStats({
-        totalSuppliers: companiesRes.count || 0,
+        totalSuppliers: isSuperAdmin
+          ? (await supabase.from('companies').select('id', { count: 'exact', head: true })).count || 0
+          : relatedCompanyIds.size,
         totalSheets: sheets.length,
-        totalAnswers: answersRes.count || 0,
+        totalAnswers: answerCount || 0,
         completionRate: sheets.length > 0 ? Math.round((approved / sheets.length) * 100) : 0,
         submittedSheets: submitted,
         approvedSheets: approved,
@@ -77,6 +118,35 @@ export default function ExecutiveDashboard() {
 
     fetchData()
   }, [])
+
+  const exportToCSV = () => {
+    const csvContent = `Executive Dashboard Report - ${new Date().toISOString().split('T')[0]}
+
+SUMMARY METRICS
+Metric,Value
+Total Suppliers,${stats.totalSuppliers}
+Total Sheets,${stats.totalSheets}
+Completion Rate,${stats.completionRate}%
+Total Data Points,${stats.totalAnswers}
+
+STATUS BREAKDOWN
+Status,Count,Percentage
+Approved/Completed,${stats.approvedSheets},${stats.totalSheets > 0 ? Math.round((stats.approvedSheets / stats.totalSheets) * 100) : 0}%
+Submitted,${stats.submittedSheets},${stats.totalSheets > 0 ? Math.round((stats.submittedSheets / stats.totalSheets) * 100) : 0}%
+Draft/In Progress,${stats.draftSheets},${stats.totalSheets > 0 ? Math.round((stats.draftSheets / stats.totalSheets) * 100) : 0}%
+Flagged/Rejected,${stats.flaggedSheets},${stats.totalSheets > 0 ? Math.round((stats.flaggedSheets / stats.totalSheets) * 100) : 0}%
+`
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `executive-dashboard-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <AppLayout title="Executive Dashboard">
@@ -99,9 +169,9 @@ export default function ExecutiveDashboard() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={exportToCSV} disabled={stats.loading}>
             <Download className="h-4 w-4 mr-2" />
-            Export PDF
+            Export CSV
           </Button>
         </div>
 

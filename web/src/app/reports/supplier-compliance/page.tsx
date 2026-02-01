@@ -41,24 +41,50 @@ export default function SupplierComplianceReport() {
     async function fetchData() {
       const supabase = createClient()
 
-      // Get all companies with their sheets
+      // Get current user and check access level
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const companyId = userData?.company_id
+
+      // Get all companies
       const { data: companies } = await supabase
         .from('companies')
         .select('id, name')
         .order('name')
 
-      const { data: sheets } = await supabase
+      // Get sheets - filter by company access if not super admin
+      const { data: allSheets } = await supabase
         .from('sheets')
-        .select('id, requesting_company_id, status')
+        .select('id, company_id, requesting_company_id, status')
 
-      // Calculate compliance for each supplier
+      // Filter sheets based on access level
+      let sheets = allSheets || []
+      if (!isSuperAdmin && companyId) {
+        sheets = sheets.filter(
+          s => s.company_id === companyId || s.requesting_company_id === companyId
+        )
+      }
+
+      // Calculate compliance for each supplier (company_id = supplier filling out the sheet)
       const supplierData: SupplierCompliance[] = (companies || []).map(company => {
-        const companySheets = (sheets || []).filter(s => s.requesting_company_id === company.id)
+        const companySheets = sheets.filter(s => s.company_id === company.id)
+        // Legacy/draft/imported count as complete
         const completed = companySheets.filter(s =>
-          s.status === 'approved' || s.status === 'completed'
+          s.status === 'approved' || s.status === 'completed' || s.status === 'draft' || s.status === 'imported' || !s.status
         ).length
         const pending = companySheets.filter(s =>
-          s.status === 'draft' || s.status === 'pending' || s.status === 'in_progress'
+          s.status === 'in_progress' || s.status === 'pending'
         ).length
 
         return {
@@ -101,6 +127,39 @@ export default function SupplierComplianceReport() {
     return <Badge variant="outline">No Data</Badge>
   }
 
+  const exportToCSV = () => {
+    const headers = ['Supplier', 'Total Sheets', 'Completed', 'Pending', 'Completion Rate', 'Status']
+    const getStatus = (rate: number) => {
+      if (rate >= 80) return 'Compliant'
+      if (rate >= 50) return 'In Progress'
+      if (rate > 0) return 'Action Required'
+      return 'No Data'
+    }
+    const rows = suppliers.map(s => [
+      s.name,
+      s.totalSheets,
+      s.completedSheets,
+      s.pendingSheets,
+      `${s.completionRate}%`,
+      getStatus(s.completionRate)
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `supplier-compliance-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <AppLayout title="Supplier Compliance Summary">
       <div className="space-y-6">
@@ -122,7 +181,7 @@ export default function SupplierComplianceReport() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={exportToCSV} disabled={loading || suppliers.length === 0}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>

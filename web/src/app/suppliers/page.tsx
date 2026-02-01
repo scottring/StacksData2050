@@ -1,14 +1,12 @@
 import { AppLayout } from '@/components/layout/app-layout'
 import { SuppliersList } from '@/components/suppliers/suppliers-list'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Download } from 'lucide-react'
+import { SuppliersHeaderActions } from '@/components/suppliers/suppliers-header-actions'
+import { PageHeader } from '@/components/layout/page-header'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/database.types'
 
 type Company = Database['public']['Tables']['companies']['Row']
 type User = Database['public']['Tables']['users']['Row']
-type Sheet = Database['public']['Tables']['sheets']['Row']
 
 interface SupplierWithStats {
   company: Company
@@ -21,58 +19,60 @@ interface SupplierWithStats {
 async function getSuppliers(): Promise<SupplierWithStats[]> {
   const supabase = await createClient()
 
-  // Get current user and their company
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return []
 
   const { data: userData } = await supabase
     .from('users')
-    .select('company_id, is_super_admin')
+    .select('company_id')
     .eq('id', user.id)
     .single()
 
   if (!userData?.company_id) return []
 
-  // Fetch companies - RLS will automatically filter to visible companies
-  // (own company + association members + sheet relationship companies)
+  const myCompanyId = userData.company_id
+
+  const { data: sheets } = await supabase
+    .from('sheets')
+    .select('*, companies!sheets_company_id_fkey(id, name, logo_url, location)')
+    .eq('requesting_company_id', myCompanyId)
+
+  if (!sheets || sheets.length === 0) return []
+
+  const supplierCompanyIds = [...new Set(
+    sheets
+      .map(s => s.company_id)
+      .filter((id): id is string => id !== null)
+  )]
+
+  if (supplierCompanyIds.length === 0) return []
+
   const { data: companies } = await supabase
     .from('companies')
     .select('*')
-    
-    
+    .in('id', supplierCompanyIds)
     .order('name')
 
   if (!companies) return []
 
-  // Fetch sheets - RLS will filter to accessible sheets only
-  const { data: sheets } = await supabase
-    .from('sheets')
-    .select('*')
-
-  // Fetch users for primary contacts - RLS will filter to visible users
   const { data: users } = await supabase
     .from('users')
     .select('*')
-    .eq('is_company_main_contact', true)
+    .in('company_id', supplierCompanyIds)
 
-  // Build supplier stats
   const suppliersWithStats: SupplierWithStats[] = companies.map(company => {
-    // Count sheets assigned to this supplier company
-    const companySheets = (sheets || []).filter(
-      s => s.requesting_company_id === company.id
-    )
+    const companySheets = sheets.filter(s => s.company_id === company.id)
 
     const openTasks = companySheets.filter(
       s => s.status === 'in_progress' || s.status === 'pending'
     ).length
 
     const completedTasks = companySheets.filter(
-      s => s.status === 'completed' || s.status === 'approved'
+      s => s.status === 'approved' || s.status === 'imported' || s.status === 'completed' || s.status === 'draft' || !s.status
     ).length
 
-    const primaryContact = (users || []).find(
-      u => u.company_id === company.id
-    ) || null
+    const companyUsers = (users || []).filter(u => u.company_id === company.id)
+    const primaryContact = companyUsers.find(u => u.role === 'admin') || companyUsers[0] || null
 
     return {
       company,
@@ -91,28 +91,14 @@ export default async function SuppliersPage() {
 
   return (
     <AppLayout title="Our Suppliers">
-      <div className="space-y-6">
-        {/* Header with actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Suppliers</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage your supplier relationships and compliance data
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Supplier
-            </Button>
-          </div>
-        </div>
+      <div className="space-y-6 max-w-7xl mx-auto">
+        <PageHeader
+          title="Our Suppliers"
+          description="Manage your supplier relationships and compliance data"
+        >
+          <SuppliersHeaderActions />
+        </PageHeader>
 
-        {/* Client component handles search and table interactivity */}
         <SuppliersList suppliers={suppliers} />
       </div>
     </AppLayout>

@@ -38,12 +38,36 @@ export default function OverdueSubmissionsReport() {
     async function fetchData() {
       const supabase = createClient()
 
-      // Get sheets that are still in draft/pending/in_progress status
-      const { data: sheets } = await supabase
+      // Get current user and check access level
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const companyId = userData?.company_id
+
+      // Get sheets that are still in pending/in_progress status (not legacy draft/imported)
+      const { data: allSheets } = await supabase
         .from('sheets')
-        .select('id, name, requesting_company_id, status, modified_at, created_at')
-        .in('status', ['draft', 'pending', 'in_progress'])
+        .select('id, name, company_id, requesting_company_id, status, modified_at, created_at')
+        .in('status', ['pending', 'in_progress'])
         .order('modified_at', { ascending: true })
+
+      // Filter sheets based on access level
+      let sheets = allSheets || []
+      if (!isSuperAdmin && companyId) {
+        sheets = sheets.filter(
+          s => s.company_id === companyId || s.requesting_company_id === companyId
+        )
+      }
 
       const { data: companies } = await supabase
         .from('companies')
@@ -53,17 +77,18 @@ export default function OverdueSubmissionsReport() {
       const now = new Date()
 
       // Calculate days since last modified
-      const overdueData: OverdueSheet[] = (sheets || []).map(sheet => {
+      const overdueData: OverdueSheet[] = sheets.map(sheet => {
         const lastModified = new Date(sheet.modified_at || sheet.created_at)
         const diffTime = now.getTime() - lastModified.getTime()
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-        const company = companyMap.get(sheet.requesting_company_id)
+        // Show company that is the supplier (company_id)
+        const company = companyMap.get(sheet.company_id)
 
         return {
           id: sheet.id,
           name: sheet.name,
           companyName: company?.name || 'Unknown',
-          status: sheet.status || 'draft',
+          status: sheet.status || 'pending',
           modifiedAt: sheet.modified_at || sheet.created_at,
           daysOverdue: diffDays,
         }
@@ -101,6 +126,38 @@ export default function OverdueSubmissionsReport() {
     })
   }
 
+  const exportToCSV = () => {
+    const headers = ['Product', 'Supplier', 'Status', 'Last Modified', 'Days Overdue', 'Urgency']
+    const getUrgency = (days: number) => {
+      if (days > 90) return 'Critical'
+      if (days > 30) return 'Overdue'
+      return 'Warning'
+    }
+    const rows = overdueSheets.map(s => [
+      s.name,
+      s.companyName,
+      s.status,
+      formatDate(s.modifiedAt),
+      s.daysOverdue,
+      getUrgency(s.daysOverdue)
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `overdue-submissions-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <AppLayout title="Overdue Submissions">
       <div className="space-y-6">
@@ -127,7 +184,7 @@ export default function OverdueSubmissionsReport() {
               <Mail className="h-4 w-4 mr-2" />
               Send Reminders
             </Button>
-            <Button>
+            <Button onClick={exportToCSV} disabled={loading || overdueSheets.length === 0}>
               <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>

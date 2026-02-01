@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -59,7 +60,7 @@ export default function LoginPage() {
     }
 
     setError(null)
-    alert('Check your email for a password reset link')
+    toast.success('Check your email for a password reset link')
     setLoading(false)
   }
 

@@ -1,7 +1,3 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,28 +14,34 @@ import {
   ArrowLeft,
   Building2,
   Mail,
-  Phone,
   MapPin,
-  Plus,
   FileText,
   ChevronRight,
   CheckCircle2,
   Clock,
   AlertCircle
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import type { Company, Sheet, User } from '@/lib/database.types'
+import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/database.types'
+import Link from 'next/link'
+import { SupplierDetailActions } from '@/components/suppliers/supplier-detail-actions'
+import { CreateFirstSheetButton } from '@/components/suppliers/create-first-sheet-button'
+
+type Company = Database['public']['Tables']['companies']['Row']
+type User = Database['public']['Tables']['users']['Row']
+type Sheet = Database['public']['Tables']['sheets']['Row']
 
 interface SupplierDetails {
   company: Company
   contacts: User[]
   sheets: Sheet[]
+  myCompanyId: string
 }
 
 function getStatusBadge(status: string | null) {
   switch (status) {
-    case 'completed':
     case 'approved':
+    case 'imported':
       return (
         <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
           <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -54,10 +56,17 @@ function getStatusBadge(status: string | null) {
         </Badge>
       )
     case 'pending':
+    case 'flagged':
       return (
         <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
           <AlertCircle className="h-3 w-3 mr-1" />
-          Pending
+          {status === 'flagged' ? 'Flagged' : 'Pending'}
+        </Badge>
+      )
+    case 'draft':
+      return (
+        <Badge variant="outline">
+          Draft
         </Badge>
       )
     default:
@@ -69,70 +78,65 @@ function getStatusBadge(status: string | null) {
   }
 }
 
-export default function SupplierDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const supplierId = params.id as string
+async function getSupplierDetails(supplierId: string): Promise<SupplierDetails | null> {
+  const supabase = await createClient()
 
-  const [details, setDetails] = useState<SupplierDetails | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Get current user's company
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
-  useEffect(() => {
-    async function fetchSupplierDetails() {
-      const supabase = createClient()
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
 
-      // Fetch company
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('id', supplierId)
-        .single()
+  if (!userData?.company_id) return null
 
-      if (companyError || !company) {
-        console.error('Error fetching company:', companyError)
-        setLoading(false)
-        return
-      }
+  const myCompanyId = userData.company_id
 
-      // Fetch contacts
-      const { data: contacts } = await supabase
-        .from('users')
-        .select('*')
-        .eq('company_id', supplierId)
-        .order('is_company_main_contact', { ascending: false })
+  // Fetch supplier company
+  const { data: company, error: companyError } = await supabase
+    .from('companies')
+    .select('*')
+    .eq('id', supplierId)
+    .single()
 
-      // Fetch sheets assigned to this supplier
-      const { data: sheets } = await supabase
-        .from('sheets')
-        .select('*')
-        .eq('requesting_company_id', supplierId)
-        .order('modified_at', { ascending: false })
-
-      setDetails({
-        company,
-        contacts: contacts || [],
-        sheets: sheets || []
-      })
-      setLoading(false)
-    }
-
-    if (supplierId) {
-      fetchSupplierDetails()
-    }
-  }, [supplierId])
-
-  if (loading) {
-    return (
-      <AppLayout title="Supplier Details">
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <span>Loading supplier...</span>
-          </div>
-        </div>
-      </AppLayout>
-    )
+  if (companyError || !company) {
+    return null
   }
+
+  // Fetch contacts at supplier company
+  const { data: contacts } = await supabase
+    .from('users')
+    .select('*')
+    .eq('company_id', supplierId)
+
+  // Fetch sheets where:
+  // - This company is the supplier (company_id = supplierId)
+  // - My company requested them (requesting_company_id = myCompanyId)
+  const { data: sheets } = await supabase
+    .from('sheets')
+    .select('*')
+    .eq('company_id', supplierId)
+    .eq('requesting_company_id', myCompanyId)
+    .order('modified_at', { ascending: false })
+
+  return {
+    company,
+    contacts: contacts || [],
+    sheets: sheets || [],
+    myCompanyId
+  }
+}
+
+export default async function SupplierDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id: supplierId } = await params
+  const details = await getSupplierDetails(supplierId)
 
   if (!details) {
     return (
@@ -140,33 +144,41 @@ export default function SupplierDetailPage() {
         <div className="flex flex-col items-center justify-center h-64 gap-4">
           <Building2 className="h-16 w-16 text-muted-foreground/30" />
           <p className="text-muted-foreground">Supplier not found</p>
-          <Button variant="outline" onClick={() => router.push('/suppliers')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Suppliers
-          </Button>
+          <Link href="/suppliers">
+            <Button variant="outline">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Suppliers
+            </Button>
+          </Link>
         </div>
       </AppLayout>
     )
   }
 
   const { company, contacts, sheets } = details
-  const primaryContact = contacts.find(c => c.is_company_main_contact) || contacts[0]
-  const completedSheets = sheets.filter(s => s.status === 'completed' || s.status === 'approved').length
+
+  // Filter out placeholder contacts
+  const realContacts = contacts.filter(c =>
+    c.full_name &&
+    c.full_name !== 'Unknown' &&
+    !c.email?.includes('placeholder')
+  )
+  const primaryContact = realContacts.find(c => c.role === 'admin') || realContacts[0]
+  const completedSheets = sheets.filter(s => s.status === 'approved' || s.status === 'imported').length
   const inProgressSheets = sheets.filter(s => s.status === 'in_progress').length
-  const pendingSheets = sheets.filter(s => s.status === 'pending').length
+  const draftSheets = sheets.filter(s => s.status === 'draft').length
+  const pendingSheets = sheets.filter(s => s.status === 'pending' || s.status === 'flagged').length
 
   return (
     <AppLayout title={company.name}>
       <div className="space-y-6">
         {/* Back button and header */}
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push('/suppliers')}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <Link href="/suppliers">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center">
@@ -191,10 +203,7 @@ export default function SupplierDetailPage() {
               </div>
             </div>
           </div>
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            New Product Sheet
-          </Button>
+          <SupplierDetailActions supplierId={company.id} supplierName={company.name} />
         </div>
 
         {/* Stats and contact info */}
@@ -266,25 +275,21 @@ export default function SupplierDetailPage() {
                           <div className="flex flex-col items-center gap-2 text-muted-foreground">
                             <FileText className="h-12 w-12 opacity-30" />
                             <span>No product sheets yet</span>
-                            <Button variant="outline" size="sm" className="mt-2">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Create First Sheet
-                            </Button>
+                            <CreateFirstSheetButton />
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : (
                       sheets.map((sheet) => (
-                        <TableRow
-                          key={sheet.id}
-                          className="cursor-pointer hover:bg-muted/50"
-                          onClick={() => router.push(`/sheets/${sheet.id}`)}
-                        >
+                        <TableRow key={sheet.id} className="group">
                           <TableCell>
-                            <div className="flex items-center gap-3">
+                            <Link
+                              href={`/sheets/${sheet.id}`}
+                              className="flex items-center gap-3 group-hover:text-primary"
+                            >
                               <FileText className="h-5 w-5 text-muted-foreground" />
                               <span className="font-medium">{sheet.name}</span>
-                            </div>
+                            </Link>
                           </TableCell>
                           <TableCell>
                             {getStatusBadge(sheet.status)}
@@ -295,7 +300,9 @@ export default function SupplierDetailPage() {
                               : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                            <Link href={`/sheets/${sheet.id}`}>
+                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                            </Link>
                           </TableCell>
                         </TableRow>
                       ))
@@ -316,9 +323,7 @@ export default function SupplierDetailPage() {
                 {primaryContact ? (
                   <div className="space-y-3">
                     <div className="font-medium text-lg">
-                      {primaryContact.full_name ||
-                       `${primaryContact.first_name || ''} ${primaryContact.last_name || ''}`.trim() ||
-                       'No name'}
+                      {primaryContact.full_name || 'No name'}
                     </div>
                     {primaryContact.email && (
                       <div className="flex items-center gap-2 text-muted-foreground">
@@ -331,12 +336,6 @@ export default function SupplierDetailPage() {
                         </a>
                       </div>
                     )}
-                    {primaryContact.phone_text && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Phone className="h-4 w-4" />
-                        <span>{primaryContact.phone_text}</span>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <p className="text-muted-foreground">No contact assigned</p>
@@ -344,22 +343,20 @@ export default function SupplierDetailPage() {
               </CardContent>
             </Card>
 
-            {contacts.length > 1 && (
+            {realContacts.length > 1 && (
               <Card>
                 <CardHeader>
                   <CardTitle>Other Contacts</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {contacts
+                    {realContacts
                       .filter(c => c.id !== primaryContact?.id)
                       .slice(0, 3)
                       .map(contact => (
                         <div key={contact.id} className="text-sm">
                           <div className="font-medium">
-                            {contact.full_name ||
-                             `${contact.first_name || ''} ${contact.last_name || ''}`.trim() ||
-                             'No name'}
+                            {contact.full_name}
                           </div>
                           {contact.email && (
                             <div className="text-muted-foreground">{contact.email}</div>

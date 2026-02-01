@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import {
   Dialog,
@@ -19,12 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle2, Settings } from 'lucide-react'
+import { Loader2, CheckCircle2, Settings, User } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
 import { TagMultiSelect } from '@/components/ui/tag-multi-select'
 type Company = Database['public']['Tables']['companies']['Row']
+type UserRecord = Database['public']['Tables']['users']['Row']
 // Use a simpler tag type for what we actually need
 interface TagOption {
   id: string
@@ -37,12 +39,19 @@ interface CompanyQuestion {
   response_type: 'text' | 'yes_no' | 'choice'
   required: boolean
 }
+interface SupplierContact {
+  id: string
+  email: string | null
+  full_name: string | null
+}
 interface RequestSheetDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogProps) {
   const [suppliers, setSuppliers] = useState<Company[]>([])
+  const [supplierContacts, setSupplierContacts] = useState<SupplierContact[]>([])
+  const [loadingContacts, setLoadingContacts] = useState(false)
   const [tags, setTags] = useState<TagOption[]>([])
   const [customQuestions, setCustomQuestions] = useState<CompanyQuestion[]>([])
   const [loading, setLoading] = useState(true)
@@ -52,6 +61,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   const [formData, setFormData] = useState({
     productName: '',
     supplierId: '',
+    selectedContactId: '',
     selectedTags: [] as string[],
     selectedCustomQuestions: [] as string[],
     newSupplierEmail: '',
@@ -63,6 +73,45 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       setSuccess(false)
     }
   }, [open])
+
+  // Fetch contacts when supplier changes
+  useEffect(() => {
+    async function fetchContacts() {
+      if (!formData.supplierId) {
+        setSupplierContacts([])
+        return
+      }
+
+      setLoadingContacts(true)
+      const supabase = createClient()
+
+      const { data: contacts } = await supabase
+        .from('users')
+        .select('id, email, full_name')
+        .eq('company_id', formData.supplierId)
+        .order('full_name')
+
+      // Filter out placeholder emails and unknown names
+      const validContacts = (contacts || []).filter(c =>
+        c.email &&
+        !c.email.includes('placeholder') &&
+        c.full_name &&
+        c.full_name !== 'Unknown'
+      )
+
+      setSupplierContacts(validContacts)
+      setLoadingContacts(false)
+
+      // Auto-select if only one contact
+      if (validContacts.length === 1) {
+        setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
+      } else {
+        setFormData(prev => ({ ...prev, selectedContactId: '' }))
+      }
+    }
+
+    fetchContacts()
+  }, [formData.supplierId])
   async function fetchData() {
     setLoading(true)
     const supabase = createClient()
@@ -227,13 +276,33 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       // Send email notification to supplier
       if (supplierMode === 'existing' && formData.supplierId) {
         try {
-          // Get supplier's primary user email
-          const { data: supplierUsers } = await supabase
-            .from('users')
-            .select('email, full_name')
-            .eq('company_id', formData.supplierId)
-            .limit(1)
-          
+          let supplierEmail: string | null = null
+          let supplierName: string | null = null
+
+          // Use selected contact if one was chosen
+          if (formData.selectedContactId) {
+            const selectedContact = supplierContacts.find(c => c.id === formData.selectedContactId)
+            if (selectedContact) {
+              supplierEmail = selectedContact.email
+              supplierName = selectedContact.full_name
+            }
+          }
+
+          // Fall back to first valid contact if no contact was selected
+          if (!supplierEmail) {
+            const { data: supplierUsers } = await supabase
+              .from('users')
+              .select('email, full_name')
+              .eq('company_id', formData.supplierId)
+              .not('email', 'ilike', '%placeholder%')
+              .limit(1)
+
+            if (supplierUsers && supplierUsers.length > 0) {
+              supplierEmail = supplierUsers[0].email
+              supplierName = supplierUsers[0].full_name
+            }
+          }
+
           // Get requester's company name
           const { data: requesterCompany } = await supabase
             .from('companies')
@@ -241,15 +310,15 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
             .eq('id', userData.company_id)
             .single()
 
-          if (supplierUsers && supplierUsers.length > 0) {
+          if (supplierEmail) {
             await fetch('/api/requests/notify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 requestId: newRequest.id,
                 sheetId: newSheet.id,
-                supplierEmail: supplierUsers[0].email,
-                supplierName: supplierUsers[0].full_name,
+                supplierEmail,
+                supplierName,
                 productName: formData.productName,
                 requesterName: userData.full_name,
                 requesterCompany: requesterCompany?.name,
@@ -267,16 +336,18 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
         setFormData({
           productName: '',
           supplierId: '',
+          selectedContactId: '',
           selectedTags: [],
           selectedCustomQuestions: [],
           newSupplierEmail: '',
           newSupplierCompanyName: '',
         })
+        setSupplierContacts([])
         onOpenChange(false)
       }, 1500)
     } catch (error) {
       console.error('Error creating request:', error)
-      alert('Failed to create request. Please try again.')
+      toast.error('Failed to create request. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -370,7 +441,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                 </Button>
               </div>
               {supplierMode === 'existing' ? (
-                <>
+                <div className="space-y-3">
                   <Select
                     value={formData.supplierId}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, supplierId: value }))}
@@ -394,10 +465,53 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                       )}
                     </SelectContent>
                   </Select>
+
+                  {/* Contact selector - appears after supplier is selected */}
+                  {formData.supplierId && (
+                    <div className="space-y-2">
+                      <Label htmlFor="contact" className="text-sm">
+                        Send To
+                      </Label>
+                      {loadingContacts ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Loading contacts...
+                        </div>
+                      ) : supplierContacts.length === 0 ? (
+                        <div className="text-sm text-muted-foreground py-2 flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          No contacts found at this company
+                        </div>
+                      ) : (
+                        <Select
+                          value={formData.selectedContactId}
+                          onValueChange={(value) => setFormData(prev => ({ ...prev, selectedContactId: value }))}
+                          disabled={submitting}
+                        >
+                          <SelectTrigger id="contact">
+                            <SelectValue placeholder="Select a contact (optional)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {supplierContacts.map((contact) => (
+                              <SelectItem key={contact.id} value={contact.id}>
+                                <div className="flex flex-col">
+                                  <span>{contact.full_name}</span>
+                                  <span className="text-xs text-muted-foreground">{contact.email}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  )}
+
                   <p className="text-xs text-muted-foreground">
-                    The supplier who will fill out the questionnaire
+                    {formData.selectedContactId
+                      ? 'This person will receive the request notification'
+                      : 'Select a specific contact or we\'ll notify the primary contact'}
                   </p>
-                </>
+                </div>
               ) : (
                 <div className="space-y-3">
                   <Input

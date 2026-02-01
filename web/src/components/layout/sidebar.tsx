@@ -14,13 +14,14 @@ import {
   BarChart3,
   Settings,
   ChevronDown,
-  ShieldAlert,
   Inbox,
   Send,
   FileUp,
   LogOut,
   User,
   Shield,
+  ChevronRight,
+  Plug,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -90,19 +91,6 @@ const supplierNavItems: NavItem[] = [
   },
 ]
 
-const complianceNavItems: NavItem[] = [
-  {
-    title: 'Supplier View',
-    href: '/compliance/supplier',
-    icon: ShieldAlert,
-  },
-  {
-    title: 'Manufacturer View',
-    href: '/compliance/manufacturer',
-    icon: Building2,
-  },
-]
-
 const adminNavItems: NavItem[] = [
   {
     title: 'Companies',
@@ -131,21 +119,24 @@ function NavSection({ title, items, pathname }: NavSectionProps) {
   const [isOpen, setIsOpen] = useState(true)
 
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+        className="group flex w-full items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors"
       >
         {title}
         <ChevronDown
           className={cn(
-            'h-4 w-4 transition-transform',
+            'h-3.5 w-3.5 transition-transform duration-200',
             isOpen ? '' : '-rotate-90'
           )}
         />
       </button>
-      {isOpen && (
-        <nav className="mt-1 space-y-1">
+      <div className={cn(
+        "grid transition-all duration-200 ease-out",
+        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      )}>
+        <nav className="overflow-hidden mt-1 space-y-0.5">
           {items.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             const Icon = item.icon
@@ -154,19 +145,25 @@ function NavSection({ title, items, pathname }: NavSectionProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 )}
               >
-                <Icon className="h-4 w-4" />
-                {item.title}
+                <Icon className={cn(
+                  "h-4 w-4 transition-transform duration-150",
+                  !isActive && "group-hover:scale-110"
+                )} />
+                <span>{item.title}</span>
+                {isActive && (
+                  <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-70" />
+                )}
               </Link>
             )
           })}
         </nav>
-      )}
+      </div>
     </div>
   )
 }
@@ -239,127 +236,171 @@ export function Sidebar() {
     return user?.email || 'User'
   }
 
+  const isDashboardActive = pathname === '/dashboard'
+  const isReportsActive = pathname === '/reports' || pathname.startsWith('/reports/')
+  const isIntegrationsActive = pathname === '/integrations' || pathname.startsWith('/integrations/')
+  const isSettingsActive = pathname === '/settings'
+
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-sidebar">
+    <aside className="flex h-screen w-64 flex-col border-r border-slate-200/60 bg-gradient-to-b from-slate-50 to-white">
       {/* Logo */}
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href="/dashboard" className="flex items-center">
+      <div className="flex h-16 items-center border-b border-slate-200/60 px-5">
+        <Link href="/dashboard" className="flex items-center gap-2 group">
           <img
             src="/stacks-logo-new.png"
             alt="Stacks Data"
-            className="h-10 w-auto"
+            className="h-9 w-auto transition-transform duration-200 group-hover:scale-105"
           />
         </Link>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {/* Dashboard */}
         <nav className="mb-4">
           <Link
             href="/dashboard"
             className={cn(
-              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-              pathname === '/dashboard'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+              isDashboardActive
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             )}
           >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
+            <LayoutDashboard className={cn(
+              "h-4 w-4 transition-transform duration-150",
+              !isDashboardActive && "group-hover:scale-110"
+            )} />
+            <span>Dashboard</span>
+            {isDashboardActive && (
+              <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-70" />
+            )}
           </Link>
         </nav>
 
         <NavSection title="As Customer" items={customerNavItems} pathname={pathname} />
         <NavSection title="As Supplier" items={supplierNavItems} pathname={pathname} />
-        <NavSection title="Compliance" items={complianceNavItems} pathname={pathname} />
         <NavSection title="Admin" items={adminNavItems} pathname={pathname} />
 
-        {/* Reports */}
-        <nav className="mt-4">
+        {/* Reports & Integrations */}
+        <nav className="mt-4 pt-4 border-t border-slate-200/60 space-y-0.5">
           <Link
             href="/reports"
             className={cn(
-              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-              pathname === '/reports' || pathname.startsWith('/reports/')
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+              isReportsActive
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             )}
           >
-            <BarChart3 className="h-4 w-4" />
-            Reports
+            <BarChart3 className={cn(
+              "h-4 w-4 transition-transform duration-150",
+              !isReportsActive && "group-hover:scale-110"
+            )} />
+            <span>Reports</span>
+            {isReportsActive && (
+              <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-70" />
+            )}
+          </Link>
+          <Link
+            href="/integrations"
+            className={cn(
+              'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+              isIntegrationsActive
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            )}
+          >
+            <Plug className={cn(
+              "h-4 w-4 transition-transform duration-150",
+              !isIntegrationsActive && "group-hover:scale-110"
+            )} />
+            <span>Integrations</span>
+            {isIntegrationsActive && (
+              <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-70" />
+            )}
           </Link>
         </nav>
       </div>
 
       {/* Bottom section */}
-      <div className="border-t p-3 space-y-2">
+      <div className="border-t border-slate-200/60 p-3 space-y-2 bg-white/50">
         <Link
           href="/settings"
           className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-            pathname === '/settings'
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+            isSettingsActive
+              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           )}
         >
-          <Settings className="h-4 w-4" />
-          Settings
+          <Settings className={cn(
+            "h-4 w-4 transition-transform duration-150",
+            !isSettingsActive && "group-hover:scale-110"
+          )} />
+          <span>Settings</span>
+          {isSettingsActive && (
+            <ChevronRight className="h-3.5 w-3.5 ml-auto opacity-70" />
+          )}
         </Link>
 
         {/* User profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 hover:bg-slate-100 group">
+              <Avatar className="h-9 w-9 ring-2 ring-white shadow-sm">
+                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 text-left truncate">
-                <p className="text-sm font-medium truncate">{getDisplayName()}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm font-medium text-slate-900 truncate">{getDisplayName()}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.companyName || user?.email}</p>
               </div>
+              <ChevronDown className="h-4 w-4 text-slate-400 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="start" side="top">
-            <DropdownMenuLabel>
+          <DropdownMenuContent className="w-56 rounded-xl shadow-lg border-slate-200/60" align="start" side="top" sideOffset={8}>
+            <DropdownMenuLabel className="px-3 py-2">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{getDisplayName()}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="text-sm font-semibold text-slate-900">{getDisplayName()}</p>
+                <p className="text-xs text-slate-500">{user?.email}</p>
                 {user?.companyName && (
-                  <p className="text-xs text-muted-foreground">{user.companyName}</p>
+                  <p className="text-xs text-slate-400">{user.companyName}</p>
                 )}
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/profile" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                Profile
+            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuItem asChild className="rounded-lg mx-1 cursor-pointer">
+              <Link href="/profile" className="flex items-center gap-2 px-2 py-2">
+                <User className="h-4 w-4 text-slate-500" />
+                <span>Profile</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center">
-                <Settings className="mr-2 h-4 w-4" />
-                Company Settings
+            <DropdownMenuItem asChild className="rounded-lg mx-1 cursor-pointer">
+              <Link href="/settings" className="flex items-center gap-2 px-2 py-2">
+                <Settings className="h-4 w-4 text-slate-500" />
+                <span>Company Settings</span>
               </Link>
             </DropdownMenuItem>
             {user?.role === 'super_admin' && (
               <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/admin" className="flex items-center">
-                    <Shield className="mr-2 h-4 w-4" />
-                    Admin Panel
+                <DropdownMenuSeparator className="bg-slate-100" />
+                <DropdownMenuItem asChild className="rounded-lg mx-1 cursor-pointer">
+                  <Link href="/admin" className="flex items-center gap-2 px-2 py-2">
+                    <Shield className="h-4 w-4 text-violet-500" />
+                    <span>Admin Panel</span>
                   </Link>
                 </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
+            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="rounded-lg mx-1 cursor-pointer text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

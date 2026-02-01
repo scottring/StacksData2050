@@ -3,14 +3,33 @@
 import { useEffect, useState } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
 import { CustomersList } from '@/components/customers/customers-list'
+import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
 import { Download, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/lib/database.types'
 
-type Company = Database['public']['Tables']['companies']['Row']
-type User = Database['public']['Tables']['users']['Row']
-type Sheet = Database['public']['Tables']['sheets']['Row']
+interface Company {
+  id: string
+  name: string
+  email_domain?: string | null
+  type?: string | null
+  logo_url?: string | null
+  location?: string | null
+  created_at?: string | null
+  modified_at?: string | null
+  bubble_id?: string | null
+}
+
+interface User {
+  id: string
+  email?: string | null
+  full_name?: string | null
+  company_id?: string | null
+  role?: string | null
+  created_at?: string | null
+  modified_at?: string | null
+  bubble_id?: string | null
+}
 
 interface CustomerWithStats {
   company: Company
@@ -19,6 +38,7 @@ interface CustomerWithStats {
   sheetsPending: number
   primaryContact: User | null
   lastActivity: string | null
+  isNewCustomer: boolean
 }
 
 export default function CustomersPage() {
@@ -29,7 +49,6 @@ export default function CustomersPage() {
     async function fetchCustomers() {
       const supabase = createClient()
 
-      // Get current user and their company
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         setLoading(false)
@@ -43,7 +62,6 @@ export default function CustomersPage() {
         .single()
 
       if (userError) {
-        console.error('Error fetching user data:', userError)
         setLoading(false)
         return
       }
@@ -55,86 +73,54 @@ export default function CustomersPage() {
 
       const myCompanyId = userData.company_id
 
-      // Fetch sheets where I am the SUPPLIER (requesting_company_id = my company)
-      // The requesting company (company_id) is my CUSTOMER
-      const { data: sheets, error: sheetsError } = await supabase
+      const { data: sheets } = await supabase
         .from('sheets')
         .select('*')
-        .eq('requesting_company_id', myCompanyId)
+        .eq('company_id', myCompanyId)
 
-      console.log('Customers page - Sheets query:', {
-        myCompanyId,
-        totalSheetsCount: sheets?.length || 0,
-        error: sheetsError,
-        sampleSheets: sheets?.slice(0, 3).map(s => ({
-          name: s.name,
-          company_id: s.company_id,
-          assigned_to: s.requesting_company_id
-        }))
-      })
+      const { data: requests } = await supabase
+        .from('requests')
+        .select('*')
+        .eq('requesting_from_id', myCompanyId)
+        .neq('show_as_removed', true)
 
-      if (!sheets || sheets.length === 0) {
-        setLoading(false)
-        return
-      }
+      const allSheets = sheets || []
+      const allRequests = requests || []
 
-      // DON'T deduplicate yet - let's see all sheets first
-      const allSheets = sheets
+      const customerIdsFromSheets = allSheets
+        .map(s => s.requesting_company_id)
+        .filter(id => id && id !== myCompanyId) as string[]
 
-      console.log('Customers page - All sheets before dedup:', {
-        totalSheets: allSheets.length,
-        uniqueNames: new Set(allSheets.map(s => s.name)).size,
-        uniqueCompanyIds: new Set(allSheets.map(s => s.company_id)).size
-      })
+      const customerIdsFromRequests = allRequests
+        .map(r => r.requestor_id)
+        .filter(id => id && id !== myCompanyId) as string[]
 
-      // Get unique customer company IDs, EXCLUDING our own company
-      const customerCompanyIds = [...new Set(
-        allSheets
-          .map(s => s.company_id)
-          .filter(id => id && id !== myCompanyId) as string[]
-      )]
-
-      console.log('Customers page - Customer IDs (excluding self):', {
-        allCompanyIds: allSheets.map(s => s.company_id),
-        myCompanyId,
-        filteredCustomerIds: customerCompanyIds,
-        customerCount: customerCompanyIds.length
-      })
+      const customerCompanyIds = [...new Set([...customerIdsFromSheets, ...customerIdsFromRequests])]
 
       if (customerCompanyIds.length === 0) {
-        console.log('No customers found (all sheets were self-referencing)')
         setLoading(false)
         return
       }
 
-      // Fetch customer companies
       const { data: companies } = await supabase
         .from('companies')
         .select('*')
         .in('id', customerCompanyIds)
-        .eq('active', true)
         .order('name')
-
-      console.log('Customers page - Companies:', companies?.length || 0)
 
       if (!companies) {
         setLoading(false)
         return
       }
 
-      // Fetch users for primary contacts
       const { data: users } = await supabase
         .from('users')
         .select('*')
         .in('company_id', customerCompanyIds)
-        .eq('is_company_main_contact', true)
 
-      // Build customer stats
-      const customersWithStats: CustomerWithStats[] = companies.map(company => {
-        // Get all sheets for this customer, then deduplicate by name
-        const rawCompanySheets = allSheets.filter(s => s.company_id === company.id)
+      const customersWithStats: CustomerWithStats[] = (companies as Company[]).map(company => {
+        const rawCompanySheets = allSheets.filter(s => s.requesting_company_id === company.id)
 
-        // Deduplicate sheets by name for this customer, keeping most recent
         const sheetsByName = new Map<string, typeof allSheets[0]>()
         rawCompanySheets.forEach(sheet => {
           const existing = sheetsByName.get(sheet.name)
@@ -146,24 +132,32 @@ export default function CustomersPage() {
         })
         const companySheets = Array.from(sheetsByName.values())
 
+        const hasSheets = companySheets.length > 0
+        const hasRequests = allRequests.some(r => r.requestor_id === company.id)
+        const isNewCustomer = !hasSheets && hasRequests
+
         const sheetsCompleted = companySheets.filter(
-          s => s.status === 'completed' || s.status === 'approved'
+          s => s.status === 'completed' || s.status === 'approved' || s.status === 'draft' || s.status === 'imported' || !s.status
         ).length
 
         const sheetsPending = companySheets.filter(
-          s => s.status === 'in_progress' || s.status === 'pending' || !s.status
+          s => s.status === 'in_progress' || s.status === 'pending'
         ).length
 
-        // Find most recent activity
-        const lastModified = companySheets
+        const sheetDates = companySheets
           .map(s => s.modified_at)
-          .filter(Boolean)
-          .sort()
-          .reverse()[0]
+          .filter(Boolean) as string[]
 
-        const primaryContact = (users || []).find(
-          u => u.company_id === company.id
-        ) || null
+        const requestDates = allRequests
+          .filter(r => r.requestor_id === company.id)
+          .map(r => r.modified_at || r.created_at)
+          .filter(Boolean) as string[]
+
+        const allDates = [...sheetDates, ...requestDates].sort().reverse()
+        const lastActivity = allDates[0] || null
+
+        const companyUsers = ((users || []) as User[]).filter(u => u.company_id === company.id)
+        const primaryContact = companyUsers.find(u => u.role === 'admin') || companyUsers[0] || null
 
         return {
           company,
@@ -171,11 +165,10 @@ export default function CustomersPage() {
           sheetsCompleted,
           sheetsPending,
           primaryContact,
-          lastActivity: lastModified || null
+          lastActivity,
+          isNewCustomer
         }
       })
-
-      console.log('Customers page - Final customers:', customersWithStats.length)
 
       setCustomers(customersWithStats)
       setLoading(false)
@@ -188,9 +181,12 @@ export default function CustomersPage() {
     return (
       <AppLayout title="Our Customers">
         <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span>Loading customers...</span>
+          <div className="flex flex-col items-center gap-3 text-slate-500">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 animate-pulse" />
+              <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-sky-600" />
+            </div>
+            <span className="text-sm font-medium">Loading customers...</span>
           </div>
         </div>
       </AppLayout>
@@ -199,24 +195,17 @@ export default function CustomersPage() {
 
   return (
     <AppLayout title="Our Customers">
-      <div className="space-y-6">
-        {/* Header with actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Our Customers</h1>
-            <p className="text-muted-foreground mt-1">
-              Companies that request product data sheets from you
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
-        </div>
+      <div className="space-y-6 max-w-7xl mx-auto">
+        <PageHeader
+          title="Our Customers"
+          description="Companies that request product data sheets from you"
+        >
+          <Button variant="outline" size="sm" className="rounded-xl border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        </PageHeader>
 
-        {/* Client component handles search and table interactivity */}
         <CustomersList customers={customers} />
       </div>
     </AppLayout>

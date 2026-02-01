@@ -36,7 +36,8 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
 
   const filteredSuppliers = suppliers.filter(s =>
     s.company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.primaryContact?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    s.primaryContact?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.primaryContact?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const getCompletionPercentage = (supplier: SupplierWithStats) => {
@@ -136,19 +137,20 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {supplier.primaryContact ? (
+                      {supplier.primaryContact &&
+                       supplier.primaryContact.full_name &&
+                       supplier.primaryContact.full_name !== 'Unknown' &&
+                       !supplier.primaryContact.email?.includes('placeholder') ? (
                         <div>
                           <div className="font-medium">
-                            {supplier.primaryContact.full_name ||
-                             `${supplier.primaryContact.first_name || ''} ${supplier.primaryContact.last_name || ''}`.trim() ||
-                             'No name'}
+                            {supplier.primaryContact.full_name}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {supplier.primaryContact.email}
                           </div>
                         </div>
                       ) : (
-                        <span className="text-muted-foreground">No contact</span>
+                        <span className="text-muted-foreground text-sm">No contact assigned</span>
                       )}
                     </TableCell>
                     <TableCell>

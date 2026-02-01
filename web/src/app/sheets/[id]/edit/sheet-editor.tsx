@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/app-layout'
@@ -459,7 +460,7 @@ export function SheetEditor({
       router.push('/dashboard?submitted=true')
     } catch (error) {
       console.error('Submit error:', error)
-      alert('Failed to submit. Please try again.')
+      toast.error('Failed to submit. Please try again.')
     } finally {
       setSubmitting(false)
     }

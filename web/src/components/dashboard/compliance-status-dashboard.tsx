@@ -170,17 +170,27 @@ export function ComplianceStatusDashboard({ stats }: ComplianceStatusDashboardPr
       {/* Status Breakdown - Refined Cards */}
       <Card className="border-neutral-200 dark:border-neutral-800 shadow-lg shadow-neutral-900/5">
         <CardHeader className="border-b border-neutral-100 dark:border-neutral-800">
-          <CardTitle className="text-xl">Compliance Status Overview</CardTitle>
-          <CardDescription>
-            Real-time monitoring across your supply chain
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl">Compliance Status Overview</CardTitle>
+              <CardDescription>
+                Real-time monitoring across your supply chain
+              </CardDescription>
+            </div>
+            <a
+              href="/sheets"
+              className="text-sm text-primary hover:underline"
+            >
+              View all sheets →
+            </a>
+          </div>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid gap-6 md:grid-cols-3">
             {/* Complete - Emerald */}
-            <div className="relative group">
+            <a href="/sheets?status=completed" className="relative group cursor-pointer">
               <div className="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/30 dark:to-emerald-900/10 border border-emerald-200 dark:border-emerald-800/50">
+              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/30 dark:to-emerald-900/10 border border-emerald-200 dark:border-emerald-800/50 transition-transform hover:scale-[1.02]">
                 <div className="p-4 rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/25">
                   <CheckCircle2 className="h-8 w-8 text-white" />
                 </div>
@@ -193,12 +203,12 @@ export function ComplianceStatusDashboard({ stats }: ComplianceStatusDashboardPr
                   </p>
                 </div>
               </div>
-            </div>
+            </a>
 
             {/* In Progress - Blue */}
-            <div className="relative group">
+            <a href="/sheets?status=in_progress" className="relative group cursor-pointer">
               <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200 dark:border-blue-800/50">
+              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/10 border border-blue-200 dark:border-blue-800/50 transition-transform hover:scale-[1.02]">
                 <div className="p-4 rounded-xl bg-blue-500 shadow-lg shadow-blue-500/25">
                   <Clock className="h-8 w-8 text-white" />
                 </div>
@@ -211,12 +221,12 @@ export function ComplianceStatusDashboard({ stats }: ComplianceStatusDashboardPr
                   </p>
                 </div>
               </div>
-            </div>
+            </a>
 
             {/* Overdue - Red */}
-            <div className="relative group">
+            <a href="/sheets?status=overdue" className="relative group cursor-pointer">
               <div className="absolute inset-0 bg-red-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/10 border border-red-200 dark:border-red-800/50">
+              <div className="relative flex items-center gap-4 p-6 rounded-2xl bg-linear-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/10 border border-red-200 dark:border-red-800/50 transition-transform hover:scale-[1.02]">
                 <div className="p-4 rounded-xl bg-red-500 shadow-lg shadow-red-500/25">
                   <XCircle className="h-8 w-8 text-white" />
                 </div>
@@ -229,7 +239,7 @@ export function ComplianceStatusDashboard({ stats }: ComplianceStatusDashboardPr
                   </p>
                 </div>
               </div>
-            </div>
+            </a>
           </div>
         </CardContent>
       </Card>

@@ -13,10 +13,31 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Search, ChevronRight, Building2 } from 'lucide-react'
-import type { Database } from '@/lib/database.types'
 
-type Company = Database['public']['Tables']['companies']['Row']
-type User = Database['public']['Tables']['users']['Row']
+// Note: The actual database schema differs from database.types.ts
+// Using a custom type that matches the real schema
+interface Company {
+  id: string
+  name: string
+  email_domain?: string | null
+  type?: string | null
+  logo_url?: string | null
+  location?: string | null
+  created_at?: string | null
+  modified_at?: string | null
+  bubble_id?: string | null
+}
+
+interface User {
+  id: string
+  email?: string | null
+  full_name?: string | null
+  company_id?: string | null
+  role?: string | null
+  created_at?: string | null
+  modified_at?: string | null
+  bubble_id?: string | null
+}
 
 interface CustomerWithStats {
   company: Company
@@ -25,6 +46,7 @@ interface CustomerWithStats {
   sheetsPending: number
   primaryContact: User | null
   lastActivity: string | null
+  isNewCustomer: boolean
 }
 
 interface CustomersListProps {
@@ -129,37 +151,41 @@ export function CustomersList({ customers }: CustomersListProps) {
                         </div>
                         <div>
                           <div className="font-medium">{customer.company.name}</div>
-                          {customer.company.location_text && (
+                          {customer.company.location && (
                             <div className="text-sm text-muted-foreground">
-                              {customer.company.location_text}
+                              {customer.company.location}
                             </div>
                           )}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            {customer.sheetsCompleted}/{customer.sheetsRequested} sheets
-                          </span>
-                          <span className="font-medium">{completionPct}%</span>
+                      {customer.isNewCustomer ? (
+                        <span className="text-sm text-muted-foreground">
+                          Request pending
+                        </span>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              {customer.sheetsCompleted}/{customer.sheetsRequested} sheets
+                            </span>
+                            <span className="font-medium">{completionPct}%</span>
+                          </div>
+                          <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary transition-all duration-300"
+                              style={{ width: `${completionPct}%` }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary transition-all duration-300"
-                            style={{ width: `${completionPct}%` }}
-                          />
-                        </div>
-                      </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       {customer.primaryContact ? (
                         <div>
                           <div className="font-medium">
-                            {customer.primaryContact.full_name ||
-                             `${customer.primaryContact.first_name || ''} ${customer.primaryContact.last_name || ''}`.trim() ||
-                             'No name'}
+                            {customer.primaryContact.full_name || 'No name'}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {customer.primaryContact.email}
@@ -175,7 +201,11 @@ export function CustomersList({ customers }: CustomersListProps) {
                       </span>
                     </TableCell>
                     <TableCell>
-                      {customer.sheetsRequested === 0 ? (
+                      {customer.isNewCustomer ? (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                          New
+                        </Badge>
+                      ) : customer.sheetsRequested === 0 ? (
                         <Badge variant="outline">No sheets</Badge>
                       ) : customer.sheetsPending > 0 ? (
                         <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">

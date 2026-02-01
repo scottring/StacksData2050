@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,19 +55,39 @@ interface Company {
 
 export default function SheetsPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [sheets, setSheets] = useState<Sheet[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterStatus, setFilterStatus] = useState<string>(searchParams.get('status') || 'all')
   const [filterCompany, setFilterCompany] = useState<string>('all')
 
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient()
 
-      // Fetch all sheets (super_admin sees all via RLS)
-      const { data: sheetsData, error } = await supabase
+      // Get current user and check permissions
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      // Check if user is super admin
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+
+      // Get user's company_id
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const userCompanyId = userProfile?.company_id
+
+      // Build query - super admins see all, others see only their company's sheets
+      let query = supabase
         .from('sheets')
         .select(`
           id,
@@ -79,6 +99,13 @@ export default function SheetsPage() {
           created_at
         `)
         .order('name', { ascending: true })
+
+      // If not super admin, filter to user's company sheets only
+      if (!isSuperAdmin && userCompanyId) {
+        query = query.or(`company_id.eq.${userCompanyId},requesting_company_id.eq.${userCompanyId}`)
+      }
+
+      const { data: sheetsData, error } = await query
 
       if (error) {
         console.error('Error fetching sheets:', error)
@@ -177,6 +204,13 @@ export default function SheetsPage() {
           <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
             <Clock className="h-3 w-3 mr-1" />
             Pending
+          </Badge>
+        )
+      case 'imported':
+        return (
+          <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+            <FileText className="h-3 w-3 mr-1" />
+            Imported
           </Badge>
         )
       default:

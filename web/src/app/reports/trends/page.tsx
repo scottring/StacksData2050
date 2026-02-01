@@ -43,33 +43,55 @@ export default function SupplierTrendsReport() {
     async function fetchData() {
       const supabase = createClient()
 
+      // Get current user and check access level
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const companyId = userData?.company_id
+
       const { data: companies } = await supabase
         .from('companies')
         .select('id, name')
 
-      const { data: sheets } = await supabase
+      const { data: allSheets } = await supabase
         .from('sheets')
-        .select('id, requesting_company_id, status, created_at, modified_at')
+        .select('id, company_id, requesting_company_id, status, created_at, modified_at')
 
-      // Calculate trends for each supplier
+      // Filter sheets based on access level
+      let sheets = allSheets || []
+      if (!isSuperAdmin && companyId) {
+        sheets = sheets.filter(
+          s => s.company_id === companyId || s.requesting_company_id === companyId
+        )
+      }
+
+      // Calculate trends for each supplier (company_id = supplier)
       const supplierData: SupplierTrend[] = (companies || []).map(company => {
-        const companySheets = (sheets || []).filter(s => s.requesting_company_id === company.id)
+        const companySheets = sheets.filter(s => s.company_id === company.id)
+        // Legacy/draft/imported count as complete
         const completed = companySheets.filter(s =>
-          s.status === 'approved' || s.status === 'completed'
+          s.status === 'approved' || s.status === 'completed' || s.status === 'draft' || s.status === 'imported' || !s.status
         ).length
 
-        // Calculate average response time (days between created and modified for completed)
-        const completedSheets = companySheets.filter(s =>
-          s.status === 'approved' || s.status === 'completed'
-        )
+        // Calculate average response time (days between created and modified)
         let avgDays = 0
-        if (completedSheets.length > 0) {
-          const totalDays = completedSheets.reduce((sum, s) => {
+        if (companySheets.length > 0) {
+          const totalDays = companySheets.reduce((sum, s) => {
             const created = new Date(s.created_at)
-            const modified = new Date(s.modified_at)
+            const modified = new Date(s.modified_at || s.created_at)
             return sum + Math.max(1, Math.floor((modified.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)))
           }, 0)
-          avgDays = Math.round(totalDays / completedSheets.length)
+          avgDays = Math.round(totalDays / companySheets.length)
         }
 
         // Generate a realistic trend based on completion rate
@@ -131,6 +153,40 @@ export default function SupplierTrendsReport() {
     return <Badge className="bg-red-100 text-red-700">Needs Improvement</Badge>
   }
 
+  const exportToCSV = () => {
+    const headers = ['Supplier', 'Sheets', 'Completion Rate', 'Avg Response (days)', 'Trend', 'Quality Score', 'Rating']
+    const getRating = (score: number) => {
+      if (score >= 80) return 'Excellent'
+      if (score >= 60) return 'Good'
+      if (score >= 40) return 'Fair'
+      return 'Needs Improvement'
+    }
+    const rows = suppliers.map(s => [
+      s.name,
+      s.totalSheets,
+      `${s.completionRate}%`,
+      s.avgResponseDays,
+      s.trend,
+      s.qualityScore,
+      getRating(s.qualityScore)
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `supplier-trends-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <AppLayout title="Supplier Performance Trends">
       <div className="space-y-6">
@@ -152,9 +208,9 @@ export default function SupplierTrendsReport() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={exportToCSV} disabled={loading || suppliers.length === 0}>
             <Download className="h-4 w-4 mr-2" />
-            Export Report
+            Export CSV
           </Button>
         </div>
 

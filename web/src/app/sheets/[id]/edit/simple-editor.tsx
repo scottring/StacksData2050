@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -747,7 +748,7 @@ export function SimpleSheetEditor({
       window.location.href = '/dashboard?submitted=true'
     } catch (error) {
       console.error('Submit error:', error)
-      alert('Failed to submit. Please try again.')
+      toast.error('Failed to submit. Please try again.')
     } finally {
       setSubmitting(false)
     }

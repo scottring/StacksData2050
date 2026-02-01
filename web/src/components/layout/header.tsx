@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Search, Building2 } from 'lucide-react'
+import { Building2 } from 'lucide-react'
 import { NotificationBell } from '@/components/notifications/notification-bell'
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 
 interface HeaderProps {
@@ -50,23 +49,22 @@ export function Header({ title }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
+    <header className="flex h-16 items-center justify-between border-b border-slate-200/60 bg-white/80 backdrop-blur-sm px-6">
       <div className="flex items-center gap-4">
-        {title && <h1 className="text-xl font-semibold">{title}</h1>}
+        {title && (
+          <h1 className="font-display text-xl font-semibold text-slate-900 tracking-tight">
+            {title}
+          </h1>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Search */}
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <Search className="h-5 w-5" />
-        </Button>
-
         {/* Notifications */}
         <NotificationBell />
 
         {/* Company logo */}
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+        <div className="flex items-center gap-3 pl-4 border-l border-slate-200/60">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden shadow-sm ring-1 ring-slate-200/50">
             {company?.logoUrl ? (
               <img
                 src={company.logoUrl}
@@ -74,11 +72,11 @@ export function Header({ title }: HeaderProps) {
                 className="h-9 w-9 object-cover"
               />
             ) : (
-              <Building2 className="h-5 w-5 text-muted-foreground" />
+              <Building2 className="h-4 w-4 text-slate-400" />
             )}
           </div>
           {company?.name && (
-            <span className="text-sm font-medium hidden sm:inline">{company.name}</span>
+            <span className="text-sm font-medium text-slate-700 hidden sm:inline">{company.name}</span>
           )}
         </div>
       </div>

@@ -1,203 +1,58 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  TrendingUp,
   Package,
   Building2,
   Loader2,
-  Inbox,
-  Send,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  Sparkles,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { ComplianceStatusDashboard, type ComplianceStats, type ComplianceAlert, type RegulatoryGap } from '@/components/dashboard/compliance-status-dashboard'
 import { AssociationMetricsDashboard, type AssociationMetrics } from '@/components/dashboard/association-metrics-dashboard'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
+import { cn } from '@/lib/utils'
 
 interface DashboardStats {
-  // As supplier
   supplierOpenTasks: number
   supplierCompletedTasks: number
+  supplierRejectedTasks: number
   supplierTotalTasks: number
-  // As customer
+  customerOpenProducts: number
+  customerCompletedProducts: number
+  customerRejectedProducts: number
   customerTotalProducts: number
-  customerCompliantProducts: number
-  customerPendingReviews: number
-  customerActiveSuppliers: number
-  customerVerifiedSuppliers: number
-  customerTotalSuppliers: number
-  // Recent activity
   recentSheets: Array<{
     id: string
     name: string
     status: string | null
     companyName: string | null
     modifiedAt: string | null
+    role: 'supplier' | 'customer'
   }>
-  // Request tracking
-  pendingIncomingRequests?: number
-  pendingOutgoingRequests?: number
-  totalIncomingRequests?: number
-  totalOutgoingRequests?: number
 }
 
-interface StatCardProps {
-  title: string
-  value: string | number
-  description?: string
+type ViewMode = 'customer' | 'supplier'
+
+interface StatusSegment {
+  label: string
+  value: number
+  color: string
+  gradientFrom: string
+  gradientTo: string
+  status: string
   icon: React.ComponentType<{ className?: string }>
-  trend?: 'up' | 'down' | 'neutral'
-  trendValue?: string
-}
-
-function StatCard({ title, value, description, icon: Icon }: StatCardProps) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-interface TaskProgressProps {
-  open: number
-  completed: number
-  total: number
-  title: string
-}
-
-function TaskProgress({ open, completed, total, title }: TaskProgressProps) {
-  const openPercent = total > 0 ? (open / total) * 100 : 0
-  const completedPercent = total > 0 ? (completed / total) * 100 : 0
-
-  return (
-    <Card className="col-span-2">
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-8">
-          <div className="flex-1">
-            <div className="flex h-4 overflow-hidden rounded-full bg-muted">
-              <div
-                className="bg-primary transition-all"
-                style={{ width: `${completedPercent}%` }}
-              />
-              <div
-                className="bg-amber-400 transition-all"
-                style={{ width: `${openPercent}%` }}
-              />
-            </div>
-            <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-              <span>{completed} completed</span>
-              <span>{open} open</span>
-            </div>
-          </div>
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold">{completed}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">Completed</span>
-            </div>
-            <div className="flex flex-col items-center rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-amber-500" />
-                <span className="text-2xl font-bold">{open}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">Open Tasks</span>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-interface ComplianceRingProps {
-  compliant: number
-  total: number
-  title: string
-  subtitle: string
-}
-
-function ComplianceRing({ compliant, total, title, subtitle }: ComplianceRingProps) {
-  const percent = total > 0 ? Math.round((compliant / total) * 100) : 0
-  const circumference = 2 * Math.PI * 45
-  const offset = circumference - (percent / 100) * circumference
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center">
-        <div className="relative h-32 w-32">
-          <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="10"
-              className="text-muted"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="10"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              className="text-primary transition-all duration-500"
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold">{percent}%</span>
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
-        <p className="text-xs text-muted-foreground">
-          {compliant} of {total}
-        </p>
-      </CardContent>
-    </Card>
-  )
-}
-
-function getStatusBadge(status: string | null) {
-  switch (status) {
-    case 'completed':
-    case 'approved':
-      return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Completed</Badge>
-    case 'in_progress':
-      return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">In Progress</Badge>
-    case 'pending':
-      return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">Pending</Badge>
-    default:
-      return <Badge variant="outline">{status || 'Draft'}</Badge>
-  }
 }
 
 function formatTimeAgo(dateStr: string | null): string {
@@ -209,158 +64,517 @@ function formatTimeAgo(dateStr: string | null): string {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 60) return `${diffMins} min ago`
-  if (diffHours < 24) return `${diffHours} hours ago`
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
   if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 7) return `${diffDays}d ago`
   return date.toLocaleDateString()
 }
 
-function calculateComplianceStats(
-  customerSheets: Array<{
-    id: string
-    name: string
-    status: string | null
-    modified_at: string | null
-    created_at?: string | null
-  }>
-): ComplianceStats {
-  // CRITICAL: Deduplicate by name, keeping only the most recent version
-  const sheetsByName = new Map<string, typeof customerSheets[0]>()
-  customerSheets.forEach(sheet => {
-    const existing = sheetsByName.get(sheet.name)
-    if (!existing || new Date(sheet.modified_at || sheet.created_at || 0) > new Date(existing.modified_at || existing.created_at || 0)) {
-      sheetsByName.set(sheet.name, sheet)
-    }
-  })
-  const uniqueSheets = Array.from(sheetsByName.values())
-
-  const totalSheets = uniqueSheets.length
-  const completeSheets = uniqueSheets.filter(s =>
-    s.status === 'completed' || s.status === 'approved'
-  ).length
-  const incompleteSheets = uniqueSheets.filter(s =>
-    s.status === 'in_progress' || s.status === 'pending' || !s.status
-  ).length
-
-  // Calculate overdue sheets (created > 30 days ago, not complete) - use uniqueSheets
-  const now = new Date()
-  const overdueSheets = uniqueSheets.filter(s => {
-    if (s.status === 'completed' || s.status === 'approved') return false
-    const createdDate = s.created_at ? new Date(s.created_at) : new Date(s.modified_at || '')
-    const daysOld = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
-    return daysOld > 30
-  }).length
-
-  // Calculate data completeness (simplified - based on status)
-  const dataCompleteness = totalSheets > 0
-    ? Math.round((completeSheets / totalSheets) * 100)
-    : 0
-
-  // Calculate DPP readiness (estimate based on completion + buffer for missing fields)
-  const dppReadiness = totalSheets > 0
-    ? Math.max(0, Math.round((completeSheets / totalSheets) * 100 * 0.9)) // 90% of completion
-    : 0
-
-  // Generate alerts from real data
-  const recentAlerts: ComplianceAlert[] = []
-
-  if (overdueSheets > 0) {
-    recentAlerts.push({
-      id: 'overdue-sheets',
-      type: 'warning',
-      title: 'Overdue Product Data Sheets',
-      description: `${overdueSheets} product data sheets have been pending for more than 30 days. Request completion from suppliers to maintain compliance.`,
-      affectedSheets: overdueSheets,
-      date: new Date().toISOString().split('T')[0],
-    })
-  }
-
-  if (incompleteSheets > totalSheets * 0.3) {
-    recentAlerts.push({
-      id: 'incomplete-data',
-      type: 'info',
-      title: 'Incomplete Supplier Data',
-      description: `${incompleteSheets} sheets are still in progress. Complete data collection ensures regulatory readiness.`,
-      affectedSheets: incompleteSheets,
-      date: new Date().toISOString().split('T')[0],
-    })
-  }
-
-  // Add realistic regulatory alerts
-  recentAlerts.push({
-    id: 'eu-pfas-2026',
-    type: 'warning',
-    title: 'EU PFAS Restrictions - January 2026',
-    description: 'New restrictions on per- and polyfluoroalkyl substances (PFAS) in food contact materials will take effect. Review products containing fluoropolymers.',
-    affectedSheets: Math.floor(totalSheets * 0.1), // Estimate 10% affected
-    date: '2025-12-15',
-  })
-
-  if (dppReadiness < 90) {
-    recentAlerts.push({
-      id: 'dpp-readiness',
-      type: 'info',
-      title: 'Digital Product Passport Preparation',
-      description: 'EU DPP requirements take effect in 2027. Ensure all product composition data, carbon footprint, and supplier information is complete.',
-      affectedSheets: incompleteSheets,
-      date: '2025-12-10',
-    })
-  }
-
-  // Generate regulatory gaps
-  const regulatoryGaps: RegulatoryGap[] = []
-
-  if (incompleteSheets > 0) {
-    regulatoryGaps.push({
-      id: 'missing-data',
-      regulation: 'Supplier Documentation Gaps',
-      description: 'Product sheets require complete composition data, regulatory declarations, and test results for full compliance.',
-      sheetCount: incompleteSheets,
-      severity: incompleteSheets > totalSheets * 0.5 ? 'high' : 'medium',
-    })
-  }
-
-  if (dppReadiness < 90) {
-    regulatoryGaps.push({
-      id: 'dpp-gaps',
-      regulation: 'Digital Product Passport Data Fields',
-      description: 'Complete product composition data, carbon footprint, and supplier information needed for DPP compliance by 2027.',
-      sheetCount: Math.ceil(totalSheets * (1 - dppReadiness / 100)),
-      severity: 'medium',
-    })
-  }
-
-  return {
-    totalSheets,
-    completeSheets,
-    incompleteSheets,
-    overdueSheets,
-    dataCompleteness,
-    dppReadiness,
-    recentAlerts: recentAlerts.slice(0, 3), // Top 3 alerts
-    regulatoryGaps: regulatoryGaps.slice(0, 3), // Top 3 gaps
+function getStatusConfig(status: string | null) {
+  switch (status) {
+    case 'completed':
+    case 'approved':
+    case 'draft':
+    case 'imported':
+      return {
+        label: 'Complete',
+        className: 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
+        dotColor: 'bg-emerald-500',
+      }
+    case 'in_progress':
+      return {
+        label: 'In Progress',
+        className: 'bg-sky-50 text-sky-700 border-sky-200/50',
+        dotColor: 'bg-sky-500',
+      }
+    case 'pending':
+      return {
+        label: 'Open',
+        className: 'bg-amber-50 text-amber-700 border-amber-200/50',
+        dotColor: 'bg-amber-500',
+      }
+    case 'rejected':
+    case 'flagged':
+      return {
+        label: 'Rejected',
+        className: 'bg-rose-50 text-rose-700 border-rose-200/50',
+        dotColor: 'bg-rose-500',
+      }
+    default:
+      return {
+        label: status || 'Draft',
+        className: 'bg-slate-50 text-slate-600 border-slate-200/50',
+        dotColor: 'bg-slate-400',
+      }
   }
 }
 
+// Animated counter component
+function AnimatedNumber({ value, duration = 1000 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    const startTime = Date.now()
+    const startValue = displayValue
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const easeOut = 1 - Math.pow(1 - progress, 3)
+      const current = Math.floor(startValue + (value - startValue) * easeOut)
+      setDisplayValue(current)
+
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      }
+    }
+
+    requestAnimationFrame(animate)
+  }, [value, duration])
+
+  return <span>{displayValue.toLocaleString()}</span>
+}
+
+// Mini sparkline chart component
+function Sparkline({ data, color = 'emerald' }: { data: number[]; color?: string }) {
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+  const width = 80
+  const height = 32
+  const padding = 2
+
+  const points = data.map((value, index) => {
+    const x = padding + (index / (data.length - 1)) * (width - padding * 2)
+    const y = height - padding - ((value - min) / range) * (height - padding * 2)
+    return `${x},${y}`
+  }).join(' ')
+
+  const gradientId = `sparkline-gradient-${color}`
+
+  return (
+    <svg width={width} height={height} className="overflow-visible">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color === 'emerald' ? '#10b981' : color === 'amber' ? '#f59e0b' : '#3b82f6'} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color === 'emerald' ? '#10b981' : color === 'amber' ? '#f59e0b' : '#3b82f6'} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon
+        points={`${padding},${height - padding} ${points} ${width - padding},${height - padding}`}
+        fill={`url(#${gradientId})`}
+      />
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color === 'emerald' ? '#10b981' : color === 'amber' ? '#f59e0b' : '#3b82f6'}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="animate-draw-line"
+      />
+    </svg>
+  )
+}
+
+// Elegant stat card with gradient accent
+function StatCard({
+  title,
+  value,
+  subtitle,
+  trend,
+  trendLabel,
+  icon: Icon,
+  accentColor = 'emerald',
+  delay = 0,
+  sparklineData,
+}: {
+  title: string
+  value: number
+  subtitle?: string
+  trend?: number
+  trendLabel?: string
+  icon: React.ComponentType<{ className?: string }>
+  accentColor?: 'emerald' | 'amber' | 'sky' | 'rose' | 'slate'
+  delay?: number
+  sparklineData?: number[]
+}) {
+  const colorMap = {
+    emerald: {
+      bg: 'from-emerald-500/10 to-emerald-500/5',
+      border: 'border-emerald-200/30',
+      icon: 'text-emerald-600',
+      accent: 'bg-emerald-500',
+    },
+    amber: {
+      bg: 'from-amber-500/10 to-amber-500/5',
+      border: 'border-amber-200/30',
+      icon: 'text-amber-600',
+      accent: 'bg-amber-500',
+    },
+    sky: {
+      bg: 'from-sky-500/10 to-sky-500/5',
+      border: 'border-sky-200/30',
+      icon: 'text-sky-600',
+      accent: 'bg-sky-500',
+    },
+    rose: {
+      bg: 'from-rose-500/10 to-rose-500/5',
+      border: 'border-rose-200/30',
+      icon: 'text-rose-600',
+      accent: 'bg-rose-500',
+    },
+    slate: {
+      bg: 'from-slate-500/10 to-slate-500/5',
+      border: 'border-slate-200/30',
+      icon: 'text-slate-600',
+      accent: 'bg-slate-500',
+    },
+  }
+
+  const colors = colorMap[accentColor]
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 opacity-0 animate-fade-in-up",
+        colors.bg,
+        colors.border
+      )}
+      style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
+    >
+      {/* Subtle shine overlay */}
+      <div className="absolute inset-0 gradient-card-shine pointer-events-none" />
+
+      <div className="relative flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-slate-600">{title}</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-semibold tracking-tight text-slate-900">
+              <AnimatedNumber value={value} duration={800 + delay} />
+            </span>
+            {trend !== undefined && (
+              <span className={cn(
+                "flex items-center gap-0.5 text-xs font-medium",
+                trend >= 0 ? "text-emerald-600" : "text-rose-600"
+              )}>
+                {trend >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {Math.abs(trend)}%
+              </span>
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-xs text-slate-500">{subtitle}</p>
+          )}
+          {trendLabel && (
+            <p className="text-xs text-slate-400">{trendLabel}</p>
+          )}
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className={cn("rounded-xl p-2.5 bg-white/60 shadow-sm", colors.border)}>
+            <Icon className={cn("h-5 w-5", colors.icon)} />
+          </div>
+          {sparklineData && (
+            <Sparkline data={sparklineData} color={accentColor} />
+          )}
+        </div>
+      </div>
+
+      {/* Bottom accent line */}
+      <div className={cn("absolute bottom-0 left-0 right-0 h-0.5", colors.accent, "opacity-40")} />
+    </div>
+  )
+}
+
+// Refined donut chart with beautiful animations
+function RefinedDonutChart({
+  segments,
+  total,
+  onSegmentClick,
+}: {
+  segments: StatusSegment[]
+  total: number
+  onSegmentClick: (status: string) => void
+}) {
+  const [hoveredSegment, setHoveredSegment] = useState<string | null>(null)
+  const [isAnimated, setIsAnimated] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsAnimated(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const radius = 90
+  const strokeWidth = 28
+  const circumference = 2 * Math.PI * radius
+  const center = 110
+
+  let currentOffset = circumference * 0.25 // Start from top
+
+  const segmentPaths = useMemo(() => {
+    let offset = circumference * 0.25
+    return segments.map(segment => {
+      const percent = total > 0 ? (segment.value / total) * 100 : 0
+      const strokeDasharray = (percent / 100) * circumference
+      const path = {
+        ...segment,
+        percent,
+        strokeDasharray,
+        strokeDashoffset: offset,
+      }
+      offset -= strokeDasharray
+      return path
+    })
+  }, [segments, total, circumference])
+
+  return (
+    <div className="flex flex-col lg:flex-row items-center gap-10 justify-center">
+      {/* Chart */}
+      <div className="relative">
+        {/* Glow effect */}
+        <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-br from-emerald-400 via-sky-400 to-amber-400 rounded-full" />
+
+        <svg
+          width="220"
+          height="220"
+          viewBox="0 0 220 220"
+          className="relative drop-shadow-lg"
+        >
+          <defs>
+            {segmentPaths.map(segment => (
+              <linearGradient
+                key={`gradient-${segment.status}`}
+                id={`donut-gradient-${segment.status}`}
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor={segment.gradientFrom} />
+                <stop offset="100%" stopColor={segment.gradientTo} />
+              </linearGradient>
+            ))}
+          </defs>
+
+          {/* Background circle */}
+          <circle
+            cx={center}
+            cy={center}
+            r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            className="text-slate-100"
+          />
+
+          {/* Segments */}
+          {segmentPaths.map((segment, index) => (
+            <circle
+              key={segment.status}
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke={`url(#donut-gradient-${segment.status})`}
+              strokeWidth={hoveredSegment === segment.status ? strokeWidth + 6 : strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={isAnimated ? `${segment.strokeDasharray} ${circumference}` : `0 ${circumference}`}
+              strokeDashoffset={segment.strokeDashoffset}
+              className="transition-all duration-500 ease-out cursor-pointer origin-center"
+              style={{
+                filter: hoveredSegment === segment.status ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))' : 'none',
+                transitionDelay: isAnimated ? `${index * 150}ms` : '0ms',
+              }}
+              onMouseEnter={() => setHoveredSegment(segment.status)}
+              onMouseLeave={() => setHoveredSegment(null)}
+              onClick={() => onSegmentClick(segment.status)}
+            />
+          ))}
+
+          {/* Inner white circle for cleaner look */}
+          <circle
+            cx={center}
+            cy={center}
+            r={radius - strokeWidth / 2 - 8}
+            fill="white"
+            className="drop-shadow-sm"
+          />
+        </svg>
+
+        {/* Center content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-5xl font-semibold text-slate-900 tracking-tight">
+            <AnimatedNumber value={total} duration={1200} />
+          </span>
+          <span className="text-sm font-medium text-slate-500 mt-1">Total Sheets</span>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="grid grid-cols-1 gap-2.5 w-full max-w-xs">
+        {segmentPaths.map((segment, index) => {
+          const Icon = segment.icon
+          return (
+            <button
+              key={segment.status}
+              onClick={() => onSegmentClick(segment.status)}
+              onMouseEnter={() => setHoveredSegment(segment.status)}
+              onMouseLeave={() => setHoveredSegment(null)}
+              className={cn(
+                "group flex items-center gap-4 px-4 py-3.5 rounded-xl border transition-all text-left opacity-0 animate-fade-in-up",
+                hoveredSegment === segment.status
+                  ? "bg-white border-slate-200 shadow-md scale-[1.02]"
+                  : "bg-white/60 border-slate-100 hover:bg-white hover:border-slate-200 hover:shadow-sm"
+              )}
+              style={{ animationDelay: `${400 + index * 100}ms`, animationFillMode: 'forwards' }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
+                style={{ background: `linear-gradient(135deg, ${segment.gradientFrom}, ${segment.gradientTo})` }}
+              >
+                <Icon className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-slate-900">{segment.label}</div>
+                <div className="text-sm text-slate-500">
+                  {segment.value} sheet{segment.value !== 1 ? 's' : ''}
+                  <span className="text-slate-400 ml-1">
+                    ({Math.round(segment.percent)}%)
+                  </span>
+                </div>
+              </div>
+              <ArrowUpRight className={cn(
+                "h-4 w-4 text-slate-400 transition-all",
+                hoveredSegment === segment.status && "text-slate-600 translate-x-0.5 -translate-y-0.5"
+              )} />
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Activity timeline component
+function ActivityTimeline({
+  sheets,
+  onSheetClick,
+}: {
+  sheets: DashboardStats['recentSheets']
+  onSheetClick: (id: string) => void
+}) {
+  if (sheets.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+          <Clock className="h-8 w-8 text-slate-400" />
+        </div>
+        <p className="text-slate-600 font-medium">No recent activity</p>
+        <p className="text-sm text-slate-400 mt-1">Your sheet activity will appear here</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-1">
+      {sheets.map((sheet, index) => {
+        const statusConfig = getStatusConfig(sheet.status)
+        return (
+          <button
+            key={sheet.id}
+            onClick={() => onSheetClick(sheet.id)}
+            className={cn(
+              "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all opacity-0 animate-fade-in-up",
+              "hover:bg-slate-50 group"
+            )}
+            style={{ animationDelay: `${500 + index * 75}ms`, animationFillMode: 'forwards' }}
+          >
+            {/* Icon */}
+            <div className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0 transition-all",
+              "bg-gradient-to-br",
+              sheet.role === 'supplier'
+                ? "from-violet-100 to-violet-50 text-violet-600"
+                : "from-sky-100 to-sky-50 text-sky-600",
+              "group-hover:scale-105 group-hover:shadow-sm"
+            )}>
+              {sheet.role === 'supplier' ? (
+                <Package className="h-5 w-5" />
+              ) : (
+                <Building2 className="h-5 w-5" />
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-slate-900 truncate group-hover:text-slate-700 transition-colors">
+                {sheet.name}
+              </p>
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <span className="truncate">{sheet.companyName}</span>
+                <span className="text-slate-300">•</span>
+                <span className="flex-shrink-0 text-slate-400">
+                  {sheet.role === 'supplier' ? 'You supply' : 'You requested'}
+                </span>
+              </div>
+            </div>
+
+            {/* Status & Time */}
+            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+              <Badge className={cn("border font-medium text-xs px-2.5 py-0.5", statusConfig.className)}>
+                <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5", statusConfig.dotColor)} />
+                {statusConfig.label}
+              </Badge>
+              <span className="text-xs text-slate-400">
+                {formatTimeAgo(sheet.modifiedAt)}
+              </span>
+            </div>
+
+            {/* Arrow */}
+            <ChevronRight className="h-5 w-5 text-slate-300 flex-shrink-0 transition-all group-hover:text-slate-500 group-hover:translate-x-0.5" />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// Coming Soon overlay with elegant blur
+function ComingSoonSection({ title, description, children }: {
+  title: string
+  description?: string
+  children?: React.ReactNode
+}) {
+  return (
+    <section className="relative rounded-2xl overflow-hidden">
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/5 border border-slate-200/50">
+          <Sparkles className="h-4 w-4 text-slate-500" />
+          <span className="text-sm font-medium text-slate-600">Coming Soon</span>
+        </div>
+      </div>
+      <div className="opacity-40 pointer-events-none">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
+        </div>
+        {children}
+      </div>
+    </section>
+  )
+}
+
 export default function DashboardPage() {
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [complianceStats, setComplianceStats] = useState<ComplianceStats | null>(null)
   const [associationMetrics, setAssociationMetrics] = useState<AssociationMetrics | null>(null)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [userCompanyId, setUserCompanyId] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>('customer')
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
-  const [chemicalStats, setChemicalStats] = useState<{
-    totalChemicals: number
-    pfasCount: number
-    reachCount: number
-    prop65Count: number
-    sheetsWithChemicals: number
-  } | null>(null)
 
   async function fetchAssociationMetrics(supabase: ReturnType<typeof createClient>) {
-    // Use server-side API route to bypass RLS with service role
     const response = await fetch('/api/admin/association-metrics')
 
     if (!response.ok) {
@@ -370,83 +584,64 @@ export default function DashboardPage() {
 
     const { sheets: rawSheets, companies, users } = await response.json()
 
-    // Filter out test sheets and sheets from Stacks Data company
-    const stacksDataCompany = companies.find((c: any) => c.name === 'Stacks Data')
-    const sheets = rawSheets.filter((s: any) => {
-      // Exclude Stacks Data company sheets
+    const stacksDataCompany = companies.find((c: { name: string }) => c.name === 'Stacks Data')
+    const sheets = rawSheets.filter((s: { company_id: string; requesting_company_id: string; name: string }) => {
       if (stacksDataCompany && (s.company_id === stacksDataCompany.id || s.requesting_company_id === stacksDataCompany.id)) {
         return false
       }
-      // Exclude sheets with "test" in the name (case insensitive)
       if (s.name && s.name.toLowerCase().includes('test')) {
         return false
       }
       return true
     })
 
-    console.log('📊 Dashboard Data:', {
-      totalRawSheets: rawSheets.length,
-      totalFilteredSheets: sheets.length,
-      totalCompanies: companies.length,
-      sampleStatuses: sheets.slice(0, 5).map((s: any) => s.status)
-    })
-
-    // NOTE: All sheets from Bubble migration have NULL status
-    // Using activity-based metrics instead
     const now = new Date()
     const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
-    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-    // Active = modified in last 90 days (proxy for "being worked on")
-    const activeSheets90d = sheets.filter((s: any) => {
+    const activeSheets90d = sheets.filter((s: { modified_at: string }) => {
       const modified = s.modified_at ? new Date(s.modified_at) : null
       return modified && modified >= ninetyDaysAgo
     })
 
-    const activeSheets30d = sheets.filter((s: any) => {
+    const activeSheets30d = sheets.filter((s: { modified_at: string }) => {
       const modified = s.modified_at ? new Date(s.modified_at) : null
       return modified && modified >= thirtyDaysAgo
     })
 
-    // Sheet status categories based on activity
-    const activeSheetsCount = activeSheets90d.length  // Modified in last 90 days
-    const recentSheetsCount = activeSheets30d.length  // Modified in last 30 days
-    const fulfilledSheetsCount = sheets.length - activeSheets90d.length  // Not modified in 90 days
+    const activeSheetsCount = activeSheets90d.length
+    const recentSheetsCount = activeSheets30d.length
+    const fulfilledSheetsCount = sheets.length - activeSheets90d.length
 
     const overallCompletionRate = sheets.length > 0
       ? Math.round((activeSheets90d.length / sheets.length) * 100)
       : 0
 
-    // DPP readiness: based on recent activity (30d) as proxy for data quality
     const dppReadiness = sheets.length > 0
       ? Math.max(0, Math.round((activeSheets30d.length / sheets.length) * 100 * 0.65))
       : 0
 
-    const sheetsCreated7d = sheets.filter((s: any) => {
+    const sheetsCreated7d = sheets.filter((s: { created_at: string }) => {
       const created = s.created_at ? new Date(s.created_at) : null
       return created && created >= sevenDaysAgo
     }).length
 
-    const sheetsModified7d = sheets.filter((s: any) => {
+    const sheetsModified7d = sheets.filter((s: { modified_at: string }) => {
       const modified = s.modified_at ? new Date(s.modified_at) : null
       return modified && modified >= sevenDaysAgo
     }).length
 
-    // Calculate active users based on last_sign_in_at (now included from auth.users)
-    const activeUsers30d = users.filter((u: any) => {
+    const activeUsers30d = users.filter((u: { last_sign_in_at: string }) => {
       const lastSignIn = u.last_sign_in_at ? new Date(u.last_sign_in_at) : null
       return lastSignIn && lastSignIn >= thirtyDaysAgo
     }).length
 
-    // Calculate per-company metrics using activity instead of status
-    const companyMetrics = companies.map((company: any) => {
-      const companySheets = sheets.filter((s: any) => s.company_id === company.id)
+    const companyMetrics = companies.map((company: { id: string; name: string }) => {
+      const companySheets = sheets.filter((s: { company_id: string }) => s.company_id === company.id)
 
-      // Deduplicate by name, keeping only the most recent version of each product
       const sheetsByName = new Map()
-      companySheets.forEach((sheet: any) => {
+      companySheets.forEach((sheet: { name: string; modified_at: string; created_at: string }) => {
         const existing = sheetsByName.get(sheet.name)
         if (!existing || new Date(sheet.modified_at || sheet.created_at || 0) > new Date(existing.modified_at || existing.created_at || 0)) {
           sheetsByName.set(sheet.name, sheet)
@@ -454,13 +649,7 @@ export default function DashboardPage() {
       })
       const uniqueCompanySheets = Array.from(sheetsByName.values())
 
-      // Debug: log first few companies
-      if (company.name === 'UPM' || company.name === 'Sappi') {
-        console.log(`${company.name}: ${companySheets.length} total, ${uniqueCompanySheets.length} unique`)
-      }
-
-      // Activity rate = sheets modified in last 90 days
-      const companyActive = uniqueCompanySheets.filter((s: any) => {
+      const companyActive = uniqueCompanySheets.filter((s: { modified_at: string }) => {
         const modified = s.modified_at ? new Date(s.modified_at) : null
         return modified && modified >= ninetyDaysAgo
       }).length
@@ -469,7 +658,7 @@ export default function DashboardPage() {
         ? Math.round((companyActive / uniqueCompanySheets.length) * 100)
         : 0
 
-      const hasRecentActivity = uniqueCompanySheets.some((s: any) => {
+      const hasRecentActivity = uniqueCompanySheets.some((s: { modified_at: string }) => {
         const modified = s.modified_at ? new Date(s.modified_at) : null
         return modified && modified >= thirtyDaysAgo
       })
@@ -483,21 +672,18 @@ export default function DashboardPage() {
       }
     })
 
-    // Sort by total sheets first (most important), then activity rate
     const topCompanies = companyMetrics
-      .filter((c: any) => c.totalSheets > 0)
-      .sort((a: any, b: any) => {
-        // First by total sheets (volume matters)
+      .filter((c: { totalSheets: number }) => c.totalSheets > 0)
+      .sort((a: { totalSheets: number; completionRate: number }, b: { totalSheets: number; completionRate: number }) => {
         if (b.totalSheets !== a.totalSheets) {
           return b.totalSheets - a.totalSheets
         }
-        // Then by activity rate
         return b.completionRate - a.completionRate
       })
 
-    const activeCompanies = companies.filter((c: any) => {
-      const companySheets = sheets.filter((s: any) => s.company_id === c.id)
-      return companySheets.some((s: any) => {
+    const activeCompanies = companies.filter((c: { id: string }) => {
+      const companySheets = sheets.filter((s: { company_id: string }) => s.company_id === c.id)
+      return companySheets.some((s: { modified_at: string }) => {
         const modified = s.modified_at ? new Date(s.modified_at) : null
         return modified && modified >= thirtyDaysAgo
       })
@@ -524,33 +710,21 @@ export default function DashboardPage() {
     async function fetchDashboardData() {
       const supabase = createClient()
 
-      // Get current user's company and super admin status
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         setLoading(false)
         return
       }
 
-      // Check if user is super admin by calling the helper function
-      const { data: superAdminCheck, error: superAdminError } = await supabase.rpc('is_super_admin')
-      console.log('🔐 Super Admin Check:', {
-        result: superAdminCheck,
-        error: superAdminError,
-        userId: user.id,
-        email: user.email
-      })
+      const { data: superAdminCheck } = await supabase.rpc('is_super_admin')
 
       const isSuper = superAdminCheck === true
       setIsSuperAdmin(isSuper)
 
-      // If super admin, fetch association-wide metrics
       if (isSuper) {
-        console.log('✅ Fetching association-wide metrics as super admin')
         await fetchAssociationMetrics(supabase)
         setLoading(false)
         return
-      } else {
-        console.log('❌ Not super admin, showing company view')
       }
 
       const { data: userProfile } = await supabase
@@ -560,23 +734,20 @@ export default function DashboardPage() {
         .single()
 
       const companyId = userProfile?.company_id
-      setUserCompanyId(companyId)
 
       if (!companyId) {
         setLoading(false)
         return
       }
 
-      // Fetch all sheets for stats calculation in batches (Supabase caps at 1000 per request)
       const { count: totalCount } = await supabase
         .from('sheets')
         .select('*', { count: 'exact', head: true })
 
       const batchSize = 1000
       const totalBatches = Math.ceil((totalCount || 0) / batchSize)
-      let allSheets: any[] = []
+      let allSheets: { id: string; name: string; status: string | null; company_id: string; requesting_company_id: string; modified_at: string; created_at: string }[] = []
 
-      // Fetch in batches
       for (let i = 0; i < totalBatches; i++) {
         const start = i * batchSize
         const end = start + batchSize - 1
@@ -590,13 +761,9 @@ export default function DashboardPage() {
         }
       }
 
-      console.log(`✓ Dashboard fetched ${allSheets.length} sheets in ${totalBatches} batch(es)`)
+      const rawSupplierSheets = allSheets.filter(s => s.company_id === companyId)
 
-      // As Supplier: sheets assigned TO my company
-      const rawSupplierSheets = (allSheets || []).filter(s => s.requesting_company_id === companyId)
-
-      // CRITICAL: Deduplicate supplier sheets by name, keeping most recent
-      const supplierSheetsByName = new Map<string, any>()
+      const supplierSheetsByName = new Map<string, typeof allSheets[0]>()
       rawSupplierSheets.forEach(sheet => {
         const existing = supplierSheetsByName.get(sheet.name)
         if (!existing || new Date(sheet.modified_at || sheet.created_at || 0) > new Date(existing.modified_at || existing.created_at || 0)) {
@@ -605,11 +772,9 @@ export default function DashboardPage() {
       })
       const supplierSheets = Array.from(supplierSheetsByName.values())
 
-      // As Customer: sheets created BY my company
-      const rawCustomerSheets = (allSheets || []).filter(s => s.company_id === companyId)
+      const rawCustomerSheets = allSheets.filter(s => s.requesting_company_id === companyId)
 
-      // CRITICAL: Deduplicate customer sheets by name, keeping most recent
-      const customerSheetsByName = new Map<string, any>()
+      const customerSheetsByName = new Map<string, typeof allSheets[0]>()
       rawCustomerSheets.forEach(sheet => {
         const existing = customerSheetsByName.get(sheet.name)
         if (!existing || new Date(sheet.modified_at || sheet.created_at || 0) > new Date(existing.modified_at || existing.created_at || 0)) {
@@ -618,82 +783,40 @@ export default function DashboardPage() {
       })
       const customerSheets = Array.from(customerSheetsByName.values())
 
-      // Calculate time windows for activity-based metrics (used for both supplier and customer views)
-      const now = new Date()
-      const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+      const supplierCompletedTasks = supplierSheets.filter(s =>
+        !s.status || s.status === 'completed' || s.status === 'approved' || s.status === 'draft' || s.status === 'imported'
+      ).length
 
-      // Supplier metrics: Use activity-based calculations
-      // Completed = sheets with completed/approved status OR maintained in last 90 days
-      const supplierCompletedTasks = supplierSheets.filter(s => {
-        const isStatusComplete = s.status === 'completed' || s.status === 'approved'
-        const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
-        return isStatusComplete || isActivelyMaintained
-      }).length
+      const supplierOpenTasks = supplierSheets.filter(s =>
+        s.status === 'in_progress' || s.status === 'pending'
+      ).length
 
-      // Open tasks = sheets with in_progress/pending status OR modified in last 30 days but not in 90
-      const supplierOpenTasks = supplierSheets.filter(s => {
-        const isInProgress = s.status === 'in_progress' || s.status === 'pending'
-        const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
-        const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
-        // Count as "open" if recently modified but not yet in the 90-day "completed" window
-        return isInProgress || (isRecentlyModified && !isActivelyMaintained)
-      }).length
+      const supplierRejectedTasks = supplierSheets.filter(s =>
+        s.status === 'rejected' || s.status === 'flagged'
+      ).length
 
-      // Customer metrics: Calculate compliant products based on activity
+      const customerCompletedProducts = customerSheets.filter(s =>
+        !s.status || s.status === 'completed' || s.status === 'approved' || s.status === 'draft' || s.status === 'imported'
+      ).length
 
-      // Products are "compliant" if they've been actively maintained (modified in last 90 days)
-      // OR if they have completed/approved status
-      const customerCompliantProducts = customerSheets.filter(s => {
-        const isStatusComplete = s.status === 'completed' || s.status === 'approved'
-        const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
-        return isStatusComplete || isActivelyMaintained
-      }).length
+      const customerOpenProducts = customerSheets.filter(s =>
+        s.status === 'in_progress' || s.status === 'pending'
+      ).length
 
-      // Pending reviews = sheets with in_progress status OR modified in last 30 days (actively being worked)
-      const customerPendingReviews = customerSheets.filter(s => {
-        const isInProgress = s.status === 'in_progress'
-        const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
-        return isInProgress || isRecentlyModified
-      }).length
+      const customerRejectedProducts = customerSheets.filter(s =>
+        s.status === 'rejected' || s.status === 'flagged'
+      ).length
 
-      // Count unique suppliers (requesting_company_id)
-      const supplierIds = new Set(customerSheets.map(s => s.requesting_company_id).filter(Boolean))
-      const customerTotalSuppliers = supplierIds.size
-
-      // Count verified suppliers (all their sheets are actively maintained OR have completed status)
-      let verifiedCount = 0
-      supplierIds.forEach(supplierId => {
-        const supplierCustomerSheets = customerSheets.filter(s => s.requesting_company_id === supplierId)
-        const allCompliant = supplierCustomerSheets.every(s => {
-          const isStatusComplete = s.status === 'completed' || s.status === 'approved'
-          const isActivelyMaintained = s.modified_at && new Date(s.modified_at) >= ninetyDaysAgo
-          return isStatusComplete || isActivelyMaintained
-        })
-        if (allCompliant && supplierCustomerSheets.length > 0) verifiedCount++
-      })
-
-      // Active suppliers (have at least one sheet modified in last 30 days OR with in_progress/pending status)
-      let activeCount = 0
-      supplierIds.forEach(supplierId => {
-        const hasActive = customerSheets.some(s => {
-          if (s.requesting_company_id !== supplierId) return false
-          const isInProgress = s.status === 'in_progress' || s.status === 'pending'
-          const isRecentlyModified = s.modified_at && new Date(s.modified_at) >= thirtyDaysAgo
-          return isInProgress || isRecentlyModified
-        })
-        if (hasActive) activeCount++
-      })
-
-      // Recent activity - get companies for names
       const { data: companies } = await supabase
         .from('companies')
         .select('id, name')
 
       const companyMap = new Map((companies || []).map(c => [c.id, c.name]))
 
-      // Recent sheets (both supplier and customer) - dedupe by ID
-      const allRelevantSheets = [...supplierSheets, ...customerSheets]
+      const allRelevantSheets = [
+        ...supplierSheets.map(s => ({ ...s, role: 'supplier' as const })),
+        ...customerSheets.map(s => ({ ...s, role: 'customer' as const }))
+      ]
       const uniqueSheets = Array.from(new Map(allRelevantSheets.map(s => [s.id, s])).values())
       const recentSheets = uniqueSheets
         .sort((a, b) => {
@@ -701,121 +824,27 @@ export default function DashboardPage() {
           const dateB = b.modified_at ? new Date(b.modified_at).getTime() : 0
           return dateB - dateA
         })
-        .slice(0, 5)
+        .slice(0, 8)
         .map(s => ({
           id: s.id,
           name: s.name,
           status: s.status,
           companyName: companyMap.get(s.company_id === companyId ? s.requesting_company_id : s.company_id) || 'Unknown',
-          modifiedAt: s.modified_at
+          modifiedAt: s.modified_at,
+          role: s.role
         }))
-
-      // Fetch request metrics (table may not exist yet)
-      let pendingIncoming = 0
-      let pendingOutgoing = 0
-      let incomingTotal = 0
-      let outgoingTotal = 0
-
-      const { data: incomingRequests, error: reqError } = await supabase
-        .from('requests')
-        .select('id, status')
-        .eq('reader_company_id', companyId)
-
-      if (!reqError) {
-        const { data: outgoingRequests } = await supabase
-          .from('requests')
-          .select('id, status')
-          .eq('owner_company_id', companyId)
-
-        pendingIncoming = incomingRequests?.filter(r =>
-          r.status === 'created' || r.status === 'reviewed'
-        ).length || 0
-
-        pendingOutgoing = outgoingRequests?.filter(r =>
-          r.status === 'created' || r.status === 'reviewed'
-        ).length || 0
-
-        incomingTotal = incomingRequests?.length || 0
-        outgoingTotal = outgoingRequests?.length || 0
-
-        console.log('📬 Request Metrics:', {
-          incomingTotal,
-          pendingIncoming,
-          outgoingTotal,
-          pendingOutgoing
-        })
-      }
 
       setStats({
         supplierOpenTasks,
         supplierCompletedTasks,
+        supplierRejectedTasks,
         supplierTotalTasks: supplierSheets.length,
+        customerOpenProducts,
+        customerCompletedProducts,
+        customerRejectedProducts,
         customerTotalProducts: customerSheets.length,
-        customerCompliantProducts,
-        customerPendingReviews,
-        customerActiveSuppliers: activeCount,
-        customerVerifiedSuppliers: verifiedCount,
-        customerTotalSuppliers,
         recentSheets,
-        pendingIncomingRequests: pendingIncoming,
-        pendingOutgoingRequests: pendingOutgoing,
-        totalIncomingRequests: incomingTotal,
-        totalOutgoingRequests: outgoingTotal
       })
-
-      // Calculate compliance stats from customer sheets
-      const compliance = calculateComplianceStats(customerSheets)
-      setComplianceStats(compliance)
-
-      // Fetch chemical compliance stats (tables may not exist yet)
-      try {
-        const { count: totalChemicals, error: invError } = await supabase
-          .from('chemical_inventory')
-          .select('*', { count: 'exact', head: true })
-
-        // Only proceed if the table exists (no error)
-        if (!invError) {
-          const { count: pfasCount } = await supabase
-            .from('chemical_inventory')
-            .select('*', { count: 'exact', head: true })
-            .eq('is_pfas', true)
-
-          const { count: reachCount } = await supabase
-            .from('chemical_inventory')
-            .select('*', { count: 'exact', head: true })
-            .eq('is_reach_svhc', true)
-
-          const { count: prop65Count } = await supabase
-            .from('chemical_inventory')
-            .select('*', { count: 'exact', head: true })
-            .eq('is_prop65', true)
-
-          // Get sheet_chemicals and filter to only this company's sheets
-          const customerSheetIds = new Set(customerSheets.map(s => s.id))
-
-          const { data: sheetChemicals } = await supabase
-            .from('sheet_chemicals')
-            .select('sheet_id')
-
-          // Only count sheets that belong to this company
-          const sheetsWithChemicals = new Set(
-            sheetChemicals
-              ?.filter(sc => customerSheetIds.has(sc.sheet_id))
-              .map(sc => sc.sheet_id) || []
-          ).size
-
-          setChemicalStats({
-            totalChemicals: totalChemicals || 0,
-            pfasCount: pfasCount || 0,
-            reachCount: reachCount || 0,
-            prop65Count: prop65Count || 0,
-            sheetsWithChemicals
-          })
-        }
-      } catch {
-        // Chemical tables don't exist yet - skip this section
-        console.log('Chemical compliance tables not available')
-      }
 
       setLoading(false)
     }
@@ -823,20 +852,26 @@ export default function DashboardPage() {
     fetchDashboardData()
   }, [])
 
+  const handleSegmentClick = (status: string) => {
+    router.push(`/sheets?status=${status}`)
+  }
+
   if (loading) {
     return (
       <AppLayout title="Dashboard">
         <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span>Loading dashboard...</span>
+          <div className="flex flex-col items-center gap-3 text-slate-500">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-sky-100 animate-pulse" />
+              <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-emerald-600" />
+            </div>
+            <span className="text-sm font-medium">Loading your dashboard...</span>
           </div>
         </div>
       </AppLayout>
     )
   }
 
-  // Show association-wide dashboard for super admins
   if (isSuperAdmin && associationMetrics) {
     return (
       <AppLayout title="Dashboard">
@@ -849,286 +884,307 @@ export default function DashboardPage() {
     return (
       <AppLayout title="Dashboard">
         <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Unable to load dashboard data</p>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
+              <AlertCircle className="h-6 w-6 text-slate-400" />
+            </div>
+            <p className="text-slate-500 font-medium">Unable to load dashboard data</p>
+          </div>
         </div>
       </AppLayout>
     )
   }
 
-  const supplierCompletionRate = stats.supplierTotalTasks > 0
-    ? Math.round((stats.supplierCompletedTasks / stats.supplierTotalTasks) * 100)
-    : 0
+  const customerSegments: StatusSegment[] = [
+    {
+      label: 'Completed',
+      value: stats.customerCompletedProducts,
+      color: '#10b981',
+      gradientFrom: '#10b981',
+      gradientTo: '#059669',
+      status: 'completed',
+      icon: CheckCircle2,
+    },
+    {
+      label: 'Open',
+      value: stats.customerOpenProducts,
+      color: '#f59e0b',
+      gradientFrom: '#f59e0b',
+      gradientTo: '#d97706',
+      status: 'pending',
+      icon: Clock,
+    },
+    {
+      label: 'Rejected',
+      value: stats.customerRejectedProducts,
+      color: '#ef4444',
+      gradientFrom: '#f43f5e',
+      gradientTo: '#e11d48',
+      status: 'rejected',
+      icon: XCircle,
+    },
+  ]
+
+  const supplierSegments: StatusSegment[] = [
+    {
+      label: 'Completed',
+      value: stats.supplierCompletedTasks,
+      color: '#10b981',
+      gradientFrom: '#10b981',
+      gradientTo: '#059669',
+      status: 'completed',
+      icon: CheckCircle2,
+    },
+    {
+      label: 'Open',
+      value: stats.supplierOpenTasks,
+      color: '#f59e0b',
+      gradientFrom: '#f59e0b',
+      gradientTo: '#d97706',
+      status: 'pending',
+      icon: Clock,
+    },
+    {
+      label: 'Rejected',
+      value: stats.supplierRejectedTasks,
+      color: '#ef4444',
+      gradientFrom: '#f43f5e',
+      gradientTo: '#e11d48',
+      status: 'rejected',
+      icon: XCircle,
+    },
+  ]
+
+  const currentSegments = viewMode === 'customer' ? customerSegments : supplierSegments
+  const currentTotal = viewMode === 'customer' ? stats.customerTotalProducts : stats.supplierTotalTasks
+
+  // Mock sparkline data (you can replace with real historical data)
+  const mockSparklineCompleted = [12, 15, 14, 18, 22, 25, 28]
+  const mockSparklineOpen = [8, 6, 9, 7, 5, 4, 3]
+  const mockSparklineTotal = [20, 21, 23, 25, 27, 29, 31]
+
+  const currentStats = viewMode === 'customer'
+    ? {
+        completed: stats.customerCompletedProducts,
+        open: stats.customerOpenProducts,
+        rejected: stats.customerRejectedProducts,
+        total: stats.customerTotalProducts,
+      }
+    : {
+        completed: stats.supplierCompletedTasks,
+        open: stats.supplierOpenTasks,
+        rejected: stats.supplierRejectedTasks,
+        total: stats.supplierTotalTasks,
+      }
 
   return (
     <AppLayout title="Dashboard">
-      <div className="space-y-6">
-        {/* As Supplier Section */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">Your Tasks (As Supplier)</h2>
-          <div className="grid gap-4 md:grid-cols-4">
-            <TaskProgress
-              open={stats.supplierOpenTasks}
-              completed={stats.supplierCompletedTasks}
-              total={stats.supplierTotalTasks}
-              title="Questionnaire Progress"
-            />
-            <StatCard
-              title="Open Tasks"
-              value={stats.supplierOpenTasks}
-              description="Questionnaires pending"
-              icon={Clock}
-            />
-            <StatCard
-              title="Completion Rate"
-              value={`${supplierCompletionRate}%`}
-              description={`${stats.supplierCompletedTasks} of ${stats.supplierTotalTasks} complete`}
-              icon={TrendingUp}
-            />
+      <div className="space-y-8 max-w-7xl mx-auto">
+        {/* Page Header */}
+        <div className="opacity-0 animate-fade-in-up" style={{ animationFillMode: 'forwards' }}>
+          <h1 className="font-display text-3xl font-semibold text-slate-900 tracking-tight">
+            Welcome back
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Here&apos;s an overview of your supply chain compliance data
+          </p>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex items-center gap-3 opacity-0 animate-fade-in-up animation-delay-100" style={{ animationFillMode: 'forwards' }}>
+          <div className="inline-flex rounded-xl bg-slate-100/80 p-1">
+            <button
+              onClick={() => setViewMode('customer')}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
+                viewMode === 'customer'
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              )}
+            >
+              <Building2 className="h-4 w-4" />
+              As Customer
+            </button>
+            <button
+              onClick={() => setViewMode('supplier')}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
+                viewMode === 'supplier'
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              )}
+            >
+              <Package className="h-4 w-4" />
+              As Supplier
+            </button>
           </div>
-        </section>
+          <span className="text-sm text-slate-400">
+            {viewMode === 'customer'
+              ? 'Products you have requested from suppliers'
+              : 'Questionnaires you need to complete for customers'
+            }
+          </span>
+        </div>
 
-        {/* Request Tracking Section */}
-        {(stats.totalIncomingRequests || 0) > 0 || (stats.totalOutgoingRequests || 0) > 0 ? (
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Request Tracking</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Product data requests sent and received
-                </p>
-              </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-4">
-              <StatCard
-                title="Incoming Requests"
-                value={stats.totalIncomingRequests || 0}
-                description={`${stats.pendingIncomingRequests || 0} pending response`}
-                icon={Inbox}
-              />
-              <StatCard
-                title="Pending Incoming"
-                value={stats.pendingIncomingRequests || 0}
-                description="Awaiting your response"
-                icon={Clock}
-              />
-              <StatCard
-                title="Outgoing Requests"
-                value={stats.totalOutgoingRequests || 0}
-                description={`${stats.pendingOutgoingRequests || 0} pending`}
-                icon={Send}
-              />
-              <StatCard
-                title="Pending Outgoing"
-                value={stats.pendingOutgoingRequests || 0}
-                description="Awaiting supplier response"
-                icon={Clock}
-              />
-            </div>
-          </section>
-        ) : null}
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <StatCard
+            title="Total Sheets"
+            value={currentStats.total}
+            subtitle="All time"
+            icon={Package}
+            accentColor="slate"
+            delay={150}
+            sparklineData={mockSparklineTotal}
+          />
+          <StatCard
+            title="Completed"
+            value={currentStats.completed}
+            subtitle={`${currentStats.total > 0 ? Math.round((currentStats.completed / currentStats.total) * 100) : 0}% completion rate`}
+            trend={12}
+            icon={CheckCircle2}
+            accentColor="emerald"
+            delay={200}
+            sparklineData={mockSparklineCompleted}
+          />
+          <StatCard
+            title="Open"
+            value={currentStats.open}
+            subtitle="Awaiting action"
+            trend={-8}
+            icon={Clock}
+            accentColor="amber"
+            delay={250}
+            sparklineData={mockSparklineOpen}
+          />
+          <StatCard
+            title="Rejected"
+            value={currentStats.rejected}
+            subtitle="Needs attention"
+            icon={XCircle}
+            accentColor="rose"
+            delay={300}
+          />
+        </div>
 
-        {/* As Customer Section */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">Supplier Compliance (As Customer)</h2>
-          <div className="grid gap-4 md:grid-cols-4">
-            <ComplianceRing
-              compliant={stats.customerCompliantProducts}
-              total={stats.customerTotalProducts}
-              title="Products Active"
-              subtitle="Maintained within 90 days"
-            />
-            <ComplianceRing
-              compliant={stats.customerVerifiedSuppliers}
-              total={stats.customerTotalSuppliers}
-              title="Suppliers Current"
-              subtitle="All products maintained"
-            />
-            <StatCard
-              title="Pending Reviews"
-              value={stats.customerPendingReviews}
-              description="Awaiting your review"
-              icon={AlertCircle}
-            />
-            <StatCard
-              title="Active Suppliers"
-              value={stats.customerActiveSuppliers}
-              description="With ongoing requests"
-              icon={Building2}
-            />
-          </div>
-        </section>
-
-        {/* Chemical Compliance Section */}
-        {chemicalStats && (
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Chemical Compliance</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Chemical inventory and regulatory substance tracking
-                </p>
-              </div>
-              <a
-                href="/compliance/supplier"
-                className="text-sm text-primary hover:underline"
-              >
-                View chemical inventory →
-              </a>
-            </div>
-            <div className="grid gap-4 md:grid-cols-5">
-              <StatCard
-                title="Chemical Inventory"
-                value={chemicalStats.totalChemicals}
-                description="Unique substances tracked"
-                icon={Package}
-              />
-              <StatCard
-                title="Sheets with Chemicals"
-                value={chemicalStats.sheetsWithChemicals}
-                description="Product data sheets"
-                icon={Building2}
-              />
-              <Card className={chemicalStats.pfasCount > 0 ? 'border-red-200 bg-red-50' : ''}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    PFAS Substances
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">
-                    {chemicalStats.pfasCount}
+        {/* Main Content Grid */}
+        <div className="grid gap-6 lg:grid-cols-5">
+          {/* Chart Section */}
+          <div className="lg:col-span-3">
+            <Card className="overflow-hidden border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-200" style={{ animationFillMode: 'forwards' }}>
+              <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-slate-900">Sheet Status</CardTitle>
+                    <p className="text-sm text-slate-500 mt-0.5">Distribution by completion status</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">EU restriction pending</p>
-                </CardContent>
-              </Card>
-              <Card className={chemicalStats.reachCount > 0 ? 'border-orange-200 bg-orange-50' : ''}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    REACH SVHC
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {chemicalStats.reachCount}
-                  </div>
-                  <p className="text-xs text-muted-foreground">High concern substances</p>
-                </CardContent>
-              </Card>
-              <Card className={chemicalStats.prop65Count > 0 ? 'border-yellow-200 bg-yellow-50' : ''}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Prop 65
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-yellow-600">
-                    {chemicalStats.prop65Count}
-                  </div>
-                  <p className="text-xs text-muted-foreground">California listed</p>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
-        )}
-
-        {/* Compliance Intelligence Section */}
-        {complianceStats && (
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Compliance Intelligence</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Real-time regulatory monitoring and EU Digital Product Passport readiness
-                </p>
-              </div>
-              <a
-                href="/demo/compliance"
-                className="text-sm text-primary hover:underline"
-              >
-                View full compliance dashboard →
-              </a>
-            </div>
-            <ComplianceStatusDashboard stats={complianceStats} />
-          </section>
-        )}
-
-        {/* Recent Activity */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">Recent Activity</h2>
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base">Recent Sheets</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
-                {stats.recentSheets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No recent activity</p>
-                ) : (
-                  <div className="space-y-4">
-                    {stats.recentSheets.map((sheet) => (
-                      <a
-                        key={sheet.id}
-                        href={`/sheets/${sheet.id}`}
-                        className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+              <CardContent className="pt-8 pb-8 px-8">
+                {currentTotal === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center mb-4">
+                      {viewMode === 'customer' ? (
+                        <Building2 className="h-10 w-10 text-slate-400" />
+                      ) : (
+                        <Package className="h-10 w-10 text-slate-400" />
+                      )}
+                    </div>
+                    <h3 className="font-semibold text-lg text-slate-900 mb-2">No sheets yet</h3>
+                    <p className="text-slate-500 max-w-sm">
+                      {viewMode === 'customer'
+                        ? "You haven't requested any product data sheets from suppliers yet."
+                        : "You don't have any questionnaires to complete."
+                      }
+                    </p>
+                    {viewMode === 'customer' && (
+                      <button
+                        onClick={() => setRequestDialogOpen(true)}
+                        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-sm hover:shadow-md hover:from-emerald-500 hover:to-emerald-400 transition-all"
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                          <Package className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{sheet.name}</p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Building2 className="h-3 w-3" />
-                            {sheet.companyName}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          {getStatusBadge(sheet.status)}
-                          <span className="text-xs text-muted-foreground">
-                            {formatTimeAgo(sheet.modifiedAt)}
-                          </span>
-                        </div>
-                      </a>
-                    ))}
+                        <Sparkles className="h-4 w-4" />
+                        Request Product Data
+                      </button>
+                    )}
                   </div>
+                ) : (
+                  <RefinedDonutChart
+                    segments={currentSegments}
+                    total={currentTotal}
+                    onSegmentClick={handleSegmentClick}
+                  />
                 )}
               </CardContent>
             </Card>
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base">Quick Actions</CardTitle>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="lg:col-span-2">
+            <Card className="h-full border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-300" style={{ animationFillMode: 'forwards' }}>
+              <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-slate-900">Recent Activity</CardTitle>
+                    <p className="text-sm text-slate-500 mt-0.5">Latest updates on your sheets</p>
+                  </div>
+                  <a
+                    href="/sheets"
+                    className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+                  >
+                    View all
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                </div>
               </CardHeader>
-              <CardContent className="grid gap-3">
-                <a
-                  href="/suppliers"
-                  className="flex items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-muted"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10">
-                    <Building2 className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">View Suppliers</p>
-                    <p className="text-xs text-muted-foreground">Manage supplier questionnaires</p>
-                  </div>
-                </a>
-                <button
-                  className="flex items-center gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-muted"
-                  onClick={() => setRequestDialogOpen(true)}
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10">
-                    <Package className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Request Product Data</p>
-                    <p className="text-xs text-muted-foreground">Send questionnaire to supplier</p>
-                  </div>
-                </button>
+              <CardContent className="p-2">
+                <ActivityTimeline
+                  sheets={stats.recentSheets}
+                  onSheetClick={(id) => router.push(`/sheets/${id}`)}
+                />
               </CardContent>
             </Card>
           </div>
-        </section>
+        </div>
+
+        {/* Coming Soon Sections */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <ComingSoonSection
+            title="Request Tracking"
+            description="Track incoming and outgoing product data requests"
+          >
+            <div className="grid gap-3 grid-cols-2">
+              {[1, 2, 3, 4].map(i => (
+                <Card key={i} className="bg-white/60">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-slate-400">
+                      Metric {i}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-slate-300">--</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ComingSoonSection>
+
+          <ComingSoonSection
+            title="Compliance Intelligence"
+            description="Real-time regulatory monitoring and DPP readiness"
+          >
+            <div className="grid gap-3 grid-cols-3">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="h-32 bg-white/60">
+                  <CardContent className="flex items-center justify-center h-full">
+                    <div className="w-12 h-12 rounded-full bg-slate-100" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ComingSoonSection>
+        </div>
       </div>
 
-      {/* Request Product Data Dialog */}
       <RequestSheetDialog
         open={requestDialogOpen}
         onOpenChange={setRequestDialogOpen}

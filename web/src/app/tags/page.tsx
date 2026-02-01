@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { AppLayout } from '@/components/layout/app-layout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PageHeader } from '@/components/layout/page-header'
+import { StatCard } from '@/components/ui/stat-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,8 +22,11 @@ import {
   HelpCircle,
   Plus,
   Loader2,
+  ChevronRight,
+  Link2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { cn } from '@/lib/utils'
 
 interface Tag {
   id: string
@@ -42,7 +46,6 @@ export default function TagsPage() {
     async function fetchTags() {
       const supabase = createClient()
 
-      // Fetch tags
       const { data: tagsData, error } = await supabase
         .from('tags')
         .select('id, name, description, created_at')
@@ -54,17 +57,14 @@ export default function TagsPage() {
         return
       }
 
-      // Fetch question counts per tag
       const { data: questionTagsData } = await supabase
         .from('question_tags')
         .select('tag_id')
 
-      // Fetch sheet counts per tag
       const { data: sheetTagsData } = await supabase
         .from('sheet_tags')
         .select('tag_id')
 
-      // Count questions and sheets per tag
       const questionCounts = new Map<string, number>()
       questionTagsData?.forEach(qt => {
         questionCounts.set(qt.tag_id, (questionCounts.get(qt.tag_id) || 0) + 1)
@@ -93,138 +93,126 @@ export default function TagsPage() {
     tag.description?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const totalQuestionLinks = tags.reduce((sum, t) => sum + (t.questionCount || 0), 0)
+  const totalSheetLinks = tags.reduce((sum, t) => sum + (t.sheetCount || 0), 0)
+
+  if (loading) {
+    return (
+      <AppLayout title="Tags">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center gap-3 text-slate-500">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 animate-pulse" />
+              <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-amber-600" />
+            </div>
+            <span className="text-sm font-medium">Loading tags...</span>
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
+
   return (
     <AppLayout title="Tags">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Tags</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage questionnaire versions and question sets
-            </p>
-          </div>
-          <Button>
+      <div className="space-y-6 max-w-7xl mx-auto">
+        <PageHeader
+          title="Tags"
+          description="Manage questionnaire versions and question sets"
+        >
+          <Button className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
             <Plus className="h-4 w-4 mr-2" />
             Create Tag
           </Button>
-        </div>
+        </PageHeader>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg dark:bg-blue-900/30">
-                  <Tags className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{tags.length}</p>
-                  <p className="text-xs text-muted-foreground">Total Tags</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg dark:bg-purple-900/30">
-                  <HelpCircle className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">
-                    {tags.reduce((sum, t) => sum + (t.questionCount || 0), 0)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Question-Tag Links</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg dark:bg-green-900/30">
-                  <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">
-                    {tags.reduce((sum, t) => sum + (t.sheetCount || 0), 0)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Sheet-Tag Links</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard title="Total Tags" value={tags.length} icon={Tags} accentColor="amber" delay={100} />
+          <StatCard title="Question Links" value={totalQuestionLinks} icon={HelpCircle} accentColor="violet" delay={150} />
+          <StatCard title="Sheet Links" value={totalSheetLinks} icon={FileText} accentColor="emerald" delay={200} />
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 opacity-0 animate-fade-in-up animation-delay-200" style={{ animationFillMode: 'forwards' }}>
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Search tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 rounded-xl border-slate-200 focus:border-amber-300 focus:ring-amber-200"
             />
           </div>
-          <Badge variant="secondary">{filteredTags.length} tags</Badge>
+          <Badge variant="secondary" className="rounded-full px-3 py-1 bg-slate-100 text-slate-600">
+            {filteredTags.length} tags
+          </Badge>
         </div>
 
         {/* Tags Table */}
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-300" style={{ animationFillMode: 'forwards' }}>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Tag Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-center">Questions</TableHead>
-                <TableHead className="text-center">Sheets</TableHead>
-                <TableHead>Created</TableHead>
+              <TableRow className="bg-slate-50/50 border-b border-slate-100">
+                <TableHead className="font-semibold text-slate-700">Tag Name</TableHead>
+                <TableHead className="font-semibold text-slate-700">Description</TableHead>
+                <TableHead className="text-center font-semibold text-slate-700">Questions</TableHead>
+                <TableHead className="text-center font-semibold text-slate-700">Sheets</TableHead>
+                <TableHead className="font-semibold text-slate-700">Created</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
+              {filteredTags.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin" />
-                      <span>Loading tags...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : filteredTags.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Tags className="h-12 w-12 opacity-30" />
-                      <span>No tags found</span>
+                  <TableCell colSpan={6} className="text-center py-16">
+                    <div className="flex flex-col items-center gap-3 text-slate-500">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+                        <Tags className="h-8 w-8 text-slate-400" />
+                      </div>
+                      <span className="font-medium">No tags found</span>
+                      <p className="text-sm text-slate-400">Create a tag to get started</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredTags.map((tag) => (
-                  <TableRow key={tag.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow key={tag.id} className="cursor-pointer hover:bg-slate-50/50 transition-colors group">
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="font-mono">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-lg bg-amber-50 flex items-center justify-center">
+                          <Tags className="h-4 w-4 text-amber-600" />
+                        </div>
+                        <Badge variant="outline" className="font-mono text-sm rounded-lg border-slate-200 bg-slate-50/50">
                           {tag.name}
                         </Badge>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground max-w-[300px] truncate">
-                      {tag.description || '-'}
+                    <TableCell className="text-slate-500 max-w-[300px] truncate">
+                      {tag.description || <span className="text-slate-300">No description</span>}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="secondary">{tag.questionCount}</Badge>
+                      <Badge className="bg-violet-50 text-violet-700 border-violet-200/50 font-medium">
+                        <HelpCircle className="h-3 w-3 mr-1" />
+                        {tag.questionCount}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="secondary">{tag.sheetCount}</Badge>
+                      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200/50 font-medium">
+                        <FileText className="h-3 w-3 mr-1" />
+                        {tag.sheetCount}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-slate-500">
                       {tag.created_at
-                        ? new Date(tag.created_at).toLocaleDateString()
-                        : '-'}
+                        ? new Date(tag.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })
+                        : <span className="text-slate-300">-</span>}
+                    </TableCell>
+                    <TableCell>
+                      <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
                     </TableCell>
                   </TableRow>
                 ))

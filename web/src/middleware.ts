@@ -61,6 +61,12 @@ export async function middleware(request: NextRequest) {
 
   console.log('[Middleware]', request.nextUrl.pathname, { userId: user?.id })
 
+  // API routes that use API key authentication (skip session auth)
+  if (request.nextUrl.pathname.startsWith('/api/v1/')) {
+    // These routes handle their own authentication via API keys
+    return supabaseResponse
+  }
+
   // Public routes (login, home, etc.)
   const publicPaths = ['/', '/login', '/auth']
   const isPublicPath = publicPaths.some(path =>

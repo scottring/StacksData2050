@@ -42,8 +42,38 @@ export default function ChemicalInventoryReport() {
     async function fetchData() {
       const supabase = createClient()
 
-      // Get list table answers that contain chemical data
-      // Look for answers to questions about chemicals, substances, CAS numbers
+      // Get current user and check access level
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      const { data: isSuperAdmin } = await supabase.rpc('is_super_admin')
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single()
+
+      const companyId = userData?.company_id
+
+      // Get related sheets and companies
+      const { data: allSheets } = await supabase
+        .from('sheets')
+        .select('id, name, company_id, requesting_company_id')
+
+      // Filter sheets based on access level
+      let sheets = allSheets || []
+      if (!isSuperAdmin && companyId) {
+        sheets = sheets.filter(
+          s => s.company_id === companyId || s.requesting_company_id === companyId
+        )
+      }
+
+      const sheetIds = sheets.map(s => s.id)
+
+      // Get list table answers that contain chemical data for filtered sheets
       const { data: answers } = await supabase
         .from('answers')
         .select(`
@@ -55,12 +85,8 @@ export default function ChemicalInventoryReport() {
         `)
         .not('text_value', 'is', null)
         .not('list_table_row_id', 'is', null)
+        .in('sheet_id', sheetIds.length > 0 ? sheetIds : ['none'])
         .limit(500)
-
-      // Get related sheets and companies
-      const { data: sheets } = await supabase
-        .from('sheets')
-        .select('id, name, requesting_company_id')
 
       const { data: companies } = await supabase
         .from('companies')
@@ -71,7 +97,7 @@ export default function ChemicalInventoryReport() {
         .select('id, name')
 
       // Build lookup maps
-      const sheetMap = new Map((sheets || []).map(s => [s.id, s]))
+      const sheetMap = new Map(sheets.map(s => [s.id, s]))
       const companyMap = new Map((companies || []).map(c => [c.id, c]))
       const columnMap = new Map((columns || []).map(c => [c.id, c]))
 
@@ -98,7 +124,8 @@ export default function ChemicalInventoryReport() {
 
         const column = columnMap.get(answer.list_table_column_id)
         const sheet = sheetMap.get(answer.sheet_id)
-        const company = sheet ? companyMap.get(sheet.requesting_company_id) : null
+        // Use company_id (the supplier) for the company name
+        const company = sheet ? companyMap.get(sheet.company_id) : null
 
         const columnName = column?.name?.toLowerCase() || ''
         const key = `${answer.sheet_id}-${answer.text_value}`
@@ -148,6 +175,37 @@ export default function ChemicalInventoryReport() {
     c.companyName?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const exportToCSV = () => {
+    // Create CSV header
+    const headers = ['Chemical/Substance', 'CAS Number', 'Supplier', 'Product', 'Status']
+
+    // Create CSV rows from filtered data
+    const rows = filteredChemicals.map(chemical => [
+      chemical.chemicalName || '-',
+      chemical.casNumber || '-',
+      chemical.companyName,
+      chemical.sheetName,
+      chemical.hasRestrictions ? 'Has Restrictions' : 'Compliant'
+    ])
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `chemical-inventory-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <AppLayout title="Chemical Inventory Report">
       <div className="space-y-6">
@@ -169,7 +227,7 @@ export default function ChemicalInventoryReport() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={exportToCSV} disabled={loading || filteredChemicals.length === 0}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
