@@ -107,8 +107,8 @@ export async function POST(request: Request) {
           continue
         }
 
-        // Send email
-        const discoveryUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/trial/discovery?token=${token}&email=${encodeURIComponent(normalizedEmail)}`
+        // Send email - go directly to signup (skip discovery)
+        const signupUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/signup?token=${token}`
 
         const emailHtml = `
           <!DOCTYPE html>
@@ -136,10 +136,10 @@ export async function POST(request: Request) {
                 </div>
                 <div class="content">
                   <h2>You've been invited to try Stacks Data!</h2>
-                  <p>As a PPvis member, you have exclusive access to our 5-day trial. Before you start, we'd love to hear what you're hoping to get from this experience.</p>
+                  <p>As a PPvis member, you have exclusive access to our 5-day trial. Click the button below to create your account and start exploring.</p>
 
                   <div style="text-align: center;">
-                    <a href="${discoveryUrl}" class="button">Start My Trial Experience</a>
+                    <a href="${signupUrl}" class="button">Create My Account</a>
                   </div>
 
                   <div class="benefits">
@@ -153,7 +153,7 @@ export async function POST(request: Request) {
 
                   <p style="font-size: 14px; color: #6b7280;">
                     Or copy this link: <br>
-                    <span style="word-break: break-all;">${discoveryUrl}</span>
+                    <span style="word-break: break-all;">${signupUrl}</span>
                   </p>
 
                   <p style="font-size: 14px; color: #6b7280; margin-top: 24px;">
@@ -174,9 +174,7 @@ You've been invited to try Stacks Data!
 
 As a PPvis member, you have exclusive access to our 5-day trial.
 
-Before you start, we'd love to hear what you're hoping to get from this experience.
-
-Click here to start your trial: ${discoveryUrl}
+Click here to create your account: ${signupUrl}
 
 What you'll get:
 - Full access to the Stacks Data platform
@@ -190,7 +188,7 @@ This invitation expires in 5 days.
         if (process.env.DISABLE_OUTBOUND_EMAILS === 'true') {
           console.log('📧 EMAIL BLOCKED (DISABLE_OUTBOUND_EMAILS=true)')
           console.log('Would send to:', normalizedEmail)
-          console.log('Discovery URL:', discoveryUrl)
+          console.log('Signup URL:', signupUrl)
         } else if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
           await sgMail.send({
             to: normalizedEmail,
@@ -202,7 +200,7 @@ This invitation expires in 5 days.
         } else {
           console.warn('SendGrid not configured. Email not sent.')
           console.log('Would send to:', normalizedEmail)
-          console.log('Discovery URL:', discoveryUrl)
+          console.log('Signup URL:', signupUrl)
         }
 
         // Update sent_at

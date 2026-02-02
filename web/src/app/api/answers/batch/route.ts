@@ -1,6 +1,35 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+
+// Helper to log trial activity (non-blocking)
+async function logTrialActivity(email: string, userId: string | null, sheetId: string, answerCount: number) {
+  try {
+    const adminClient = createAdminClient()
+
+    // Check if this is a trial user
+    const { data: invitation } = await adminClient
+      .from('invitations')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .eq('invitation_type', 'trial')
+      .single()
+
+    if (invitation) {
+      // Log the answer submission
+      await adminClient.from('trial_activity_events').insert({
+        user_id: userId,
+        email: email.toLowerCase(),
+        event_type: 'answer_submitted',
+        event_data: { sheet_id: sheetId, answer_count: answerCount },
+      })
+    }
+  } catch (error) {
+    // Silently ignore - tracking should never break the main flow
+    console.error('Trial activity logging error:', error)
+  }
+}
 
 // Create a service role client for when auth cookies aren't available (dev workaround)
 function createServiceRoleClient() {
@@ -261,6 +290,11 @@ export async function POST(request: NextRequest) {
 
     const successCount = results.filter(r => r.success).length
     const errorCount = results.filter(r => !r.success).length
+
+    // Log trial activity if answers were saved (non-blocking)
+    if (successCount > 0 && user?.email) {
+      logTrialActivity(user.email, user.id, sheet_id, successCount)
+    }
 
     return NextResponse.json({
       success: errorCount === 0,

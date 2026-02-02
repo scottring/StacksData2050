@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react'
+import { trackDiscoveryStarted, trackDiscoveryCompleted } from '@/lib/trial-tracking'
 
 export default function DiscoveryPage() {
   return (
@@ -73,7 +74,11 @@ function DiscoveryContent() {
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    // Track that user started the discovery process
+    if (prefilledEmail) {
+      trackDiscoveryStarted(prefilledEmail)
+    }
+  }, [prefilledEmail])
 
   // Calculate progress based on filled questions
   const filledQuestions = QUESTIONS.filter(q => formData[q.id as keyof typeof formData].trim().length > 0).length
@@ -112,6 +117,9 @@ function DiscoveryContent() {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to submit. Please try again.')
       }
+
+      // Track successful completion
+      trackDiscoveryCompleted(formData.email)
 
       // Redirect to signup with token
       router.push(data.redirect_url || `/auth/signup?token=${token}`)

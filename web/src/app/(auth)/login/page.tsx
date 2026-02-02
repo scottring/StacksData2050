@@ -52,21 +52,28 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const supabase = createClient()
+    try {
+      const response = await fetch('/api/auth/send-reset-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          redirectTo: `${window.location.origin}/reset-password`,
+        }),
+      })
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
-    })
+      const result = await response.json()
 
-    if (error) {
-      setError(error.message)
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send reset email')
+      }
+
+      toast.success('Check your email for a password reset link')
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email')
+    } finally {
       setLoading(false)
-      return
     }
-
-    setError(null)
-    toast.success('Check your email for a password reset link')
-    setLoading(false)
   }
 
   return (

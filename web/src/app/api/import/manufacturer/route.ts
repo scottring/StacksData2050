@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import * as XLSX from 'xlsx'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as os from 'os'
+
+// Import bundled data files (no fs needed in production)
+import formulaMapData from '@/data/excel-formula-map.json'
+import cellLookupData from '@/data/excel-cell-lookup.json'
+import listTableMappingData from '@/data/excel-list-table-mapping.json'
 
 // Extract metadata from "Supplier Product Contact" sheet
 function extractMetadata(workbook: XLSX.WorkBook) {
@@ -278,24 +280,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: metadata.error }, { status: 400 })
     }
     
-    // Load formula maps
-    const stacksDir = process.env.STACKS_DIR || '/Users/scottkaufman/Developer/StacksData2050/stacks'
-    const formulaMap: QuestionMapping[] = JSON.parse(
-      fs.readFileSync(path.join(stacksDir, 'excel-formula-map.json'), 'utf-8')
-    )
-    const cellLookup: Record<string, CellLookup> = JSON.parse(
-      fs.readFileSync(path.join(stacksDir, 'excel-cell-lookup.json'), 'utf-8')
-    )
-
-    // Load list table mapping
-    let listTableConfig: ListTableConfig = { description: '', tables: [] }
-    try {
-      listTableConfig = JSON.parse(
-        fs.readFileSync(path.join(stacksDir, 'excel-list-table-mapping.json'), 'utf-8')
-      )
-    } catch (e) {
-      console.log('No list table mapping found, skipping list tables')
-    }
+    // Use bundled data files
+    const formulaMap: QuestionMapping[] = formulaMapData as QuestionMapping[]
+    const cellLookup: Record<string, CellLookup> = cellLookupData as Record<string, CellLookup>
+    const listTableConfig: ListTableConfig = listTableMappingData as ListTableConfig
 
     // Parse Excel - regular answers
     const parsedAnswers = parseExcelWithMap(workbook, cellLookup, formulaMap)

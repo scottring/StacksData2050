@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import * as XLSX from 'xlsx'
-import * as fs from 'fs'
-import * as path from 'path'
+
+// Import bundled data files (no fs needed in production)
+import formulaMapData from '@/data/excel-formula-map.json'
+import cellLookupData from '@/data/excel-cell-lookup.json'
 
 // Types
 interface CellLookup {
@@ -62,10 +64,6 @@ interface ImportPreview {
   }>
 }
 
-// Load the formula map and cell lookup (embedded as static data)
-// In production, these would be loaded from files or database
-const FORMULA_MAP_URL = '/data/excel-formula-map.json'
-const CELL_LOOKUP_URL = '/data/excel-cell-lookup.json'
 
 // Helper: Check if value is a placeholder
 function isPlaceholder(value: string | null): boolean {
@@ -241,15 +239,9 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
     const workbook = XLSX.read(buffer, { type: 'buffer' })
     
-    // Load formula map and cell lookup
-    // For now, read from the stacks directory - in production would be bundled
-    const stacksDir = process.env.STACKS_DIR || '/Users/scottkaufman/Developer/StacksData2050/stacks'
-    const formulaMap: QuestionMapping[] = JSON.parse(
-      fs.readFileSync(path.join(stacksDir, 'excel-formula-map.json'), 'utf-8')
-    )
-    const cellLookup: Record<string, CellLookup> = JSON.parse(
-      fs.readFileSync(path.join(stacksDir, 'excel-cell-lookup.json'), 'utf-8')
-    )
+    // Use bundled data files
+    const formulaMap: QuestionMapping[] = formulaMapData as QuestionMapping[]
+    const cellLookup: Record<string, CellLookup> = cellLookupData as Record<string, CellLookup>
     
     // Parse Excel
     const parseResult = parseExcelWithMap(workbook, cellLookup, formulaMap)

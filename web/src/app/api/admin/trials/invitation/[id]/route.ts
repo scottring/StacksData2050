@@ -33,6 +33,12 @@ export async function DELETE(
 
     const adminClient = createAdminClient()
 
+    // First, delete any related discovery responses (foreign key constraint)
+    await adminClient
+      .from('trial_discovery_responses')
+      .delete()
+      .eq('invitation_id', id)
+
     // Delete the invitation
     const { error: deleteError } = await adminClient
       .from('invitations')
@@ -42,7 +48,7 @@ export async function DELETE(
 
     if (deleteError) {
       console.error('Error deleting invitation:', deleteError)
-      return NextResponse.json({ error: 'Failed to delete invitation' }, { status: 500 })
+      return NextResponse.json({ error: deleteError.message || 'Failed to delete invitation' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -1276,6 +1276,12 @@ export function SimpleSheetEditor({
                   Saved
                 </span>
               )}
+              <Link href={`/sheets/${sheetId}/import`}>
+                <Button variant="outline" size="sm" className="text-muted-foreground">
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Import Excel
+                </Button>
+              </Link>
               <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving} className="text-muted-foreground">
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

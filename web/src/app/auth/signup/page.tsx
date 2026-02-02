@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-react'
+import { Loader2, CheckCircle, Mail } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Invitation {
   id: string
@@ -41,6 +42,10 @@ function SignupContent() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [signupComplete, setSignupComplete] = useState(false)
+  const [userAlreadyExists, setUserAlreadyExists] = useState(false)
+  const [detectedBeforeForm, setDetectedBeforeForm] = useState(false) // True if detected before showing form
+  const [resetEmailSent, setResetEmailSent] = useState(false)
+  const [sendingReset, setSendingReset] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     password: '',
@@ -77,11 +82,89 @@ function SignupContent() {
         ...prev,
         companyName: data.company_name || ''
       }))
+
+      // Check if user already exists in auth BEFORE showing the form
+      try {
+        const checkResponse = await fetch('/api/auth/check-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: data.email })
+        })
+        const checkResult = await checkResponse.json()
+
+        if (checkResult.exists) {
+          setUserAlreadyExists(true)
+          setDetectedBeforeForm(true) // User was detected before they saw the form
+        }
+      } catch (e) {
+        // If check fails, continue with normal signup flow
+        console.error('Error checking user:', e)
+      }
+
       setLoading(false)
     }
 
     validateToken()
   }, [token])
+
+  // For existing users detected BEFORE the form, automatically send password reset via SendGrid
+  // (passwords from old Bubble system didn't migrate to Supabase Auth)
+  // Only auto-send if detected before form - not if signup failed with "user exists"
+  useEffect(() => {
+    async function autoSendReset() {
+      if (detectedBeforeForm && userAlreadyExists && !resetEmailSent && !sendingReset && invitation?.email) {
+        setSendingReset(true)
+        try {
+          const response = await fetch('/api/auth/send-reset-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: invitation.email,
+              redirectTo: `${window.location.origin}/reset-password`,
+            }),
+          })
+          if (response.ok) {
+            setResetEmailSent(true)
+          }
+        } catch (e) {
+          console.error('Auto reset email failed:', e)
+        } finally {
+          setSendingReset(false)
+        }
+      }
+    }
+    autoSendReset()
+  }, [detectedBeforeForm, userAlreadyExists, resetEmailSent, sendingReset, invitation?.email])
+
+  async function handleSendResetEmail() {
+    if (!invitation?.email) return
+
+    setSendingReset(true)
+
+    try {
+      const response = await fetch('/api/auth/send-reset-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: invitation.email,
+          redirectTo: `${window.location.origin}/reset-password`,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send email')
+      }
+
+      setResetEmailSent(true)
+      toast.success('Password setup email sent!')
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send email')
+    } finally {
+      setSendingReset(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -115,10 +198,7 @@ function SignupContent() {
       }
 
       // Check if the user needs email confirmation
-      // If session is null but user exists, Supabase requires email confirmation
       if (!authData.session) {
-        // User created but not confirmed — show confirmation message
-        // Mark invitation as accepted so we know they completed signup
         await supabase
           .from('invitations')
           .update({ accepted_at: new Date().toISOString() })
@@ -133,10 +213,8 @@ function SignupContent() {
       let companyId: string
 
       if (invitation!.company_id) {
-        // Link to existing company (trial / admin invite flow)
         companyId = invitation!.company_id
       } else {
-        // Create new company (new supplier flow)
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .insert({ name: formData.companyName })
@@ -168,7 +246,6 @@ function SignupContent() {
 
       // Redirect to request/sheet if linked
       if (invitation!.request_id) {
-        // Get sheet from request
         const { data: request } = await supabase
           .from('requests')
           .select('sheet_id')
@@ -184,7 +261,12 @@ function SignupContent() {
       router.push('/dashboard')
     } catch (error: any) {
       console.error('Signup error:', error)
-      setError(error.message || 'Failed to create account. Please try again.')
+      const errorMsg = error.message?.toLowerCase() || ''
+      if (errorMsg.includes('already registered') || errorMsg.includes('already exists') || errorMsg.includes('user already')) {
+        setUserAlreadyExists(true)
+      } else {
+        setError(error.message || 'Failed to create account. Please try again.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -223,9 +305,7 @@ function SignupContent() {
       <div className="flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <h1 className="text-2xl font-bold">Check Your Email</h1>
           <p className="text-muted-foreground">
@@ -240,6 +320,119 @@ function SignupContent() {
     )
   }
 
+  // Show "Welcome back" flow if user already has an account
+  if (userAlreadyExists) {
+    // If signup failed (not detected before form), show error with options
+    if (!detectedBeforeForm && !resetEmailSent) {
+      return (
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-md space-y-6 text-center">
+            <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+              <Mail className="w-8 h-8 text-amber-600" />
+            </div>
+            <h1 className="text-2xl font-bold">Account Already Exists</h1>
+            <p className="text-muted-foreground">
+              An account with <strong>{invitation.email}</strong> already exists in our system.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              You can log in with your existing password, or reset it if you&apos;ve forgotten it.
+            </p>
+            <div className="pt-4 space-y-3">
+              <Button
+                className="w-full"
+                onClick={() => router.push('/login')}
+              >
+                Go to Login
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleSendResetEmail}
+                disabled={sendingReset}
+              >
+                {sendingReset ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Reset My Password'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Show message that reset email was/is being sent (detected before form)
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md space-y-6 text-center">
+          {sendingReset ? (
+            <>
+              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              </div>
+              <h1 className="text-2xl font-bold">Setting Up Your Account...</h1>
+              <p className="text-muted-foreground">
+                We&apos;re sending you an email to set your password.
+              </p>
+            </>
+          ) : resetEmailSent ? (
+            <>
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-green-600" />
+              </div>
+              <h1 className="text-2xl font-bold">Check Your Email</h1>
+              <p className="text-muted-foreground">
+                We&apos;ve just sent a <strong>new email</strong> to <strong>{invitation.email}</strong>.
+              </p>
+              <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-left">
+                <p className="text-sm font-medium text-emerald-800">Look for an email with subject:</p>
+                <p className="text-sm text-emerald-700 mt-1">&quot;Set Up Your Stacks Data Password&quot;</p>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Click the &quot;Set My Password&quot; button in that email to create your password.
+              </p>
+              <div className="pt-4 space-y-3">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleSendResetEmail}
+                  disabled={sendingReset}
+                >
+                  Resend Email
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Didn&apos;t receive it? Check your spam folder or click above to resend.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-amber-600" />
+              </div>
+              <h1 className="text-2xl font-bold">Welcome Back!</h1>
+              <p className="text-muted-foreground">
+                An account with <strong>{invitation.email}</strong> already exists.
+              </p>
+              <Button
+                className="w-full mt-4"
+                onClick={handleSendResetEmail}
+                disabled={sendingReset}
+              >
+                Send Password Setup Email
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Normal signup form for new users
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-md space-y-6">

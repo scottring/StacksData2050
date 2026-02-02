@@ -1,0 +1,59 @@
+{
+  "description": "Mapping of Excel list tables to Supabase list_table_columns",
+  "tables": [
+    {
+      "questionBubbleId": "1626200648716x756674962034262000",
+      "questionNumber": "4.9.27",
+      "description": "EU Plastics - FCM No. and relevant restrictions",
+      "excelSheet": "Food Contact",
+      "dataStartRow": 185,
+      "maxRows": 20,
+      "columns": [
+        { "excelCol": "D", "columnId": "b46179fa-4dfe-4717-9cfb-63778ab26726", "name": "CAS Number, if any" },
+        { "excelCol": "E", "columnId": "39e4bb80-c714-44c8-b54e-a106b1fb2b5a", "name": "FCM Number in (EU) 10/2011" },
+        { "excelCol": "F", "columnId": "791f3772-3d54-4f1d-a1d8-d8e4a521005b", "name": "SML (mg/kg)" },
+        { "excelCol": "G", "columnId": "9b7ef0b4-1581-4177-8631-63015945aeb1", "name": "Substance or product (chemical) name" },
+        { "excelCol": "I", "columnId": "b343414e-3973-411a-be63-5d673237442b", "name": "Restrictions & specifications" }
+      ]
+    },
+    {
+      "questionBubbleId": "1682551983966x953610704385212400",
+      "questionNumber": "4.9.346",
+      "description": "EU Food Additives/Flavourings - E No. / FL No.",
+      "excelSheet": "Food Contact",
+      "dataStartRow": 201,
+      "maxRows": 10,
+      "columns": [
+        { "excelCol": "F", "columnId": "6bec6168-be7e-4fa8-9776-53119c1f797c", "name": "E No. / FL No." },
+        { "excelCol": "G", "columnId": "f2d3de85-bb30-44a7-b4e5-32b5e1366c09", "name": "Substance name" },
+        { "excelCol": "H", "columnId": "9c7af64f-b41b-47b7-ba34-1716f5b03d7b", "name": "Concentration" },
+        { "excelCol": "E", "columnId": "ff85b739-b106-45a5-84bf-95175fca0eed", "name": "Limit value" },
+        { "excelCol": "J", "columnId": "5cf88464-78bb-460a-9d84-01859a80a439", "name": "Comments" }
+      ]
+    },
+    {
+      "questionBubbleId": "1626202376224x500832081724309500",
+      "questionNumber": "4.10.29",
+      "description": "USA 21 CFR 176.170",
+      "excelSheet": "Food Contact",
+      "dataStartRow": 235,
+      "maxRows": 15,
+      "columns": [
+        { "excelCol": "D", "columnId": "d6da1f62-a78c-4fbd-8319-04dc0aef064e", "name": "CAS Number, if any" },
+        { "excelCol": "E", "columnId": "54a76ced-d5c9-451e-9d0e-aaf4a514ca8d", "name": "Substance or product (Chemical) Name" },
+        { "excelCol": "F", "columnId": "96cc436f-6ca8-46ee-b0ed-745731031e68", "name": "Restrictions on food types" },
+        { "excelCol": "G", "columnId": "c81df23f-569f-4fa3-90cd-bc2e09782749", "name": "Restrictions and specifications" },
+        { "excelCol": "H", "columnId": "e46899bf-964a-4cb0-b1a8-b663d5181493", "name": "Comments" }
+      ]
+    },
+    {
+      "questionBubbleId": "1621985947370x515150303537922050",
+      "questionNumber": "3.1.2",
+      "description": "Biocides - substance and concentration",
+      "excelSheet": "Biocides",
+      "dataStartRow": 6,
+      "maxRows": 20,
+      "columns": []
+    }
+  ]
+}

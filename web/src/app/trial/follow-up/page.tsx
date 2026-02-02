@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowRight, Sparkles, CheckCircle2, Star } from 'lucide-react'
+import { trackFollowUpCompleted } from '@/lib/trial-tracking'
 
 export default function FollowUpPage() {
   return (
@@ -93,6 +94,11 @@ function FollowUpContent() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to submit. Please try again.')
+      }
+
+      // Track follow-up completion
+      if (email) {
+        trackFollowUpCompleted(email)
       }
 
       setSubmitted(true)

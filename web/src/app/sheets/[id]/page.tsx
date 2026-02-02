@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Pencil } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
+import { TrackSheetView } from '@/components/trial/track-page-view'
 
 interface ViewAnswer {
   id: string
@@ -396,6 +397,9 @@ export default async function SheetViewPage({
 
   return (
     <AppLayout title={sheet.name}>
+      {/* Track sheet view for trial users */}
+      <TrackSheetView sheetId={sheetId} sheetName={sheet.name} />
+
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">

@@ -44,6 +44,7 @@ import {
   Building2,
   Shield,
   Trash2,
+  Activity,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { InviteTrialUsersDialog } from '@/components/admin/invite-trial-users-dialog'
@@ -61,6 +62,7 @@ interface TrialInvitation {
   batch_name: string | null
   discovery_completed: boolean
   discovery_responded_at: string | null
+  activity_count: number
 }
 
 interface DiscoveryResponse {
@@ -80,6 +82,22 @@ interface DiscoveryResponse {
   likelihood_to_recommend: number | null
 }
 
+interface ActivityEvent {
+  id: string
+  event_type: string
+  event_data: Record<string, unknown>
+  page_path: string | null
+  created_at: string
+}
+
+interface ActivitySummary {
+  total_events: number
+  logins: number
+  sheets_viewed: number
+  answers_submitted: number
+  last_active: string | null
+}
+
 export default function TrialsPage() {
   const router = useRouter()
   const [invitations, setInvitations] = useState<TrialInvitation[]>([])
@@ -94,6 +112,11 @@ export default function TrialsPage() {
   const [responseDialogOpen, setResponseDialogOpen] = useState(false)
   const [loadingResponse, setLoadingResponse] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [resendingId, setResendingId] = useState<string | null>(null)
+  const [activityDialogOpen, setActivityDialogOpen] = useState(false)
+  const [selectedActivity, setSelectedActivity] = useState<{ email: string; events: ActivityEvent[]; summary: ActivitySummary } | null>(null)
+  const [loadingActivity, setLoadingActivity] = useState(false)
+  const [sendingApology, setSendingApology] = useState(false)
 
   // Stats
   const [stats, setStats] = useState({
@@ -170,6 +193,24 @@ export default function TrialsPage() {
       .in('email', emails)
     const discoveryMap = new Map((discoveryData || []).map(d => [d.email, d.responded_at]))
 
+    // Fetch activity counts for each email
+    const activityCountMap = new Map<string, number>()
+    if (emails.length > 0) {
+      // Note: We need to count events per email. Supabase doesn't support group by in JS client easily,
+      // so we'll fetch all events and count client-side (for small datasets this is fine)
+      const { data: activityData } = await supabase
+        .from('trial_activity_events')
+        .select('email')
+        .in('email', emails)
+
+      if (activityData) {
+        activityData.forEach(event => {
+          const email = event.email.toLowerCase()
+          activityCountMap.set(email, (activityCountMap.get(email) || 0) + 1)
+        })
+      }
+    }
+
     // Format invitations
     const formattedInvitations: TrialInvitation[] = (invitationsData || []).map((inv: any) => ({
       id: inv.id,
@@ -184,6 +225,7 @@ export default function TrialsPage() {
       batch_name: inv.trial_batch_id ? batchMap.get(inv.trial_batch_id) || null : null,
       discovery_completed: discoveryMap.has(inv.email.toLowerCase()),
       discovery_responded_at: discoveryMap.get(inv.email.toLowerCase()) || null,
+      activity_count: activityCountMap.get(inv.email.toLowerCase()) || 0,
     }))
 
     setInvitations(formattedInvitations)
@@ -268,8 +310,100 @@ export default function TrialsPage() {
   }
 
   async function resendInvitation(invitationId: string, email: string) {
-    // TODO: Implement resend via API
-    console.log('Resend invitation:', invitationId, email)
+    setResendingId(invitationId)
+
+    try {
+      const response = await fetch('/api/admin/trials/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invitationId, email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resend')
+      }
+
+      // Show success message
+      if (data.extended) {
+        alert(`Invitation resent to ${email}. Expiration extended by 5 days.`)
+      } else {
+        alert(`Invitation resent to ${email}.`)
+      }
+
+      // Refresh the list
+      await fetchData()
+    } catch (error: any) {
+      console.error('Error resending invitation:', error)
+      alert(error.message || 'Failed to resend invitation')
+    } finally {
+      setResendingId(null)
+    }
+  }
+
+  async function sendApologyEmails() {
+    if (!confirm('This will send an apology email to ALL trial users (including those who already signed up). Continue?')) {
+      return
+    }
+
+    setSendingApology(true)
+
+    try {
+      const response = await fetch('/api/admin/trials/send-apology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send emails')
+      }
+
+      alert(`Successfully sent ${data.sent} apology emails to pending trial users.${data.errors ? `\n\nErrors:\n${data.errors.join('\n')}` : ''}`)
+
+      // Refresh the list (expiration dates were extended)
+      await fetchData()
+    } catch (error: any) {
+      console.error('Error sending apology emails:', error)
+      alert(error.message || 'Failed to send apology emails')
+    } finally {
+      setSendingApology(false)
+    }
+  }
+
+  async function viewActivity(email: string) {
+    setLoadingActivity(true)
+    setActivityDialogOpen(true)
+
+    try {
+      const response = await fetch(`/api/trial/activity?email=${encodeURIComponent(email)}`)
+      const data = await response.json()
+
+      if (data.events) {
+        // Calculate summary
+        const events = data.events as ActivityEvent[]
+        const summary: ActivitySummary = {
+          total_events: events.length,
+          logins: events.filter(e => e.event_type === 'login').length,
+          sheets_viewed: events.filter(e => e.event_type === 'sheet_viewed').length,
+          answers_submitted: events.filter(e => e.event_type === 'answer_submitted').reduce((acc, e) => {
+            return acc + ((e.event_data?.answer_count as number) || 1)
+          }, 0),
+          last_active: events.length > 0 ? events[0].created_at : null,
+        }
+
+        setSelectedActivity({ email, events, summary })
+      } else {
+        setSelectedActivity({ email, events: [], summary: { total_events: 0, logins: 0, sheets_viewed: 0, answers_submitted: 0, last_active: null } })
+      }
+    } catch (error) {
+      console.error('Error fetching activity:', error)
+      setSelectedActivity(null)
+    }
+
+    setLoadingActivity(false)
   }
 
   async function deleteInvitation(invitationId: string) {
@@ -396,10 +530,29 @@ export default function TrialsPage() {
                 <Users className="h-5 w-5" />
                 Trial Invitations
               </CardTitle>
-              <Button onClick={() => setInviteDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Invite Users
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={sendApologyEmails}
+                  disabled={sendingApology}
+                >
+                  {sendingApology ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4 mr-2" />
+                      Send Apology Email
+                    </>
+                  )}
+                </Button>
+                <Button onClick={() => setInviteDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Invite Users
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -441,6 +594,7 @@ export default function TrialsPage() {
                     <TableHead>Company</TableHead>
                     <TableHead>Batch</TableHead>
                     <TableHead>Discovery</TableHead>
+                    <TableHead>Activity</TableHead>
                     <TableHead>Sent</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -449,7 +603,7 @@ export default function TrialsPage() {
                 <TableBody>
                   {filteredInvitations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                         {invitations.length === 0 ? (
                           <div className="flex flex-col items-center gap-2">
                             <Users className="h-8 w-8 opacity-40" />
@@ -503,6 +657,21 @@ export default function TrialsPage() {
                           )}
                         </TableCell>
                         <TableCell>
+                          {invitation.activity_count > 0 ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-auto py-1 px-2 text-sm"
+                              onClick={() => viewActivity(invitation.email)}
+                            >
+                              <Activity className="h-3 w-3 mr-1 text-emerald-600" />
+                              <span className="text-emerald-600 font-medium">{invitation.activity_count}</span>
+                            </Button>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
                           <span className="text-sm">
                             {formatDate(invitation.sent_at)}
                           </span>
@@ -520,14 +689,19 @@ export default function TrialsPage() {
                                 <Eye className="h-4 w-4" />
                               </Button>
                             )}
-                            {!invitation.accepted_at && new Date(invitation.expires_at) > new Date() && (
+                            {!invitation.accepted_at && (
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => resendInvitation(invitation.id, invitation.email)}
-                                title="Resend invitation"
+                                disabled={resendingId === invitation.id}
+                                title={new Date(invitation.expires_at) <= new Date() ? "Resend & extend expiration" : "Resend invitation"}
                               >
-                                <RefreshCw className="h-4 w-4" />
+                                {resendingId === invitation.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Mail className="h-4 w-4" />
+                                )}
                               </Button>
                             )}
                             <Button
@@ -652,6 +826,92 @@ export default function TrialsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Activity Dialog */}
+      <Dialog open={activityDialogOpen} onOpenChange={setActivityDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Activity Timeline
+            </DialogTitle>
+            <DialogDescription>
+              {selectedActivity?.email}
+            </DialogDescription>
+          </DialogHeader>
+          {loadingActivity ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : selectedActivity ? (
+            <div className="space-y-6">
+              {/* Summary Stats */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-semibold">{selectedActivity.summary.logins}</p>
+                  <p className="text-xs text-muted-foreground">Logins</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-semibold">{selectedActivity.summary.sheets_viewed}</p>
+                  <p className="text-xs text-muted-foreground">Sheets Viewed</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-semibold">{selectedActivity.summary.answers_submitted}</p>
+                  <p className="text-xs text-muted-foreground">Answers</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-2xl font-semibold">{selectedActivity.summary.total_events}</p>
+                  <p className="text-xs text-muted-foreground">Total Events</p>
+                </div>
+              </div>
+
+              {/* Last Active */}
+              {selectedActivity.summary.last_active && (
+                <p className="text-sm text-muted-foreground">
+                  Last active: {new Date(selectedActivity.summary.last_active).toLocaleString()}
+                </p>
+              )}
+
+              {/* Event Timeline */}
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                  Recent Activity
+                </h3>
+                {selectedActivity.events.length === 0 ? (
+                  <p className="text-muted-foreground text-sm py-4">No activity recorded yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {selectedActivity.events.slice(0, 50).map((event) => (
+                      <div key={event.id} className="flex items-start gap-3 text-sm py-2 border-b last:border-0">
+                        <div className="flex-shrink-0 w-24 text-muted-foreground text-xs">
+                          {new Date(event.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                          })}{' '}
+                          {new Date(event.created_at).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          })}
+                        </div>
+                        <div className="flex-1">
+                          <span className="font-medium">{formatEventType(event.event_type)}</span>
+                          {event.event_data && Object.keys(event.event_data).length > 0 && (
+                            <span className="text-muted-foreground ml-2">
+                              {formatEventData(event.event_type, event.event_data)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-muted-foreground py-4">No activity data found</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   )
 }
@@ -664,4 +924,34 @@ function QuestionResponse({ question, answer }: { question: string; answer: stri
       <p className="text-sm whitespace-pre-wrap bg-muted/50 rounded-lg p-3">{answer}</p>
     </div>
   )
+}
+
+function formatEventType(eventType: string): string {
+  const labels: Record<string, string> = {
+    login: 'Logged in',
+    page_view: 'Viewed page',
+    sheet_viewed: 'Viewed sheet',
+    sheet_created: 'Created sheet',
+    answer_submitted: 'Submitted answers',
+    answer_updated: 'Updated answers',
+    file_uploaded: 'Uploaded file',
+    export_downloaded: 'Downloaded export',
+    discovery_started: 'Started discovery',
+    discovery_completed: 'Completed discovery',
+    follow_up_completed: 'Completed follow-up',
+  }
+  return labels[eventType] || eventType
+}
+
+function formatEventData(eventType: string, data: Record<string, unknown>): string {
+  if (eventType === 'sheet_viewed' && data.sheet_name) {
+    return `"${data.sheet_name}"`
+  }
+  if (eventType === 'answer_submitted' && data.answer_count) {
+    return `(${data.answer_count} answers)`
+  }
+  if (eventType === 'page_view' && data.page_name) {
+    return data.page_name as string
+  }
+  return ''
 }
