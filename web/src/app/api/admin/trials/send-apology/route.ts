@@ -10,6 +10,10 @@ if (process.env.SENDGRID_API_KEY) {
 
 export async function POST(request: Request) {
   try {
+    // Parse request body for optional testEmail
+    const body = await request.json().catch(() => ({}))
+    const testEmail = body.testEmail as string | undefined
+
     // Verify super admin access
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -30,19 +34,58 @@ export async function POST(request: Request) {
 
     const adminClient = createAdminClient()
 
-    // Get ALL trial invitations (including accepted ones)
-    const { data: invitations, error: invError } = await adminClient
-      .from('invitations')
-      .select('id, email, token, expires_at, accepted_at')
-      .eq('invitation_type', 'trial')
+    let invitations: { id: string; email: string; token: string; expires_at: string; accepted_at: string | null }[]
 
-    if (invError) {
-      console.error('Error fetching invitations:', invError)
-      return NextResponse.json({ error: 'Failed to fetch invitations' }, { status: 500 })
-    }
+    if (testEmail) {
+      // Test mode: look for existing invitation or create a real one
+      const { data: existingInvitation } = await adminClient
+        .from('invitations')
+        .select('id, email, token, expires_at, accepted_at')
+        .eq('email', testEmail.toLowerCase())
+        .eq('invitation_type', 'trial')
+        .maybeSingle()
 
-    if (!invitations || invitations.length === 0) {
-      return NextResponse.json({ message: 'No trial invitations found', sent: 0 })
+      if (existingInvitation) {
+        invitations = [existingInvitation]
+      } else {
+        // Create a real invitation for the test email
+        const token = crypto.randomUUID()
+        const { data: newInvitation, error: createError } = await adminClient
+          .from('invitations')
+          .insert({
+            email: testEmail.toLowerCase(),
+            token,
+            invitation_type: 'trial',
+            created_by: user.id,
+            expires_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+          })
+          .select('id, email, token, expires_at, accepted_at')
+          .single()
+
+        if (createError || !newInvitation) {
+          console.error('Error creating test invitation:', createError)
+          return NextResponse.json({ error: 'Failed to create test invitation' }, { status: 500 })
+        }
+
+        invitations = [newInvitation]
+      }
+    } else {
+      // Get ALL trial invitations (including accepted ones)
+      const { data, error: invError } = await adminClient
+        .from('invitations')
+        .select('id, email, token, expires_at, accepted_at')
+        .eq('invitation_type', 'trial')
+
+      if (invError) {
+        console.error('Error fetching invitations:', invError)
+        return NextResponse.json({ error: 'Failed to fetch invitations' }, { status: 500 })
+      }
+
+      if (!data || data.length === 0) {
+        return NextResponse.json({ message: 'No trial invitations found', sent: 0 })
+      }
+
+      invitations = data
     }
 
     let sentCount = 0
@@ -88,10 +131,8 @@ export async function POST(request: Request) {
                   <p>We wanted to reach out with a quick apology. Some of you may have experienced confusion when trying to access your Stacks Data trial—if so, we're sorry about that!</p>
 
                   <div class="note">
-                    <p><strong>What happened:</strong> We recently migrated to a completely new platform, and some accounts from our previous system didn't transfer their login credentials properly. This caused issues for some users trying to sign up.</p>
+                    <p><strong>What happened:</strong> Some accounts from the previous system didn't transfer their login credentials properly. This caused issues for some users trying to sign up.</p>
                   </div>
-
-                  <p>The good news? This is exactly why we do trials—to catch these kinds of issues before they affect our paying customers. Your patience helps us build a better product for everyone.</p>
 
                   <p>If you haven't been able to access your trial yet, click the button below to get started:</p>
 
@@ -126,9 +167,7 @@ Hi there,
 
 We wanted to reach out with a quick apology. Some of you may have experienced confusion when trying to access your Stacks Data trial—if so, we're sorry about that!
 
-What happened: We recently migrated to a completely new platform, and some accounts from our previous system didn't transfer their login credentials properly. This caused issues for some users trying to sign up.
-
-The good news? This is exactly why we do trials—to catch these kinds of issues before they affect our paying customers. Your patience helps us build a better product for everyone.
+What happened: Some accounts from the previous system didn't transfer their login credentials properly. This caused issues for some users trying to sign up.
 
 If you haven't been able to access your trial yet, click the link below to get started:
 
@@ -166,6 +205,7 @@ The Stacks Data Team
       success: true,
       sent: sentCount,
       total: invitations.length,
+      testMode: !!testEmail,
       errors: errors.length > 0 ? errors : undefined,
     })
 

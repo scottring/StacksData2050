@@ -962,14 +962,101 @@ export default function DashboardPage() {
   }
 
   if (!stats) {
+    // Welcome state for new users without any data yet
     return (
       <AppLayout title="Dashboard">
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
-              <AlertCircle className="h-6 w-6 text-slate-400" />
+        <div className="max-w-3xl mx-auto py-12 px-4">
+          {/* Welcome Header */}
+          <div className="text-center mb-10 opacity-0 animate-fade-in-up" style={{ animationFillMode: 'forwards' }}>
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
+              <Sparkles className="h-10 w-10 text-white" />
             </div>
-            <p className="text-slate-500 font-medium">Unable to load dashboard data</p>
+            <h1 className="font-display text-4xl font-semibold text-slate-900 tracking-tight mb-3">
+              Welcome to Stacks Data
+            </h1>
+            <p className="text-lg text-slate-600 max-w-xl mx-auto">
+              Your supply chain compliance platform is ready. Let&apos;s get you started with managing your product data sheets.
+            </p>
+          </div>
+
+          {/* Getting Started Steps */}
+          <div className="space-y-4 mb-10">
+            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider text-center mb-6">
+              Getting Started
+            </h2>
+
+            <div className="grid gap-4">
+              {/* Step 1 */}
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-semibold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-900 mb-1">Explore your supplier products</h3>
+                  <p className="text-sm text-slate-600 mb-3">
+                    View the product data sheets your company supplies to customers. These contain compliance questionnaires and chemical data.
+                  </p>
+                  <Link
+                    href="/sheets"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                  >
+                    View Sheets
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-white font-semibold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-900 mb-1">Check incoming requests</h3>
+                  <p className="text-sm text-slate-600 mb-3">
+                    See if any customers have requested product data from you. Respond to requests to keep your supply chain relationships strong.
+                  </p>
+                  <Link
+                    href="/requests/incoming"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-sky-600 hover:text-sky-700"
+                  >
+                    View Incoming Requests
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center text-white font-semibold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-900 mb-1">Request data from your suppliers</h3>
+                  <p className="text-sm text-slate-600 mb-3">
+                    Need compliance data from your own suppliers? Send them a request to fill out a product data sheet.
+                  </p>
+                  <Link
+                    href="/requests/outgoing"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-700"
+                  >
+                    Manage Outgoing Requests
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Help Section */}
+          <div className="text-center pt-6 border-t border-slate-200 opacity-0 animate-fade-in-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
+            <p className="text-sm text-slate-500">
+              Need help getting started?{' '}
+              <Link href="/docs/getting-started" className="font-medium text-emerald-600 hover:text-emerald-700">
+                Read our quick start guide
+              </Link>
+              {' '}or reach out to our support team.
+            </p>
           </div>
         </div>
       </AppLayout>

@@ -117,6 +117,7 @@ export default function TrialsPage() {
   const [selectedActivity, setSelectedActivity] = useState<{ email: string; events: ActivityEvent[]; summary: ActivitySummary } | null>(null)
   const [loadingActivity, setLoadingActivity] = useState(false)
   const [sendingApology, setSendingApology] = useState(false)
+  const [sendingTestApology, setSendingTestApology] = useState(false)
 
   // Stats
   const [stats, setStats] = useState({
@@ -342,6 +343,34 @@ export default function TrialsPage() {
     }
   }
 
+  async function sendTestApologyEmail() {
+    const testEmail = prompt('Enter email address to send test apology email to:')
+    if (!testEmail) return
+
+    setSendingTestApology(true)
+
+    try {
+      const response = await fetch('/api/admin/trials/send-apology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ testEmail }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send test email')
+      }
+
+      alert(`Test apology email sent to ${testEmail}`)
+    } catch (error: any) {
+      console.error('Error sending test apology email:', error)
+      alert(error.message || 'Failed to send test email')
+    } finally {
+      setSendingTestApology(false)
+    }
+  }
+
   async function sendApologyEmails() {
     if (!confirm('This will send an apology email to ALL trial users (including those who already signed up). Continue?')) {
       return
@@ -361,7 +390,7 @@ export default function TrialsPage() {
         throw new Error(data.error || 'Failed to send emails')
       }
 
-      alert(`Successfully sent ${data.sent} apology emails to pending trial users.${data.errors ? `\n\nErrors:\n${data.errors.join('\n')}` : ''}`)
+      alert(`Successfully sent ${data.sent} apology emails to trial users.${data.errors ? `\n\nErrors:\n${data.errors.join('\n')}` : ''}`)
 
       // Refresh the list (expiration dates were extended)
       await fetchData()
@@ -531,6 +560,19 @@ export default function TrialsPage() {
                 Trial Invitations
               </CardTitle>
               <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={sendTestApologyEmail}
+                  disabled={sendingTestApology}
+                  title="Send test apology email"
+                >
+                  {sendingTestApology ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    'Test'
+                  )}
+                </Button>
                 <Button
                   variant="outline"
                   onClick={sendApologyEmails}
