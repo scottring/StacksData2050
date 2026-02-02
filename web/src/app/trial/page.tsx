@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { FileSpreadsheet, Send, Upload, MessageSquarePlus, ArrowRight, BookOpen, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react'
+import { FileSpreadsheet, Send, Upload, MessageSquarePlus, ArrowRight, BookOpen, AlertTriangle, CheckCircle2, Sparkles, Users, Building2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function TrialPage() {
@@ -44,7 +44,7 @@ export default function TrialPage() {
       setSubmitterEmail('')
       toast.success('Issue reported — thank you!')
       setTimeout(() => setSubmitted(false), 5000)
-    } catch (error) {
+    } catch {
       toast.error('Failed to submit issue. Please email support@stacksdata.com')
     } finally {
       setSubmitting(false)
@@ -57,12 +57,12 @@ export default function TrialPage() {
       <div className="bg-background border-b">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image 
-              src="/stacks-logo-new.png" 
-              alt="Stacks Data" 
-              width={140} 
-              height={40}
-              className="h-10 w-auto"
+            <Image
+              src="/stacks-data-logo-light.png"
+              alt="Stacks Data"
+              width={280}
+              height={80}
+              className="h-20 w-auto"
             />
           </div>
           <Link href="/login">
@@ -81,9 +81,9 @@ export default function TrialPage() {
           Welcome to the P&P-VIS Stacks Data 2026 Trial
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          You know Stacks. You've been there from the start, helping us shape what compliance 
-          data management could be. Now we're back — rebuilt from the ground up — and we can't 
-          wait to show you what's new.
+          You know Stacks. You&apos;ve been there from the start, helping us shape what compliance
+          data management could be. Now we&apos;re back — rebuilt from the ground up — and we can&apos;t
+          wait to show you what&apos;s new.
         </p>
         <Link href="/login">
           <Button size="lg" className="text-lg px-8">
@@ -184,6 +184,79 @@ export default function TrialPage() {
         </Card>
       </div>
 
+      {/* Demo Accounts */}
+      <div className="max-w-4xl mx-auto px-4 pb-12">
+        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">Experience the Full Cycle</CardTitle>
+                <CardDescription>
+                  Use these demo accounts to see both sides of the request workflow.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              To experience the complete request → respond → review → approve cycle,
+              you can log into these shared demo accounts to play the other role:
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Demo Customer Account */}
+              <div className="p-4 rounded-lg border bg-background">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium">Demo Customer Account</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Use this to send requests or review supplier submissions.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Email:</span>
+                    <code className="bg-muted px-2 py-0.5 rounded text-xs">demo-customer@stacksdata.com</code>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Password:</span>
+                    <code className="bg-muted px-2 py-0.5 rounded text-xs">StacksDemo2026!</code>
+                  </div>
+                </div>
+              </div>
+
+              {/* Demo Supplier Account */}
+              <div className="p-4 rounded-lg border bg-background">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building2 className="h-4 w-4 text-green-600" />
+                  <span className="font-medium">Demo Supplier Account</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Use this to receive and respond to customer requests.
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Email:</span>
+                    <code className="bg-muted px-2 py-0.5 rounded text-xs">demo-supplier@stacksdata.com</code>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Password:</span>
+                    <code className="bg-muted px-2 py-0.5 rounded text-xs">StacksDemo2026!</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground mt-4">
+              These are shared accounts — other trial users may also be using them simultaneously.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Known Issues / Report Issue */}
       <div className="max-w-4xl mx-auto px-4 pb-16">
         <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-900">
@@ -205,8 +278,13 @@ export default function TrialPage() {
               <p className="text-muted-foreground">
                 <strong>Current known issues:</strong>
               </p>
-              <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                <li>Excel import may timeout on very large workbooks (100+ products)</li>
+              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>
+                  <strong>Excel import field matching</strong> — During this trial, some fields
+                  may not map exactly as expected. This is expected trial behavior — in production,
+                  these anomalies will be resolved. Your feedback on any mismatches helps us
+                  improve the import accuracy significantly.
+                </li>
                 <li>Dark mode toggle coming soon</li>
                 <li>Email notifications may have slight delays</li>
               </ul>

@@ -16,6 +16,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { InlineCASLookup, InlineChemicalSearch } from '@/components/sheets/cas-lookup'
 import { InlineCommentButton } from '@/components/sheets/question-comments'
 import { InlineAttachmentButton } from '@/components/sheets/question-attachments'
@@ -65,15 +75,18 @@ interface BranchingData {
   parentQuestionId: string | null
 }
 
-interface RejectionRound {
-  reason: string
-  response: string | null
+interface FlagComment {
+  role: 'customer' | 'supplier'
+  text: string
   created_at: string
 }
 
 interface Rejection {
   question_id: string
-  rounds: RejectionRound[]
+  reason: string
+  response: string | null
+  created_at: string
+  comments: FlagComment[]
 }
 
 interface CustomQuestion {
@@ -120,10 +133,9 @@ function getDisplayValue(answer: ViewAnswer): string {
   return ''
 }
 
-// Get rejection reason for a question
-function getRejectionRounds(rejections: Rejection[], questionId: string): RejectionRound[] {
-  const rejection = rejections.find(r => r.question_id === questionId)
-  return rejection?.rounds || []
+// Get rejection for a question
+function getRejection(rejections: Rejection[], questionId: string): Rejection | undefined {
+  return rejections.find(r => r.question_id === questionId)
 }
 
 export function SimpleSheetEditor({
@@ -171,6 +183,7 @@ export function SimpleSheetEditor({
 
   const [saving, setSaving] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle')
   const [rejectionResponses, setRejectionResponses] = useState<Map<string, string>>(new Map())
   const [additionalNotes, setAdditionalNotes] = useState<Map<string, string>>(() => {
@@ -294,7 +307,23 @@ export function SimpleSheetEditor({
 
   // Helper to check if a question should be hidden based on branching logic
   const isQuestionHidden = useMemo(() => {
+    // Build set of rejected question IDs
+    const rejectedQuestionIds = new Set(rejections.map(r => r.question_id))
+
+    // Build a map of choice ID -> choice content for quick lookup
+    const choiceContentMap = new Map<string, string>()
+    choices.forEach(c => {
+      if (c.id && c.content) {
+        choiceContentMap.set(c.id, c.content)
+      }
+    })
+
     return (questionId: string): boolean => {
+      // Never hide questions that have rejections - they were explicitly flagged
+      if (rejectedQuestionIds.has(questionId)) {
+        return false
+      }
+
       const branching = branchingData[questionId]
       if (!branching?.dependentNoShow || !branching?.parentQuestionId) {
         return false
@@ -309,7 +338,17 @@ export function SimpleSheetEditor({
       const savedValue = savedParentAnswer ? getDisplayValue(savedParentAnswer) : null
 
       // Use local value if available, otherwise use saved value
-      const answerValue = (parentValue?.value ?? savedValue)?.toString().toLowerCase()
+      let rawValue = (parentValue?.value ?? savedValue)?.toString()
+
+      // If the value looks like a UUID (choice ID), look up the choice content
+      if (rawValue && rawValue.includes('-') && rawValue.length > 30) {
+        const choiceContent = choiceContentMap.get(rawValue)
+        if (choiceContent) {
+          rawValue = choiceContent
+        }
+      }
+
+      const answerValue = rawValue?.toLowerCase()
 
       // Hide dependent questions unless parent answered Yes/true
       if (!answerValue) {
@@ -319,12 +358,13 @@ export function SimpleSheetEditor({
       // Show only if parent answered Yes or true
       return !(answerValue === 'yes' || answerValue === 'true')
     }
-  }, [branchingData, localValues, sortedQuestions])
+  }, [branchingData, localValues, sortedQuestions, rejections, choices])
 
   // Filter sortedQuestions to exclude hidden dependent questions
+  // Note: localValues is explicitly in deps to ensure reactivity when parent answers change
   const visibleQuestions = useMemo(() => {
     return sortedQuestions.filter(([questionId]) => !isQuestionHidden(questionId))
-  }, [sortedQuestions, isQuestionHidden])
+  }, [sortedQuestions, isQuestionHidden, localValues])
 
 
   // Create lookup for section names based on questions in each section group
@@ -708,11 +748,12 @@ export function SimpleSheetEditor({
     }
   }
 
-  const handleSubmit = async () => {
-    if (!confirm('Submit this response to the customer? They will be notified to review your answers.')) {
-      return
-    }
-    
+  const handleSubmit = () => {
+    setShowSubmitConfirm(true)
+  }
+
+  const confirmSubmit = async () => {
+    setShowSubmitConfirm(false)
     setSubmitting(true)
     try {
       // Save first
@@ -1357,44 +1398,62 @@ export function SimpleSheetEditor({
                   {q.question_content && q.question_name && q.question_content !== q.question_name && (
                     <p className="text-sm text-muted-foreground">{q.question_content}</p>
                   )}
-                  {getRejectionRounds(rejections, questionId).length > 0 && (
-                    <div className="mt-2 p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
-                      <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
-                        <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">Revision History</p>
-                          <div className="mt-2 space-y-3">
-                            {getRejectionRounds(rejections, questionId).map((round, idx) => (
-                              <div key={idx} className="pb-2 border-b border-amber-200 dark:border-amber-700 last:border-0">
-                                <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                  <span className="font-medium">Round {idx + 1}</span>
-                                  <span>•</span>
-                                  <span>{new Date(round.created_at).toLocaleDateString()}</span>
-                                </div>
-                                <p className="text-sm mt-1"><span className="font-medium">Customer:</span> {round.reason}</p>
-                                {round.response && (
-                                  <p className="text-sm mt-1 text-blue-800 dark:text-blue-200"><span className="font-medium">Your response:</span> {round.response}</p>
-                                )}
+                  {getRejection(rejections, questionId) && (() => {
+                    const rejection = getRejection(rejections, questionId)!
+                    // Check if supplier needs to respond: either no response yet, or last comment was from customer
+                    const lastComment = rejection.comments.length > 0 ? rejection.comments[rejection.comments.length - 1] : null
+                    const needsSupplierResponse = lastComment
+                      ? lastComment.role === 'customer'  // Last comment is from customer, supplier should respond
+                      : !(rejection.response || rejection.comments.some(c => c.role === 'supplier')) // No comments yet, check if any response exists
+                    return (
+                      <div className="mt-2 p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+                        <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
+                          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Flag Discussion</p>
+                            <div className="mt-2 space-y-2">
+                              {/* Initial flag reason from customer */}
+                              <div className="p-2 rounded bg-amber-100 dark:bg-amber-900/30">
+                                <p className="text-sm"><span className="font-medium">Customer:</span> {rejection.reason}</p>
                               </div>
-                            ))}
-                          </div>
-                          {getRejectionRounds(rejections, questionId).some(r => !r.response) && (
-                            <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
-                              <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                                Your Response (optional)
-                              </label>
-                              <textarea
-                                className="mt-1 w-full min-h-[60px] rounded-md border border-amber-300 bg-white dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-900 dark:text-amber-100 placeholder:text-amber-400"
-                                placeholder="Add your response to this feedback..."
-                                value={rejectionResponses.get(questionId) || ''}
-                                onChange={(e) => setRejectionResponses(prev => new Map(prev).set(questionId, e.target.value))}
-                              />
+                              {/* Legacy response field (for backwards compatibility) */}
+                              {rejection.response && rejection.comments.length === 0 && (
+                                <div className="p-2 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
+                                  <p className="text-sm"><span className="font-medium">Your response:</span> {rejection.response}</p>
+                                </div>
+                              )}
+                              {/* Comments thread */}
+                              {rejection.comments.map((comment, cidx) => (
+                                <div key={cidx} className={`p-2 rounded ${
+                                  comment.role === 'supplier'
+                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+                                    : 'bg-amber-100 dark:bg-amber-900/30'
+                                }`}>
+                                  <p className="text-sm">
+                                    <span className="font-medium capitalize">{comment.role === 'supplier' ? 'Your response' : 'Customer'}:</span> {comment.text}
+                                  </p>
+                                </div>
+                              ))}
                             </div>
-                          )}
+                            {/* Response input - show if last message is from customer (they need a response) */}
+                            {needsSupplierResponse && (
+                              <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-700">
+                                <label className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                  Your Response (optional)
+                                </label>
+                                <textarea
+                                  className="mt-1 w-full min-h-[60px] rounded-md border border-amber-300 bg-white dark:bg-amber-950/30 px-3 py-2 text-sm text-amber-900 dark:text-amber-100 placeholder:text-amber-400"
+                                  placeholder="Add your response to this feedback..."
+                                  value={rejectionResponses.get(questionId) || ''}
+                                  onChange={(e) => setRejectionResponses(prev => new Map(prev).set(questionId, e.target.value))}
+                                />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
                 </CardHeader>
                 <CardContent>
                   {isListTable ? (
@@ -1536,6 +1595,49 @@ export function SimpleSheetEditor({
             </div>
           </div>
         )}
+
+        {/* Floating Submit Button - Bottom Right */}
+        {canEdit && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <Button
+              onClick={handleSubmit}
+              disabled={saving || submitting}
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/25 hover:shadow-green-600/40 transition-all duration-200 rounded-full px-6 py-3 h-auto"
+            >
+              {submitting ? (
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              ) : (
+                <SendHorizontal className="h-5 w-5 mr-2" />
+              )}
+              <span className="font-semibold">
+                {submitting ? 'Submitting...' : 'Submit to Customer'}
+              </span>
+            </Button>
+          </div>
+        )}
+
+        {/* Submit Confirmation Dialog */}
+        <AlertDialog open={showSubmitConfirm} onOpenChange={setShowSubmitConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Submit to Customer?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Your response will be sent to {requestingCompanyName || 'the customer'} for review. They will be notified that your submission is ready.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmSubmit}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <SendHorizontal className="h-4 w-4 mr-2" />
+                Submit
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AppLayout>
   )

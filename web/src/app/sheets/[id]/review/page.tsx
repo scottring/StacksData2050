@@ -72,6 +72,12 @@ interface Answer {
   list_table_column_name?: string | null
 }
 
+interface FlagComment {
+  role: 'customer' | 'supplier'
+  text: string
+  created_at: string
+}
+
 interface AnswerRejection {
   id: string
   answer_id: string
@@ -80,6 +86,15 @@ interface AnswerRejection {
   resolved_at: string | null
   rejected_by: string | null
   created_at: string
+  comments?: FlagComment[]
+}
+
+interface FlagData {
+  reason: string
+  response: string | null
+  resolved_at: string | null
+  created_at: string
+  comments: FlagComment[]
 }
 
 interface Sheet {
@@ -119,7 +134,7 @@ export default function ReviewPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
   const [observations, setObservations] = useState('')
-  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, Array<{ reason: string; response: string | null; resolved_at: string | null; created_at: string }>>>(new Map())
+  const [flaggedAnswers, setFlaggedAnswers] = useState<Map<string, FlagData>>(new Map())
   const [showFlagInput, setShowFlagInput] = useState<string | null>(null)
   const [flagReason, setFlagReason] = useState('')
 
@@ -186,18 +201,23 @@ export default function ReviewPage() {
         existingRejections = (rejectionsData || []) as AnswerRejection[]
       }
 
-      // Pre-populate flagged answers from existing rejections (all rounds)
-      const flaggedMap = new Map<string, Array<{ reason: string; response: string | null; resolved_at: string | null; created_at: string }>>()
-      // Sort by created_at to maintain conversation order
-      const sortedRejections = [...existingRejections].sort((a, b) => 
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      )
-      sortedRejections.forEach(r => {
+      // Pre-populate flagged answers from existing rejections (single flag per question with comments)
+      const flaggedMap = new Map<string, FlagData>()
+      // Get the most recent unresolved rejection per question, or latest resolved if none unresolved
+      existingRejections.forEach(r => {
         const answer = answers?.find(a => a.id === r.answer_id)
         if (answer?.question_id) {
-          const existing = flaggedMap.get(answer.question_id) || []
-          existing.push({ reason: r.reason, response: r.response, resolved_at: r.resolved_at, created_at: r.created_at })
-          flaggedMap.set(answer.question_id, existing)
+          const existing = flaggedMap.get(answer.question_id)
+          // Only keep the most recent rejection (prioritize unresolved)
+          if (!existing || (r.resolved_at === null && existing.resolved_at !== null)) {
+            flaggedMap.set(answer.question_id, {
+              reason: r.reason,
+              response: r.response,
+              resolved_at: r.resolved_at,
+              created_at: r.created_at,
+              comments: r.comments || []
+            })
+          }
         }
       })
 
@@ -264,29 +284,72 @@ export default function ReviewPage() {
     })
   }
 
-  // Check if question has an active flag (not resolved by manufacturer)
+  // Check if question has an active flag (not resolved)
   const isQuestionFlagged = (questionId: string): boolean => {
-    const rounds = flaggedAnswers.get(questionId)
-    if (!rounds || rounds.length === 0) return false
-    // A question is flagged if ANY round is not resolved
-    return rounds.some(r => r.resolved_at === null)
+    const flag = flaggedAnswers.get(questionId)
+    if (!flag) return false
+    return flag.resolved_at === null
   }
 
   // Count questions with unresolved flags
   const unresolvedFlagCount = Array.from(flaggedAnswers.keys()).filter(qId => isQuestionFlagged(qId)).length
 
+  // Handle initial flag creation (new flag)
   const handleFlagAnswer = (questionId: string) => {
     if (flagReason.trim()) {
-      setFlaggedAnswers(prev => {
-        const next = new Map(prev)
-        const existing = next.get(questionId) || []
-        existing.push({ reason: flagReason, response: null, resolved_at: null, created_at: new Date().toISOString() })
-        next.set(questionId, existing)
-        return next
-      })
+      const existingFlag = flaggedAnswers.get(questionId)
+
+      if (existingFlag && existingFlag.resolved_at === null) {
+        // Add comment to existing flag
+        handleAddComment(questionId, flagReason)
+      } else {
+        // Create new flag
+        setFlaggedAnswers(prev => {
+          const next = new Map(prev)
+          next.set(questionId, {
+            reason: flagReason,
+            response: null,
+            resolved_at: null,
+            created_at: new Date().toISOString(),
+            comments: []
+          })
+          return next
+        })
+      }
       setShowFlagInput(null)
       setFlagReason('')
     }
+  }
+
+  // Handle adding a comment to an existing flag
+  const handleAddComment = async (questionId: string, commentText: string) => {
+    const response = await fetch('/api/sheets/add-flag-comment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sheetId,
+        questionId,
+        comment: commentText,
+        role: 'customer'
+      })
+    })
+
+    if (response.ok) {
+      const { comment } = await response.json()
+      setFlaggedAnswers(prev => {
+        const next = new Map(prev)
+        const existing = next.get(questionId)
+        if (existing) {
+          next.set(questionId, {
+            ...existing,
+            comments: [...existing.comments, comment]
+          })
+        }
+        return next
+      })
+    }
+    setShowFlagInput(null)
+    setFlagReason('')
   }
 
   const handleUnflag = async (questionId: string) => {
@@ -296,15 +359,14 @@ export default function ReviewPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sheetId, questionId })
     })
-    
+
     if (response.ok) {
-      // Update local state - mark all rounds as resolved
+      // Update local state - mark flag as resolved
       setFlaggedAnswers(prev => {
         const next = new Map(prev)
         const existing = next.get(questionId)
         if (existing) {
-          const updated = existing.map(r => ({ ...r, resolved_at: new Date().toISOString() }))
-          next.set(questionId, updated)
+          next.set(questionId, { ...existing, resolved_at: new Date().toISOString() })
         }
         return next
       })
@@ -361,17 +423,26 @@ export default function ReviewPage() {
           completed: false
         })
 
-      // Create answer rejections via API (bypasses RLS) - only send NEW flags (no response yet)
+      // Create answer rejections via API (bypasses RLS) - only send NEW flags
+      // A flag is new if there's no existing rejection for that question in the database
+      const existingQuestionIds = new Set(
+        data.existingRejections
+          .filter(r => r.resolved_at === null) // Only unresolved flags
+          .map(r => {
+            const answer = data.answers.find(a => a.id === r.answer_id)
+            return answer?.question_id
+          })
+          .filter(Boolean)
+      )
+
       const rejections = Array.from(flaggedAnswers.entries())
-        .filter(([_, rounds]) => rounds.some(r => r.response === null))
-        .map(([questionId, rounds]) => {
-          // Get the latest flag without a response
-          const latestUnresponded = rounds.filter(r => r.response === null).pop()
-          return {
-            questionId,
-            reason: latestUnresponded?.reason || ''
-          }
-        })
+        .filter(([questionId, flag]) =>
+          flag.resolved_at === null && !existingQuestionIds.has(questionId)
+        )
+        .map(([questionId, flag]) => ({
+          questionId,
+          reason: flag.reason
+        }))
         .filter(r => r.reason)
       
       const rejectResponse = await fetch('/api/sheets/reject-answers', {
@@ -737,33 +808,60 @@ export default function ReviewPage() {
                                 <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
                               )}
                             </div>
-                            {isFlagged && (
-                              <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
-                                <p className="text-xs font-medium text-amber-700">Revision History:</p>
-                                {(flaggedAnswers.get(question.id) || []).map((round, ridx) => (
-                                  <div key={ridx} className="text-sm space-y-1">
+                            {isFlagged && (() => {
+                              const flag = flaggedAnswers.get(question.id)
+                              if (!flag) return null
+                              return (
+                                <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
+                                  <p className="text-xs font-medium text-amber-700">Flag Discussion:</p>
+                                  {/* Initial flag reason */}
+                                  <div className="text-sm space-y-1">
                                     <div className="flex items-center gap-2">
                                       <Flag className="h-3 w-3 text-amber-600" />
-                                      <span className="font-medium text-amber-800">Flag {ridx + 1}:</span>
-                                      <span className="text-gray-600">{round.reason}</span>
+                                      <span className="font-medium text-amber-800">Customer:</span>
+                                      <span className="text-gray-600">{flag.reason}</span>
                                     </div>
-                                    {round.response && (
-                                      <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800">
-                                        <span className="font-medium">Supplier:</span> {round.response}
-                                      </div>
+                                  </div>
+                                  {/* Legacy response field (for backwards compatibility) */}
+                                  {flag.response && flag.comments.length === 0 && (
+                                    <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800 text-sm">
+                                      <span className="font-medium">Supplier:</span> {flag.response}
+                                    </div>
+                                  )}
+                                  {/* Comments thread */}
+                                  {flag.comments.map((comment, cidx) => (
+                                    <div key={cidx} className={`ml-5 p-2 rounded text-sm ${
+                                      comment.role === 'supplier'
+                                        ? 'bg-blue-50 text-blue-800'
+                                        : 'bg-amber-100 text-amber-800'
+                                    }`}>
+                                      <span className="font-medium capitalize">{comment.role}:</span> {comment.text}
+                                    </div>
+                                  ))}
+                                  <div className="flex items-center gap-2 pt-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleUnflag(question.id)}
+                                      className="text-xs h-6 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                    >
+                                      Approve answer
+                                    </Button>
+                                    {showFlagInput !== question.id && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setShowFlagInput(question.id)}
+                                        className="text-xs h-6 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                      >
+                                        <MessageSquare className="h-3 w-3 mr-1" />
+                                        Add comment
+                                      </Button>
                                     )}
                                   </div>
-                                ))}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleUnflag(question.id)}
-                                  className="text-xs h-6 text-amber-600"
-                                >
-                                  Approve answer
-                                </Button>
-                              </div>
-                            )}
+                                </div>
+                              )
+                            })()}
                           </div>
                           <div className="flex flex-col gap-2">
                             {!isFlagged && showFlagInput !== question.id && (
@@ -783,13 +881,13 @@ export default function ReviewPage() {
                         {showFlagInput === question.id && (
                           <div className="mt-3 flex gap-2">
                             <Input
-                              placeholder="Enter reason for flagging..."
+                              placeholder={isFlagged ? "Add your comment..." : "Enter reason for flagging..."}
                               value={flagReason}
                               onChange={(e) => setFlagReason(e.target.value)}
                               className="flex-1"
                             />
                             <Button size="sm" onClick={() => handleFlagAnswer(question.id)}>
-                              Add Flag
+                              {isFlagged ? 'Add Comment' : 'Add Flag'}
                             </Button>
                             <Button
                               size="sm"
@@ -833,33 +931,60 @@ export default function ReviewPage() {
                                       <p className="text-sm">{getAnswerDisplay(question, answer)}</p>
                                     )}
                                   </div>
-                                  {isFlagged && (
-                                    <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
-                                      <p className="text-xs font-medium text-amber-700">Revision History:</p>
-                                      {(flaggedAnswers.get(question.id) || []).map((round, ridx) => (
-                                        <div key={ridx} className="text-sm space-y-1">
+                                  {isFlagged && (() => {
+                                    const flag = flaggedAnswers.get(question.id)
+                                    if (!flag) return null
+                                    return (
+                                      <div className="mt-3 space-y-2 border-l-2 border-amber-300 pl-3">
+                                        <p className="text-xs font-medium text-amber-700">Flag Discussion:</p>
+                                        {/* Initial flag reason */}
+                                        <div className="text-sm space-y-1">
                                           <div className="flex items-center gap-2">
                                             <Flag className="h-3 w-3 text-amber-600" />
-                                            <span className="font-medium text-amber-800">Flag {ridx + 1}:</span>
-                                            <span className="text-gray-600">{round.reason}</span>
+                                            <span className="font-medium text-amber-800">Customer:</span>
+                                            <span className="text-gray-600">{flag.reason}</span>
                                           </div>
-                                          {round.response && (
-                                            <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800">
-                                              <span className="font-medium">Supplier:</span> {round.response}
-                                            </div>
+                                        </div>
+                                        {/* Legacy response field */}
+                                        {flag.response && flag.comments.length === 0 && (
+                                          <div className="ml-5 p-2 bg-blue-50 rounded text-blue-800 text-sm">
+                                            <span className="font-medium">Supplier:</span> {flag.response}
+                                          </div>
+                                        )}
+                                        {/* Comments thread */}
+                                        {flag.comments.map((comment, cidx) => (
+                                          <div key={cidx} className={`ml-5 p-2 rounded text-sm ${
+                                            comment.role === 'supplier'
+                                              ? 'bg-blue-50 text-blue-800'
+                                              : 'bg-amber-100 text-amber-800'
+                                          }`}>
+                                            <span className="font-medium capitalize">{comment.role}:</span> {comment.text}
+                                          </div>
+                                        ))}
+                                        <div className="flex items-center gap-2 pt-1">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleUnflag(question.id)}
+                                            className="text-xs h-6 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                          >
+                                            Approve answer
+                                          </Button>
+                                          {showFlagInput !== question.id && (
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => setShowFlagInput(question.id)}
+                                              className="text-xs h-6 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                            >
+                                              <MessageSquare className="h-3 w-3 mr-1" />
+                                              Add comment
+                                            </Button>
                                           )}
                                         </div>
-                                      ))}
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleUnflag(question.id)}
-                                        className="text-xs h-6 text-amber-600"
-                                      >
-                                        Approve answer
-                                      </Button>
-                                    </div>
-                                  )}
+                                      </div>
+                                    )
+                                  })()}
                                 </div>
                                 <div>
                                   {!isFlagged && showFlagInput !== question.id && (
@@ -879,13 +1004,13 @@ export default function ReviewPage() {
                               {showFlagInput === question.id && (
                                 <div className="mt-3 flex gap-2">
                                   <Input
-                                    placeholder="Enter reason for flagging..."
+                                    placeholder={isFlagged ? "Add your comment..." : "Enter reason for flagging..."}
                                     value={flagReason}
                                     onChange={(e) => setFlagReason(e.target.value)}
                                     className="flex-1"
                                   />
                                   <Button size="sm" onClick={() => handleFlagAnswer(question.id)}>
-                                    Add Flag
+                                    {isFlagged ? 'Add Comment' : 'Add Flag'}
                                   </Button>
                                   <Button
                                     size="sm"

@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle2, Settings, User } from 'lucide-react'
+import { Loader2, CheckCircle2, Settings, User, Plus, X } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import Link from 'next/link'
 import type { Database } from '@/lib/database.types'
@@ -58,6 +58,11 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [supplierMode, setSupplierMode] = useState<'existing' | 'new'>('existing')
+  const [showNewQuestionForm, setShowNewQuestionForm] = useState(false)
+  const [newQuestionText, setNewQuestionText] = useState('')
+  const [newQuestionType, setNewQuestionType] = useState<'text' | 'yes_no'>('text')
+  const [newQuestionRequired, setNewQuestionRequired] = useState(false)
+  const [creatingQuestion, setCreatingQuestion] = useState(false)
   const [formData, setFormData] = useState({
     productName: '',
     supplierId: '',
@@ -135,6 +140,47 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     setCustomQuestions(customQuestionsData || [])
     setLoading(false)
   }
+  async function handleCreateQuestion() {
+    if (!newQuestionText.trim()) return
+
+    setCreatingQuestion(true)
+    try {
+      const response = await fetch('/api/company-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question_text: newQuestionText.trim(),
+          response_type: newQuestionType,
+          required: newQuestionRequired,
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to create question')
+
+      const newQuestion = await response.json()
+
+      // Add to list and auto-select
+      setCustomQuestions(prev => [...prev, newQuestion])
+      setFormData(prev => ({
+        ...prev,
+        selectedCustomQuestions: [...prev.selectedCustomQuestions, newQuestion.id]
+      }))
+
+      // Reset form
+      setNewQuestionText('')
+      setNewQuestionType('text')
+      setNewQuestionRequired(false)
+      setShowNewQuestionForm(false)
+
+      toast.success('Custom question created')
+    } catch (error) {
+      console.error('Error creating question:', error)
+      toast.error('Failed to create question')
+    } finally {
+      setCreatingQuestion(false)
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
@@ -199,15 +245,18 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
         }
       }
       // Create new sheet
+      // company_id = the supplier (company whose data is being collected)
+      // requesting_company_id = the customer (company requesting the data)
       const { data: newSheet, error: sheetError } = await supabase
         .from('sheets')
         .insert({
           name: formData.productName,
-          company_id: userData.company_id,
-          requesting_company_id: supplierCompanyId,
+          company_id: supplierCompanyId,
+          requesting_company_id: userData.company_id,
           // stack_id removed - tags control questions now
           status: 'pending',
           created_by: user.id,
+          import_source: 'request',
         })
         .select()
         .single()
@@ -557,10 +606,23 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
               </p>
             </div>
             {/* Custom Questions Section */}
-            {customQuestions.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Custom Questions</Label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Custom Questions</Label>
+                <div className="flex items-center gap-2">
+                  {!showNewQuestionForm && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => setShowNewQuestionForm(true)}
+                      disabled={submitting}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add New
+                    </Button>
+                  )}
                   <Link
                     href="/settings/questions"
                     className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
@@ -570,53 +632,141 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                     Manage
                   </Link>
                 </div>
-                <div className="border rounded-md divide-y max-h-[150px] overflow-y-auto">
-                  {customQuestions.map((question) => (
-                    <label
-                      key={question.id}
-                      className="flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer"
+              </div>
+
+              {/* Inline new question form */}
+              {showNewQuestionForm && (
+                <div className="border rounded-md p-3 bg-muted/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">New Question</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => {
+                        setShowNewQuestionForm(false)
+                        setNewQuestionText('')
+                        setNewQuestionType('text')
+                        setNewQuestionRequired(false)
+                      }}
                     >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Enter your question..."
+                    value={newQuestionText}
+                    onChange={(e) => setNewQuestionText(e.target.value)}
+                    disabled={creatingQuestion}
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-4">
+                    <Select
+                      value={newQuestionType}
+                      onValueChange={(v) => setNewQuestionType(v as 'text' | 'yes_no')}
+                      disabled={creatingQuestion}
+                    >
+                      <SelectTrigger className="w-[140px] h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="text">Text Answer</SelectItem>
+                        <SelectItem value="yes_no">Yes/No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <label className="flex items-center gap-2 text-sm">
                       <Checkbox
-                        checked={formData.selectedCustomQuestions.includes(question.id)}
-                        onCheckedChange={(checked) => {
-                          setFormData(prev => ({
-                            ...prev,
-                            selectedCustomQuestions: checked
-                              ? [...prev.selectedCustomQuestions, question.id]
-                              : prev.selectedCustomQuestions.filter(id => id !== question.id)
-                          }))
-                        }}
-                        disabled={submitting}
-                        className="mt-0.5"
+                        checked={newQuestionRequired}
+                        onCheckedChange={(checked) => setNewQuestionRequired(checked === true)}
+                        disabled={creatingQuestion}
                       />
-                      <span className="text-sm leading-tight">
-                        {question.question_text}
-                        {question.required && (
-                          <span className="text-red-500 ml-1">*</span>
-                        )}
-                      </span>
+                      Required
                     </label>
-                  ))}
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowNewQuestionForm(false)
+                        setNewQuestionText('')
+                        setNewQuestionType('text')
+                        setNewQuestionRequired(false)
+                      }}
+                      disabled={creatingQuestion}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleCreateQuestion}
+                      disabled={creatingQuestion || !newQuestionText.trim()}
+                    >
+                      {creatingQuestion ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        'Add Question'
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Select additional questions to include in this request
-                </p>
-              </div>
-            )}
-            {customQuestions.length === 0 && (
-              <div className="text-center py-3 border rounded-md bg-muted/50">
-                <p className="text-sm text-muted-foreground">
-                  No custom questions available.{' '}
-                  <Link
-                    href="/settings/questions"
-                    className="text-primary hover:underline"
-                    target="_blank"
-                  >
-                    Create some
-                  </Link>
-                </p>
-              </div>
-            )}
+              )}
+
+              {customQuestions.length > 0 ? (
+                <>
+                  <div className="border rounded-md divide-y max-h-[150px] overflow-y-auto">
+                    {customQuestions.map((question) => (
+                      <label
+                        key={question.id}
+                        className="flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={formData.selectedCustomQuestions.includes(question.id)}
+                          onCheckedChange={(checked) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              selectedCustomQuestions: checked
+                                ? [...prev.selectedCustomQuestions, question.id]
+                                : prev.selectedCustomQuestions.filter(id => id !== question.id)
+                            }))
+                          }}
+                          disabled={submitting}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm leading-tight">
+                          {question.question_text}
+                          {question.required && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Select additional questions to include in this request
+                  </p>
+                </>
+              ) : !showNewQuestionForm && (
+                <div className="text-center py-3 border rounded-md bg-muted/50">
+                  <p className="text-sm text-muted-foreground">
+                    No custom questions yet.{' '}
+                    <button
+                      type="button"
+                      onClick={() => setShowNewQuestionForm(true)}
+                      className="text-primary hover:underline"
+                    >
+                      Create one
+                    </button>
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button

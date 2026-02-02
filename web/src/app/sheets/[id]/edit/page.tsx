@@ -65,42 +65,43 @@ export default async function SheetEditPage({
     .order("order_number")
 
   // === Fetch rejections if sheet is flagged ===
-  let rejections: { question_id: string; rounds: { reason: string; response: string | null; created_at: string }[] }[] = []
+  interface FlagComment { role: 'customer' | 'supplier'; text: string; created_at: string }
+  let rejections: { question_id: string; reason: string; response: string | null; created_at: string; comments: FlagComment[] }[] = []
   if (sheet.status === 'flagged') {
     // Get all answer IDs for this sheet
     const answerIds = answers?.map(a => a.id).filter(Boolean) || []
     if (answerIds.length > 0) {
       const { data: rejectionsData } = await supabase
         .from("answer_rejections")
-        .select("answer_id, reason, response, created_at")
+        .select("answer_id, reason, response, created_at, comments")
         .in("answer_id", answerIds)
-        .order("created_at")
-      
-      // Group rejections by question_id
+        .is("resolved_at", null) // Only get unresolved flags
+        .order("created_at", { ascending: false })
+
+      // Get the most recent unresolved rejection per question
       if (rejectionsData) {
-        const byQuestion = new Map<string, { reason: string; response: string | null; created_at: string }[]>()
-        rejectionsData.forEach(r => {
+        const byQuestion = new Map<string, { reason: string; response: string | null; created_at: string; comments: FlagComment[] }>()
+        rejectionsData.forEach((r: any) => {
           const answer = answers?.find(a => a.id === r.answer_id)
-          if (answer?.question_id) {
-            const existing = byQuestion.get(answer.question_id) || []
-            existing.push({
+          if (answer?.question_id && !byQuestion.has(answer.question_id)) {
+            byQuestion.set(answer.question_id, {
               reason: r.reason || 'Revision requested',
               response: r.response || null,
-              created_at: r.created_at
+              created_at: r.created_at,
+              comments: r.comments || []
             })
-            byQuestion.set(answer.question_id, existing)
           }
         })
-        rejections = Array.from(byQuestion.entries()).map(([question_id, rounds]) => ({
+        rejections = Array.from(byQuestion.entries()).map(([question_id, data]) => ({
           question_id,
-          rounds
+          ...data
         }))
       }
     }
   }
 
   // Fetch questions with their section/subsection info + branching fields
-  let questionsWithSections: any[] = []
+  const questionsWithSections: any[] = []
   
   if (taggedQuestionIds.length > 0) {
     const batchSize = 50

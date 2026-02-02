@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, ArrowRight, LogIn, LayoutDashboard, FileSpreadsheet, Send, Upload, Settings, HelpCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogIn, LayoutDashboard, FileSpreadsheet, Send, Upload, Settings, HelpCircle, Users, Building2 } from 'lucide-react'
 
 export default function GettingStartedPage() {
   return (
@@ -11,12 +11,12 @@ export default function GettingStartedPage() {
       <div className="bg-background border-b">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Image 
-              src="/stacks-logo-new.png" 
-              alt="Stacks Data" 
-              width={140} 
-              height={40}
-              className="h-10 w-auto"
+            <Image
+              src="/stacks-data-logo-light.png"
+              alt="Stacks Data"
+              width={280}
+              height={80}
+              className="h-20 w-auto"
             />
           </div>
           <Link href="/login">
@@ -57,6 +57,67 @@ export default function GettingStartedPage() {
               <li><strong>Better Search</strong> — Find any product, sheet, or supplier instantly</li>
             </ul>
             <p className="pt-2">Your historical data has been migrated — you'll see it when you log in.</p>
+          </CardContent>
+        </Card>
+
+        {/* Demo Accounts */}
+        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-900">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <CardTitle className="text-xl">Try the Full Workflow</CardTitle>
+            </div>
+            <CardDescription>
+              Experience both sides of the request cycle using our demo accounts
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              To fully understand how Stacks works, you can log into these shared demo accounts
+              to play "the other side" of any request:
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Demo Customer Account */}
+              <div className="p-4 rounded-lg border bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <span className="font-semibold">Demo Customer Account</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Use this to send requests to suppliers or review their submissions.
+                </p>
+                <div className="space-y-1 text-sm font-mono">
+                  <div><span className="text-muted-foreground">Email:</span> demo-customer@stacksdata.com</div>
+                  <div><span className="text-muted-foreground">Password:</span> StacksDemo2026!</div>
+                </div>
+              </div>
+
+              {/* Demo Supplier Account */}
+              <div className="p-4 rounded-lg border bg-background">
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="h-4 w-4 text-green-600" />
+                  <span className="font-semibold">Demo Supplier Account</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Use this to receive requests and fill out compliance sheets.
+                </p>
+                <div className="space-y-1 text-sm font-mono">
+                  <div><span className="text-muted-foreground">Email:</span> demo-supplier@stacksdata.com</div>
+                  <div><span className="text-muted-foreground">Password:</span> StacksDemo2026!</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 p-3 rounded-lg text-sm text-muted-foreground">
+              <strong>Example:</strong> As a supplier, send yourself a request using the Demo Customer account.
+              Then log back into your account to fill it out and submit. Finally, log into Demo Customer
+              to review and approve your submission.
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Note: These are shared accounts — other trial users may be using them at the same time.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -209,14 +270,11 @@ export default function GettingStartedPage() {
           </CardHeader>
           <CardContent className="pl-[4.5rem]">
             <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-              <li>Go to <strong>Import</strong> in the sidebar</li>
+              <li>Go to <strong>Import Workbooks</strong> under <strong>As Supplier</strong> or <strong>As Customer</strong> in the sidebar</li>
               <li>Drag and drop your HQ 2.1 Excel workbook (or click to browse)</li>
               <li>Review the preview — check that products and answers look correct</li>
               <li>Click <strong>Import</strong> to create sheets from the workbook</li>
             </ol>
-            <p className="text-muted-foreground mt-3">
-              <strong>Tip:</strong> You can import multiple workbooks. Duplicates are detected automatically.
-            </p>
           </CardContent>
         </Card>
 

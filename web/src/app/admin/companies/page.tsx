@@ -18,7 +18,6 @@ import {
   Loader2,
   ChevronRight,
   Shield,
-  TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -208,7 +207,7 @@ export default function CompaniesPage() {
 
         {/* Companies List */}
         <div className="grid gap-3 opacity-0 animate-fade-in-up animation-delay-300" style={{ animationFillMode: 'forwards' }}>
-          {filteredCompanies.map((company, index) => (
+          {filteredCompanies.map((company) => (
             <Card
               key={company.id}
               className="cursor-pointer hover:bg-slate-50/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-slate-200/60 group"

@@ -98,6 +98,11 @@ const adminNavItems: NavItem[] = [
     icon: Building2,
   },
   {
+    title: 'Trials',
+    href: '/admin/trials',
+    icon: Users,
+  },
+  {
     title: 'Questions',
     href: '/questions',
     icon: HelpCircle,
@@ -247,9 +252,9 @@ export function Sidebar() {
       <div className="flex h-16 items-center border-b border-slate-200/60 px-5">
         <Link href="/dashboard" className="flex items-center gap-2 group">
           <img
-            src="/stacks-logo-new.png"
+            src="/stacks-data-logo-light.png"
             alt="Stacks Data"
-            className="h-9 w-auto transition-transform duration-200 group-hover:scale-105"
+            className="h-16 w-auto transition-transform duration-200 group-hover:scale-105"
           />
         </Link>
       </div>

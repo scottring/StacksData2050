@@ -10,13 +10,11 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Building2,
   Package,
-  Users,
   ArrowLeft,
   Mail,
   Calendar,
   Loader2,
   Shield,
-  TrendingUp,
 } from 'lucide-react'
 
 interface CompanyDetails {

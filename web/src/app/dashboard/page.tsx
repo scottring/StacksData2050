@@ -18,7 +18,14 @@ import {
   CheckCircle2,
   AlertCircle,
   XCircle,
+  Send,
+  Inbox,
+  FlaskConical,
+  Shield,
+  AlertTriangle,
+  FileCheck,
 } from 'lucide-react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { AssociationMetricsDashboard, type AssociationMetrics } from '@/components/dashboard/association-metrics-dashboard'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
@@ -41,6 +48,19 @@ interface DashboardStats {
     modifiedAt: string | null
     role: 'supplier' | 'customer'
   }>
+  // Request tracking
+  outgoingRequestsPending: number
+  outgoingRequestsTotal: number
+  incomingRequestsPending: number
+  incomingRequestsTotal: number
+}
+
+interface ComplianceStats {
+  totalChemicals: number
+  pfasChemicals: number
+  reachSvhcChemicals: number
+  prop65Chemicals: number
+  highRiskChemicals: number
 }
 
 type ViewMode = 'customer' | 'supplier'
@@ -71,7 +91,7 @@ function formatTimeAgo(dateStr: string | null): string {
   return date.toLocaleDateString()
 }
 
-function getStatusConfig(status: string | null) {
+function getStatusConfig(status: string | null, role?: 'supplier' | 'customer') {
   switch (status) {
     case 'completed':
     case 'approved':
@@ -81,6 +101,20 @@ function getStatusConfig(status: string | null) {
         label: 'Complete',
         className: 'bg-emerald-50 text-emerald-700 border-emerald-200/50',
         dotColor: 'bg-emerald-500',
+      }
+    case 'submitted':
+      // Different labels based on perspective
+      if (role === 'customer') {
+        return {
+          label: 'Ready for Review',
+          className: 'bg-violet-50 text-violet-700 border-violet-200/50',
+          dotColor: 'bg-violet-500',
+        }
+      }
+      return {
+        label: 'Awaiting Review',
+        className: 'bg-sky-50 text-sky-700 border-sky-200/50',
+        dotColor: 'bg-sky-500',
       }
     case 'in_progress':
       return {
@@ -189,6 +223,8 @@ function StatCard({
   accentColor = 'emerald',
   delay = 0,
   sparklineData,
+  href,
+  onClick,
 }: {
   title: string
   value: number
@@ -199,6 +235,8 @@ function StatCard({
   accentColor?: 'emerald' | 'amber' | 'sky' | 'rose' | 'slate'
   delay?: number
   sparklineData?: number[]
+  href?: string
+  onClick?: () => void
 }) {
   const colorMap = {
     emerald: {
@@ -234,15 +272,27 @@ function StatCard({
   }
 
   const colors = colorMap[accentColor]
+  const isClickable = href || onClick
+  const router = useRouter()
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick()
+    } else if (href) {
+      router.push(href)
+    }
+  }
 
   return (
     <div
       className={cn(
         "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 opacity-0 animate-fade-in-up",
         colors.bg,
-        colors.border
+        colors.border,
+        isClickable && "cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all"
       )}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
+      onClick={isClickable ? handleClick : undefined}
     >
       {/* Subtle shine overlay */}
       <div className="absolute inset-0 gradient-card-shine pointer-events-none" />
@@ -310,7 +360,7 @@ function RefinedDonutChart({
   const circumference = 2 * Math.PI * radius
   const center = 110
 
-  let currentOffset = circumference * 0.25 // Start from top
+  const currentOffset = circumference * 0.25 // Start from top
 
   const segmentPaths = useMemo(() => {
     let offset = circumference * 0.25
@@ -462,7 +512,7 @@ function ActivityTimeline({
   onSheetClick,
 }: {
   sheets: DashboardStats['recentSheets']
-  onSheetClick: (id: string) => void
+  onSheetClick: (sheet: DashboardStats['recentSheets'][0]) => void
 }) {
   if (sheets.length === 0) {
     return (
@@ -479,11 +529,11 @@ function ActivityTimeline({
   return (
     <div className="space-y-1">
       {sheets.map((sheet, index) => {
-        const statusConfig = getStatusConfig(sheet.status)
+        const statusConfig = getStatusConfig(sheet.status, sheet.role)
         return (
           <button
             key={sheet.id}
-            onClick={() => onSheetClick(sheet.id)}
+            onClick={() => onSheetClick(sheet)}
             className={cn(
               "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all opacity-0 animate-fade-in-up",
               "hover:bg-slate-50 group"
@@ -540,34 +590,11 @@ function ActivityTimeline({
   )
 }
 
-// Coming Soon overlay with elegant blur
-function ComingSoonSection({ title, description, children }: {
-  title: string
-  description?: string
-  children?: React.ReactNode
-}) {
-  return (
-    <section className="relative rounded-2xl overflow-hidden">
-      <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/5 border border-slate-200/50">
-          <Sparkles className="h-4 w-4 text-slate-500" />
-          <span className="text-sm font-medium text-slate-600">Coming Soon</span>
-        </div>
-      </div>
-      <div className="opacity-40 pointer-events-none">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-          {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
-        </div>
-        {children}
-      </div>
-    </section>
-  )
-}
 
 export default function DashboardPage() {
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [complianceStats, setComplianceStats] = useState<ComplianceStats | null>(null)
   const [associationMetrics, setAssociationMetrics] = useState<AssociationMetrics | null>(null)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -834,6 +861,20 @@ export default function DashboardPage() {
           role: s.role
         }))
 
+      // Fetch request data
+      const { data: outgoingRequests } = await supabase
+        .from('requests')
+        .select('id, processed')
+        .eq('requestor_id', companyId)
+
+      const { data: incomingRequests } = await supabase
+        .from('requests')
+        .select('id, processed')
+        .eq('requesting_from_id', companyId)
+
+      const outgoingPending = (outgoingRequests || []).filter(r => !r.processed).length
+      const incomingPending = (incomingRequests || []).filter(r => !r.processed).length
+
       setStats({
         supplierOpenTasks,
         supplierCompletedTasks,
@@ -844,7 +885,47 @@ export default function DashboardPage() {
         customerRejectedProducts,
         customerTotalProducts: customerSheets.length,
         recentSheets,
+        outgoingRequestsPending: outgoingPending,
+        outgoingRequestsTotal: outgoingRequests?.length || 0,
+        incomingRequestsPending: incomingPending,
+        incomingRequestsTotal: incomingRequests?.length || 0,
       })
+
+      // Fetch compliance data (chemicals from user's sheets)
+      const allSheetIds = [...supplierSheets, ...customerSheets].map(s => s.id)
+      if (allSheetIds.length > 0) {
+        const { data: chemicals } = await supabase
+          .from('sheet_chemicals')
+          .select(`
+            chemical_id,
+            chemical_inventory (
+              id,
+              is_pfas,
+              is_reach_svhc,
+              is_prop65,
+              risk_level
+            )
+          `)
+          .in('sheet_id', allSheetIds.slice(0, 100)) // Limit to avoid too large queries
+
+        if (chemicals) {
+          const uniqueChemicals = new Map()
+          chemicals.forEach((c: any) => {
+            if (c.chemical_inventory) {
+              uniqueChemicals.set(c.chemical_id, c.chemical_inventory)
+            }
+          })
+          const chemicalList = Array.from(uniqueChemicals.values())
+
+          setComplianceStats({
+            totalChemicals: chemicalList.length,
+            pfasChemicals: chemicalList.filter((c: any) => c.is_pfas).length,
+            reachSvhcChemicals: chemicalList.filter((c: any) => c.is_reach_svhc).length,
+            prop65Chemicals: chemicalList.filter((c: any) => c.is_prop65).length,
+            highRiskChemicals: chemicalList.filter((c: any) => c.risk_level === 'high').length,
+          })
+        }
+      }
 
       setLoading(false)
     }
@@ -1036,6 +1117,7 @@ export default function DashboardPage() {
             accentColor="slate"
             delay={150}
             sparklineData={mockSparklineTotal}
+            href="/sheets"
           />
           <StatCard
             title="Completed"
@@ -1046,6 +1128,7 @@ export default function DashboardPage() {
             accentColor="emerald"
             delay={200}
             sparklineData={mockSparklineCompleted}
+            href="/sheets?status=completed"
           />
           <StatCard
             title="Open"
@@ -1056,6 +1139,7 @@ export default function DashboardPage() {
             accentColor="amber"
             delay={250}
             sparklineData={mockSparklineOpen}
+            href="/sheets?status=pending"
           />
           <StatCard
             title="Rejected"
@@ -1064,6 +1148,7 @@ export default function DashboardPage() {
             icon={XCircle}
             accentColor="rose"
             delay={300}
+            href="/sheets?status=flagged"
           />
         </div>
 
@@ -1139,49 +1224,159 @@ export default function DashboardPage() {
               <CardContent className="p-2">
                 <ActivityTimeline
                   sheets={stats.recentSheets}
-                  onSheetClick={(id) => router.push(`/sheets/${id}`)}
+                  onSheetClick={(sheet) => {
+                    // Navigate to review page for customers viewing submitted sheets
+                    if (sheet.role === 'customer' && sheet.status === 'submitted') {
+                      router.push(`/sheets/${sheet.id}/review`)
+                    } else if (sheet.role === 'supplier' && (sheet.status === 'flagged' || sheet.status === 'in_progress' || sheet.status === 'pending')) {
+                      // Suppliers should edit flagged/in-progress/pending sheets
+                      router.push(`/sheets/${sheet.id}/edit`)
+                    } else {
+                      router.push(`/sheets/${sheet.id}`)
+                    }
+                  }}
                 />
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Coming Soon Sections */}
+        {/* Request Tracking & Compliance Intelligence */}
         <div className="grid gap-6 md:grid-cols-2">
-          <ComingSoonSection
-            title="Request Tracking"
-            description="Track incoming and outgoing product data requests"
-          >
-            <div className="grid gap-3 grid-cols-2">
-              {[1, 2, 3, 4].map(i => (
-                <Card key={i} className="bg-white/60">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-400">
-                      Metric {i}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-slate-300">--</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </ComingSoonSection>
+          {/* Request Tracking */}
+          <Card className="border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-400" style={{ animationFillMode: 'forwards' }}>
+            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold text-slate-900">Request Tracking</CardTitle>
+                  <p className="text-sm text-slate-500 mt-0.5">Incoming and outgoing product data requests</p>
+                </div>
+                <Link
+                  href="/requests/outgoing"
+                  className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+                >
+                  View all
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5">
+              <div className="grid gap-4 grid-cols-2">
+                <Link href="/requests/outgoing" className="group">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 hover:shadow-md transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center">
+                        <Send className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-semibold text-slate-900">
+                          {stats?.outgoingRequestsPending || 0}
+                        </p>
+                        <p className="text-xs text-slate-500">Outgoing Pending</p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm text-slate-600">
+                      {stats?.outgoingRequestsTotal || 0} total requests sent
+                    </p>
+                  </div>
+                </Link>
+                <Link href="/requests/incoming" className="group">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 hover:shadow-md transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center">
+                        <Inbox className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-semibold text-slate-900">
+                          {stats?.incomingRequestsPending || 0}
+                        </p>
+                        <p className="text-xs text-slate-500">Incoming Pending</p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm text-slate-600">
+                      {stats?.incomingRequestsTotal || 0} total requests received
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
 
-          <ComingSoonSection
-            title="Compliance Intelligence"
-            description="Real-time regulatory monitoring and DPP readiness"
-          >
-            <div className="grid gap-3 grid-cols-3">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="h-32 bg-white/60">
-                  <CardContent className="flex items-center justify-center h-full">
-                    <div className="w-12 h-12 rounded-full bg-slate-100" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </ComingSoonSection>
+          {/* Compliance Intelligence */}
+          <Card className="border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-500" style={{ animationFillMode: 'forwards' }}>
+            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold text-slate-900">Compliance Intelligence</CardTitle>
+                  <p className="text-sm text-slate-500 mt-0.5">Chemical regulatory monitoring</p>
+                </div>
+                <Link
+                  href="/compliance/supplier"
+                  className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+                >
+                  View details
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5">
+              {complianceStats && complianceStats.totalChemicals > 0 ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <FlaskConical className="h-5 w-5 text-slate-600" />
+                      <span className="text-sm font-medium text-slate-700">Total Chemicals Tracked</span>
+                    </div>
+                    <span className="text-lg font-semibold text-slate-900">{complianceStats.totalChemicals}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link href="/compliance/supplier?filter=pfas" className="p-3 rounded-lg bg-amber-50 border border-amber-200/50 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-amber-600" />
+                        <span className="text-xs font-medium text-amber-700">PFAS</span>
+                      </div>
+                      <p className="text-xl font-semibold text-amber-900 mt-1">{complianceStats.pfasChemicals}</p>
+                    </Link>
+                    <Link href="/compliance/supplier?filter=reach" className="p-3 rounded-lg bg-rose-50 border border-rose-200/50 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-rose-600" />
+                        <span className="text-xs font-medium text-rose-700">REACH SVHC</span>
+                      </div>
+                      <p className="text-xl font-semibold text-rose-900 mt-1">{complianceStats.reachSvhcChemicals}</p>
+                    </Link>
+                    <Link href="/compliance/supplier?filter=prop65" className="p-3 rounded-lg bg-orange-50 border border-orange-200/50 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-2">
+                        <FileCheck className="h-4 w-4 text-orange-600" />
+                        <span className="text-xs font-medium text-orange-700">Prop 65</span>
+                      </div>
+                      <p className="text-xl font-semibold text-orange-900 mt-1">{complianceStats.prop65Chemicals}</p>
+                    </Link>
+                    <Link href="/compliance/supplier?filter=high-risk" className="p-3 rounded-lg bg-red-50 border border-red-200/50 hover:shadow-sm transition-all">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="h-4 w-4 text-red-600" />
+                        <span className="text-xs font-medium text-red-700">High Risk</span>
+                      </div>
+                      <p className="text-xl font-semibold text-red-900 mt-1">{complianceStats.highRiskChemicals}</p>
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+                    <FlaskConical className="h-6 w-6 text-slate-400" />
+                  </div>
+                  <p className="text-sm font-medium text-slate-600">No chemical data yet</p>
+                  <p className="text-xs text-slate-400 mt-1">Chemical compliance data will appear here</p>
+                  <Link
+                    href="/compliance/supplier"
+                    className="mt-4 text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                  >
+                    View compliance dashboard
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
 

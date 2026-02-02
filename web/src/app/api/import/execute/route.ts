@@ -44,7 +44,13 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       )
     }
-    
+
+    // Mark sheet as imported from Excel
+    await supabase
+      .from('sheets')
+      .update({ import_source: 'excel_import' })
+      .eq('id', sheetId)
+
     // Build answer records
     const answersToInsert: any[] = []
     

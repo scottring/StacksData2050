@@ -27,20 +27,45 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Update each rejection with the response
+    // Update each rejection with the response (add to comments array)
     const results = []
     for (const resp of responses) {
       const answerId = questionToAnswer.get(resp.questionId)
       if (answerId) {
-        const { error } = await supabase
+        // Get current rejection to append to comments
+        const { data: rejections } = await supabase
           .from('answer_rejections')
-          .update({ response: resp.response })
+          .select('id, comments')
           .eq('answer_id', answerId)
-        
-        if (error) {
-          results.push({ questionId: resp.questionId, success: false, error: error.message })
+          .is('resolved_at', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (rejections && rejections.length > 0) {
+          const rejection = rejections[0]
+          const currentComments = rejection.comments || []
+
+          const newComment = {
+            role: 'supplier',
+            text: resp.response,
+            created_at: new Date().toISOString()
+          }
+
+          const { error } = await supabase
+            .from('answer_rejections')
+            .update({
+              response: resp.response, // Keep for backwards compatibility
+              comments: [...currentComments, newComment]
+            })
+            .eq('id', rejection.id)
+
+          if (error) {
+            results.push({ questionId: resp.questionId, success: false, error: error.message })
+          } else {
+            results.push({ questionId: resp.questionId, success: true })
+          }
         } else {
-          results.push({ questionId: resp.questionId, success: true })
+          results.push({ questionId: resp.questionId, success: false, error: 'No active flag found' })
         }
       }
     }

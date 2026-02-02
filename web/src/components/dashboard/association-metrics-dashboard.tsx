@@ -2,13 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
 import {
   TrendingUp,
   Building2,
   Package,
   Users,
   CheckCircle2,
-  AlertTriangle,
   Activity,
   Shield,
 } from 'lucide-react'
@@ -166,7 +166,7 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <a
+              <Link
                 href="/sheets?filter=active_90d"
                 className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
               >
@@ -175,8 +175,8 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
                   <span className="text-sm">Active (90d)</span>
                 </div>
                 <span className="font-medium">{metrics.activeSheetsCount}</span>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/sheets?filter=recent_30d"
                 className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
               >
@@ -185,8 +185,8 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
                   <span className="text-sm">Recent (30d)</span>
                 </div>
                 <span className="font-medium">{metrics.recentSheetsCount}</span>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/sheets?filter=fulfilled"
                 className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
               >
@@ -195,7 +195,7 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
                   <span className="text-sm">Fulfilled</span>
                 </div>
                 <span className="font-medium">{metrics.fulfilledSheetsCount}</span>
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>

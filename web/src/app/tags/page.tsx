@@ -23,10 +23,8 @@ import {
   Plus,
   Loader2,
   ChevronRight,
-  Link2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils'
 
 interface Tag {
   id: string

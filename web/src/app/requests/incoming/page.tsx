@@ -89,7 +89,7 @@ export default function IncomingRequestsPage() {
     }
 
     const requestIds = requestData?.map((r: any) => r.id) || []
-    let tagsByRequest: Record<string, string[]> = {}
+    const tagsByRequest: Record<string, string[]> = {}
     if (requestIds.length > 0) {
       const { data: rtData } = await supabase.from("request_tags").select("request_id, tag_id").in("request_id", requestIds)
       const tagIds = [...new Set(rtData?.map((rt: any) => rt.tag_id) || [])]

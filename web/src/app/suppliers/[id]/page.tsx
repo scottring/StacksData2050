@@ -166,7 +166,6 @@ export default async function SupplierDetailPage({
   const primaryContact = realContacts.find(c => c.role === 'admin') || realContacts[0]
   const completedSheets = sheets.filter(s => s.status === 'approved' || s.status === 'imported').length
   const inProgressSheets = sheets.filter(s => s.status === 'in_progress').length
-  const draftSheets = sheets.filter(s => s.status === 'draft').length
   const pendingSheets = sheets.filter(s => s.status === 'pending' || s.status === 'flagged').length
 
   return (

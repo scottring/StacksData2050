@@ -10,6 +10,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from '@/components/ui/command'
 import {
   Popover,
@@ -96,34 +97,36 @@ export function TagMultiSelect({
         <PopoverContent className="w-full p-0" align="start">
           <Command>
             <CommandInput placeholder="Search tags..." />
-            <CommandEmpty>No tags found.</CommandEmpty>
-            <CommandGroup className="max-h-64 overflow-auto">
-              {tags.map((tag) => {
-                const isSelected = selectedTags.includes(tag.id)
-                return (
-                  <CommandItem
-                    key={tag.id}
-                    value={tag.name || 'Unnamed'}
-                    onSelect={() => handleSelect(tag.id)}
-                  >
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        isSelected ? 'opacity-100' : 'opacity-0'
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span>{tag.name || 'Unnamed'}</span>
-                      {tag.description && (
-                        <span className="text-xs text-muted-foreground">
-                          {tag.description}
-                        </span>
-                      )}
-                    </div>
-                  </CommandItem>
-                )
-              })}
-            </CommandGroup>
+            <CommandList>
+              <CommandEmpty>No tags found.</CommandEmpty>
+              <CommandGroup>
+                {tags.map((tag) => {
+                  const isSelected = selectedTags.includes(tag.id)
+                  return (
+                    <CommandItem
+                      key={tag.id}
+                      value={tag.name || 'Unnamed'}
+                      onSelect={() => handleSelect(tag.id)}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          isSelected ? 'opacity-100' : 'opacity-0'
+                        )}
+                      />
+                      <div className="flex flex-col">
+                        <span>{tag.name || 'Unnamed'}</span>
+                        {tag.description && (
+                          <span className="text-xs text-muted-foreground">
+                            {tag.description}
+                          </span>
+                        )}
+                      </div>
+                    </CommandItem>
+                  )
+                })}
+              </CommandGroup>
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
