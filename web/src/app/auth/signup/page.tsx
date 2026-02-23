@@ -197,19 +197,7 @@ function SignupContent() {
         throw new Error('Failed to create user account')
       }
 
-      // Check if the user needs email confirmation
-      if (!authData.session) {
-        await supabase
-          .from('invitations')
-          .update({ accepted_at: new Date().toISOString() })
-          .eq('id', invitation!.id)
-
-        setSignupComplete(true)
-        setSubmitting(false)
-        return
-      }
-
-      // Determine company_id: use existing company or create new one
+      // STEP 1: Create company if needed (must happen before early return)
       let companyId: string
 
       if (invitation!.company_id) {
@@ -225,7 +213,7 @@ function SignupContent() {
         companyId = company.id
       }
 
-      // Create user record
+      // STEP 2: Create user record (must happen before early return)
       const { error: userError } = await supabase
         .from('users')
         .insert({
@@ -238,13 +226,20 @@ function SignupContent() {
 
       if (userError) throw userError
 
-      // Mark invitation as accepted
+      // STEP 3: Mark invitation as accepted
       await supabase
         .from('invitations')
         .update({ accepted_at: new Date().toISOString() })
         .eq('id', invitation!.id)
 
-      // Redirect to request/sheet if linked
+      // STEP 4: Handle email confirmation (now safe - user record exists)
+      if (!authData.session) {
+        setSignupComplete(true)
+        setSubmitting(false)
+        return
+      }
+
+      // STEP 5: Redirect (only if session exists immediately)
       if (invitation!.request_id) {
         const { data: request } = await supabase
           .from('requests')

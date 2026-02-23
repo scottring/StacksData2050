@@ -45,9 +45,12 @@ import {
   Shield,
   Trash2,
   Activity,
+  Link2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Checkbox } from '@/components/ui/checkbox'
 import { InviteTrialUsersDialog } from '@/components/admin/invite-trial-users-dialog'
+import { SendCustomEmailDialog } from '@/components/admin/send-custom-email-dialog'
 
 interface TrialInvitation {
   id: string
@@ -118,6 +121,9 @@ export default function TrialsPage() {
   const [loadingActivity, setLoadingActivity] = useState(false)
   const [sendingApology, setSendingApology] = useState(false)
   const [sendingTestApology, setSendingTestApology] = useState(false)
+  const [sendingMagicLinkEmail, setSendingMagicLinkEmail] = useState<string | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [customEmailDialogOpen, setCustomEmailDialogOpen] = useState(false)
 
   // Stats
   const [stats, setStats] = useState({
@@ -343,6 +349,31 @@ export default function TrialsPage() {
     }
   }
 
+  async function sendMagicLink(email: string) {
+    setSendingMagicLinkEmail(email)
+
+    try {
+      const response = await fetch('/api/admin/trials/send-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send magic link')
+      }
+
+      alert(`Magic link sent to ${email}. They can click it to access the platform instantly.`)
+    } catch (error: any) {
+      console.error('Error sending magic link:', error)
+      alert(error.message || 'Failed to send magic link')
+    } finally {
+      setSendingMagicLinkEmail(null)
+    }
+  }
+
   async function sendTestApologyEmail() {
     const testEmail = prompt('Enter email address to send test apology email to:')
     if (!testEmail) return
@@ -560,6 +591,16 @@ export default function TrialsPage() {
                 Trial Invitations
               </CardTitle>
               <div className="flex gap-2">
+                {selectedIds.size > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setCustomEmailDialogOpen(true)}
+                    className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Email ({selectedIds.size} selected)
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -632,6 +673,18 @@ export default function TrialsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={filteredInvitations.length > 0 && filteredInvitations.every(inv => selectedIds.has(inv.id))}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedIds(new Set(filteredInvitations.map(inv => inv.id)))
+                          } else {
+                            setSelectedIds(new Set())
+                          }
+                        }}
+                      />
+                    </TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Batch</TableHead>
@@ -645,7 +698,7 @@ export default function TrialsPage() {
                 <TableBody>
                   {filteredInvitations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
                         {invitations.length === 0 ? (
                           <div className="flex flex-col items-center gap-2">
                             <Users className="h-8 w-8 opacity-40" />
@@ -667,6 +720,22 @@ export default function TrialsPage() {
                   ) : (
                     filteredInvitations.map((invitation) => (
                       <TableRow key={invitation.id}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedIds.has(invitation.id)}
+                            onCheckedChange={(checked) => {
+                              setSelectedIds(prev => {
+                                const next = new Set(prev)
+                                if (checked) {
+                                  next.add(invitation.id)
+                                } else {
+                                  next.delete(invitation.id)
+                                }
+                                return next
+                              })
+                            }}
+                          />
+                        </TableCell>
                         <TableCell>
                           <p className="font-medium">{invitation.email}</p>
                         </TableCell>
@@ -731,6 +800,19 @@ export default function TrialsPage() {
                                 <Eye className="h-4 w-4" />
                               </Button>
                             )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => sendMagicLink(invitation.email)}
+                              disabled={sendingMagicLinkEmail === invitation.email}
+                              title="Send magic link for instant access"
+                            >
+                              {sendingMagicLinkEmail === invitation.email ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Link2 className="h-4 w-4" />
+                              )}
+                            </Button>
                             {!invitation.accepted_at && (
                               <Button
                                 variant="ghost"
@@ -775,6 +857,17 @@ export default function TrialsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Custom Email Dialog */}
+      <SendCustomEmailDialog
+        open={customEmailDialogOpen}
+        onOpenChange={setCustomEmailDialogOpen}
+        selectedInvitations={invitations.filter(inv => selectedIds.has(inv.id)).map(inv => ({
+          id: inv.id,
+          email: inv.email,
+          company_name: inv.company_name,
+        }))}
+      />
 
       {/* Invite Dialog */}
       <InviteTrialUsersDialog
