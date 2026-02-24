@@ -22,6 +22,8 @@ import {
   Shield,
   ChevronRight,
   Plug,
+  Zap,
+  FileText,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -88,6 +90,24 @@ const supplierNavItems: NavItem[] = [
     title: 'Incoming Requests',
     href: '/requests/incoming',
     icon: Inbox,
+  },
+]
+
+const pipelineNavItems: NavItem[] = [
+  {
+    title: 'Extract Documents',
+    href: '/pipeline/extract',
+    icon: FileUp,
+  },
+  {
+    title: 'Compliance',
+    href: '/pipeline/compliance',
+    icon: Shield,
+  },
+  {
+    title: 'Documents',
+    href: '/pipeline/documents',
+    icon: FileText,
   },
 ]
 
@@ -285,6 +305,7 @@ export function Sidebar() {
 
         <NavSection title="As Customer" items={customerNavItems} pathname={pathname} />
         <NavSection title="As Supplier" items={supplierNavItems} pathname={pathname} />
+        <NavSection title="Intelligence Pipeline" items={pipelineNavItems} pathname={pathname} />
         <NavSection title="Admin" items={adminNavItems} pathname={pathname} />
 
         {/* Reports & Integrations */}

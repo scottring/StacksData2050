@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil } from 'lucide-react'
+import { Pencil, Shield, FileUp } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
@@ -410,6 +410,18 @@ export default async function SheetViewPage({
           </div>
           <div className="ml-auto flex items-center gap-3">
             <Badge variant="outline">{sheet.status || 'draft'}</Badge>
+            <Link href="/pipeline/extract">
+              <Button size="sm" variant="outline">
+                <FileUp className="h-4 w-4 mr-2" />
+                Upload SDS
+              </Button>
+            </Link>
+            <Link href="/pipeline/compliance">
+              <Button size="sm" variant="outline">
+                <Shield className="h-4 w-4 mr-2" />
+                Run Assessment
+              </Button>
+            </Link>
             <Link href={`/sheets/${sheetId}/edit`}>
               <Button size="sm">
                 <Pencil className="h-4 w-4 mr-2" />
