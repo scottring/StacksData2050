@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { FileUp, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { useCallback, useState, useRef } from 'react'
+import { FileUp, CheckCircle2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ProcessingStepper from './processing-stepper'
 
 interface UploadDropzoneProps {
   onUploadComplete: (docId: string) => void
@@ -21,10 +22,14 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
   const [dragActive, setDragActive] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [docType, setDocType] = useState('sds')
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+
+  // Processing state
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
+  const [stepMessage, setStepMessage] = useState('')
+  const [processStatus, setProcessStatus] = useState<'processing' | 'complete' | 'error'>('processing')
+  const abortRef = useRef<AbortController | null>(null)
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -56,12 +61,14 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
   const handleUploadAndProcess = async () => {
     if (!file) return
 
-    setUploading(true)
+    setIsProcessing(true)
+    setCurrentStep(0)
+    setStepMessage('Uploading file...')
+    setProcessStatus('processing')
     setError(null)
-    setSuccess(false)
 
     try {
-      // Step 1: Upload
+      // Step 1: Upload the file
       const formData = new FormData()
       formData.append('file', file)
       formData.append('document_type', docType)
@@ -77,32 +84,125 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
       }
 
       const uploadData = await uploadRes.json()
-      setUploading(false)
-      setProcessing(true)
+      const documentId = uploadData.id
 
-      // Step 2: Process with Claude
-      const processRes = await fetch('/api/extraction/process', {
+      // Step 2: Connect to SSE stream for processing
+      const abort = new AbortController()
+      abortRef.current = abort
+
+      const streamRes = await fetch('/api/extraction/process-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ document_id: uploadData.id }),
+        body: JSON.stringify({ document_id: documentId }),
+        signal: abort.signal,
       })
 
-      if (!processRes.ok) {
-        const err = await processRes.json()
-        throw new Error(err.error || 'Processing failed')
+      if (!streamRes.ok) {
+        const errText = await streamRes.text()
+        throw new Error(errText || 'Processing failed')
       }
 
-      setProcessing(false)
-      setSuccess(true)
-      onUploadComplete(uploadData.id)
+      const reader = streamRes.body?.getReader()
+      if (!reader) throw new Error('No response stream')
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+
+        // Parse SSE lines
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || '' // Keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          try {
+            const data = JSON.parse(line.slice(6))
+
+            if (data.status === 'complete') {
+              setCurrentStep(4)
+              setProcessStatus('complete')
+              setStepMessage('')
+              // Brief delay to show the complete state, then navigate
+              setTimeout(() => onUploadComplete(documentId), 1500)
+              return
+            }
+
+            if (data.status === 'error') {
+              setProcessStatus('error')
+              setError(data.error || 'Processing failed')
+              return
+            }
+
+            if (typeof data.step === 'number') {
+              setCurrentStep(data.step)
+              if (data.message) setStepMessage(data.message)
+            }
+          } catch {
+            // Skip malformed lines
+          }
+        }
+      }
+
+      // If stream ended without a complete/error status, check final state
+      if (processStatus === 'processing') {
+        setProcessStatus('complete')
+        setTimeout(() => onUploadComplete(documentId), 1500)
+      }
     } catch (err) {
-      setUploading(false)
-      setProcessing(false)
+      if ((err as Error).name === 'AbortError') return
+      setProcessStatus('error')
       setError(err instanceof Error ? err.message : 'Something went wrong')
     }
   }
 
-  const isProcessing = uploading || processing
+  const handleReset = () => {
+    setIsProcessing(false)
+    setCurrentStep(0)
+    setStepMessage('')
+    setProcessStatus('processing')
+    setFile(null)
+    setError(null)
+    abortRef.current?.abort()
+    abortRef.current = null
+  }
+
+  // Show stepper during processing
+  if (isProcessing) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-slate-200 bg-white">
+          {file && (
+            <div className="px-6 pt-5 text-center">
+              <p className="text-sm font-medium text-slate-700">{file.name}</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {(file.size / 1024).toFixed(0)} KB
+              </p>
+            </div>
+          )}
+
+          <ProcessingStepper
+            currentStep={currentStep}
+            status={processStatus}
+            error={error || undefined}
+            message={stepMessage}
+          />
+        </div>
+
+        {processStatus === 'error' && (
+          <div className="text-center">
+            <Button variant="outline" onClick={handleReset} size="sm">
+              Try Again
+            </Button>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -125,7 +225,6 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
           accept=".pdf,.csv,.xls,.xlsx,.txt"
           onChange={handleFileSelect}
           className="absolute inset-0 cursor-pointer opacity-0"
-          disabled={isProcessing}
         />
         {file ? (
           <div className="text-center">
@@ -135,9 +234,8 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
               {(file.size / 1024).toFixed(0)} KB &middot; {file.type || 'unknown type'}
             </p>
             <button
-              onClick={(e) => { e.stopPropagation(); setFile(null); setSuccess(false) }}
+              onClick={(e) => { e.stopPropagation(); setFile(null) }}
               className="mt-2 text-xs text-slate-500 hover:text-slate-700 underline"
-              disabled={isProcessing}
             >
               Change file
             </button>
@@ -157,7 +255,7 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
 
       {/* Document type selector */}
       <div className="flex items-center gap-3">
-        <Select value={docType} onValueChange={setDocType} disabled={isProcessing}>
+        <Select value={docType} onValueChange={setDocType}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Document type" />
           </SelectTrigger>
@@ -172,18 +270,10 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
 
         <Button
           onClick={handleUploadAndProcess}
-          disabled={!file || isProcessing}
+          disabled={!file}
           className="min-w-[140px]"
         >
-          {uploading ? (
-            <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Uploading...</>
-          ) : processing ? (
-            <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Extracting...</>
-          ) : success ? (
-            <><CheckCircle2 className="h-4 w-4 mr-2" /> Done</>
-          ) : (
-            <><FileUp className="h-4 w-4 mr-2" /> Upload & Extract</>
-          )}
+          <FileUp className="h-4 w-4 mr-2" /> Upload & Extract
         </Button>
       </div>
 

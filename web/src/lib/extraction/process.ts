@@ -12,7 +12,14 @@ interface ExtractionResult {
   tokenCount: number
 }
 
-export async function processDocument(documentId: string): Promise<ExtractionResult> {
+export interface ProcessingCallbacks {
+  onPrepare?: () => void
+  onExtract?: () => void
+  onParse?: () => void
+  onStore?: () => void
+}
+
+export async function processDocument(documentId: string, callbacks?: ProcessingCallbacks): Promise<ExtractionResult> {
   const supabase = await createClient()
   const startTime = Date.now()
 
@@ -42,6 +49,8 @@ export async function processDocument(documentId: string): Promise<ExtractionRes
     if (downloadError || !fileData) {
       throw new Error(`Failed to download file: ${downloadError?.message}`)
     }
+
+    callbacks?.onPrepare?.()
 
     // 4. Get extraction config for this document type
     const config = getExtractionConfig(doc.document_type)
@@ -121,6 +130,8 @@ export async function processDocument(documentId: string): Promise<ExtractionRes
       text: config.userPrompt,
     })
 
+    callbacks?.onExtract?.()
+
     // 6. Call Claude
     const client = getAnthropicClient()
     const response = await client.messages.create({
@@ -148,6 +159,8 @@ export async function processDocument(documentId: string): Promise<ExtractionRes
 
     const extractedData = toolUseBlock.input as Record<string, unknown>
     const tokenCount = (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0)
+
+    callbacks?.onParse?.()
 
     // 8. Convert extracted data into extraction_items
     const items: Array<{
@@ -215,6 +228,8 @@ export async function processDocument(documentId: string): Promise<ExtractionRes
         confidence: 0.9,
       })
     }
+
+    callbacks?.onStore?.()
 
     // 9. Insert extraction items
     if (items.length > 0) {
