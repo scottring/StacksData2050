@@ -150,7 +150,7 @@ export default function CompaniesPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-100 to-rose-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-100 to-rose-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-violet-600" />
             </div>
             <span className="text-sm font-medium">Loading companies...</span>
@@ -214,7 +214,7 @@ export default function CompaniesPage() {
               onClick={() => router.push(`/admin/companies/${company.id}`)}
             >
               <CardContent className="flex items-center gap-6 p-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 group-hover:scale-105 transition-transform">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-50 group-hover:scale-105 transition-transform">
                   <Building2 className="h-6 w-6 text-slate-500" />
                 </div>
 

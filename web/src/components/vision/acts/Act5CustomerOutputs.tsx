@@ -25,11 +25,11 @@ export default function Act5CustomerOutputs({ progress }: Act5Props) {
   return (
     <section className="relative flex h-screen items-center justify-center overflow-hidden">
       {/* Background — warmer, like an office */}
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950" />
+      <div className="absolute inset-0 bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950" />
 
       {/* Desk surface hint */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl h-32 bg-gradient-to-t from-amber-900/5 to-transparent rounded-t-3xl"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl h-32 bg-linear-to-t from-amber-900/5 to-transparent rounded-t-3xl"
         style={{ opacity: showTitle ? 0.4 : 0 }}
       />
 

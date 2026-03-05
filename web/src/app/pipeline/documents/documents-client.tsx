@@ -93,7 +93,7 @@ export default function DocumentListClient() {
                 onClick={() => handleGenerate(doc.type)}
               >
                 <div className="flex items-start gap-3">
-                  <Icon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <Icon className="h-5 w-5 mt-0.5 shrink-0" />
                   <div>
                     <div className="text-sm font-medium">
                       {generating === doc.type ? (

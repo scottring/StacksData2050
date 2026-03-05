@@ -133,10 +133,17 @@ export async function processDocument(documentId: string, callbacks?: Processing
     callbacks?.onExtract?.()
 
     // 6. Call Claude
+    // Questionnaires need much more output tokens since they extract many questions
+    // (16k was not enough — responses were getting truncated)
+    const isQuestionnaire = doc.document_type === 'questionnaire' || doc.document_type === 'questionnaire_filled'
+    const maxTokens = isQuestionnaire ? 64000 : 4096
+
     const client = getAnthropicClient()
-    const response = await client.messages.create({
+
+    // Use streaming for large max_tokens to avoid SDK timeout
+    const stream = client.messages.stream({
       model: EXTRACTION_MODEL,
-      max_tokens: 4096,
+      max_tokens: maxTokens,
       system: config.systemPrompt,
       messages: [
         {
@@ -147,6 +154,13 @@ export async function processDocument(documentId: string, callbacks?: Processing
       tools: [config.tool],
       tool_choice: { type: 'tool', name: config.tool.name },
     })
+
+    const response = await stream.finalMessage()
+
+    // Check if response was truncated
+    if (response.stop_reason === 'max_tokens') {
+      console.warn(`[extraction] Response truncated by max_tokens for document ${documentId} (type: ${doc.document_type})`)
+    }
 
     // 7. Parse the tool_use response
     const toolUseBlock = response.content.find(
@@ -229,7 +243,37 @@ export async function processDocument(documentId: string, callbacks?: Processing
       })
     }
 
+    // Questionnaire questions (reverse ingestion)
+    const questions = extractedData.questions as Array<Record<string, unknown>> | undefined
+    if (questions && Array.isArray(questions)) {
+      for (const q of questions) {
+        items.push({
+          document_id: documentId,
+          item_type: 'question_requirement',
+          data: q,
+          confidence: (q.confidence as number) ?? 0.8,
+        })
+      }
+    }
+
+    // Questionnaire metadata (sections, title, regulations)
+    if (extractedData.document_title || extractedData.referenced_regulations || extractedData.sections) {
+      items.push({
+        document_id: documentId,
+        item_type: 'questionnaire_metadata',
+        data: {
+          document_title: extractedData.document_title,
+          requesting_organization: extractedData.requesting_organization,
+          referenced_regulations: extractedData.referenced_regulations,
+          sections: extractedData.sections,
+        },
+        confidence: 1.0,
+      })
+    }
+
     callbacks?.onStore?.()
+
+    console.log(`[extraction] Document ${documentId} (type: ${doc.document_type}): extracted ${items.length} items`, items.map(i => i.item_type))
 
     // 9. Insert extraction items
     if (items.length > 0) {
@@ -240,6 +284,8 @@ export async function processDocument(documentId: string, callbacks?: Processing
       if (insertError) {
         throw new Error(`Failed to insert extraction items: ${insertError.message}`)
       }
+    } else {
+      console.warn(`[extraction] Document ${documentId}: no items extracted. Raw keys: ${Object.keys(extractedData).join(', ')}`)
     }
 
     const durationMs = Date.now() - startTime

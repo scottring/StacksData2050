@@ -1,0 +1,129 @@
+import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
+import {
+  mapParameters,
+  type ExtractionItem,
+  type Question,
+  type ExistingAnswer,
+} from '@/lib/extraction/parameter-mapper'
+
+/**
+ * GET /api/station/request/[id]/mapping
+ *
+ * Runs the parameter mapper for a given request:
+ * 1. Gets questions filtered by sheet tags
+ * 2. Gets extraction items from documents linked to the sheet
+ * 3. Gets existing answers
+ * 4. Returns the mapping result
+ */
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id: requestId } = await params
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // 1. Fetch the request and its sheet
+  const { data: request } = await supabase
+    .from('requests')
+    .select('id, sheet_id, sheet:sheets(id, company_id, requesting_company_id)')
+    .eq('id', requestId)
+    .single()
+
+  if (!request || !request.sheet) {
+    return NextResponse.json({ error: 'Request not found' }, { status: 404 })
+  }
+
+  const sheet = request.sheet as unknown as Record<string, unknown>
+  const sheetId = sheet.id as string
+
+  // 2. Get tag IDs for this sheet
+  const { data: sheetTags } = await supabase
+    .from('sheet_tags')
+    .select('tag_id')
+    .eq('sheet_id', sheetId)
+
+  const tagIds = (sheetTags || []).map((st) => st.tag_id as string)
+
+  if (tagIds.length === 0) {
+    return NextResponse.json({
+      parameters: [],
+      summary: { total: 0, mapped: 0, existing: 0, gaps: 0, requiredGaps: 0, overallConfidence: 0 },
+    })
+  }
+
+  // 3. Get question IDs for these tags (deduplicated)
+  const { data: questionTags } = await supabase
+    .from('question_tags')
+    .select('question_id')
+    .in('tag_id', tagIds)
+
+  const uniqueQuestionIds = [...new Set((questionTags || []).map((qt) => qt.question_id as string))]
+
+  if (uniqueQuestionIds.length === 0) {
+    return NextResponse.json({
+      parameters: [],
+      summary: { total: 0, mapped: 0, existing: 0, gaps: 0, requiredGaps: 0, overallConfidence: 0 },
+    })
+  }
+
+  // 4. Fetch the actual questions (batched if over 100)
+  const questions: Question[] = []
+  const batchSize = 100
+  for (let i = 0; i < uniqueQuestionIds.length; i += batchSize) {
+    const batch = uniqueQuestionIds.slice(i, i + batchSize)
+    const { data } = await supabase
+      .from('questions')
+      .select('id, content, question_type, section_name_sort, subsection_name_sort, section_sort_number, subsection_sort_number, order_number, required, optional_question, clarification')
+      .in('id', batch)
+
+    if (data) {
+      questions.push(...(data as Question[]))
+    }
+  }
+
+  // 5. Get extraction documents for this sheet
+  const { data: extractionDocs } = await supabase
+    .from('extraction_documents')
+    .select('id')
+    .eq('sheet_id', sheetId)
+    .in('status', ['extracted', 'confirmed'])
+
+  const docIds = (extractionDocs || []).map((d) => d.id as string)
+
+  // 6. Get extraction items
+  let extractionItems: ExtractionItem[] = []
+  if (docIds.length > 0) {
+    for (let i = 0; i < docIds.length; i += batchSize) {
+      const batch = docIds.slice(i, i + batchSize)
+      const { data } = await supabase
+        .from('extraction_items')
+        .select('id, document_id, item_type, data, confidence')
+        .in('document_id', batch)
+
+      if (data) {
+        extractionItems.push(...(data as ExtractionItem[]))
+      }
+    }
+  }
+
+  // 7. Get existing answers for this sheet
+  const { data: existingAnswers } = await supabase
+    .from('answers')
+    .select('id, parent_question_id, text_value, number_value, boolean_value, text_area_value, choice_id, date_value, file_url')
+    .eq('sheet_id', sheetId)
+
+  // 8. Run the mapper
+  const result = mapParameters(
+    questions,
+    extractionItems,
+    (existingAnswers || []) as ExistingAnswer[],
+  )
+
+  return NextResponse.json(result)
+}

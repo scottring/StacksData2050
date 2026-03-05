@@ -13,7 +13,7 @@ import { trackDiscoveryStarted, trackDiscoveryCompleted } from '@/lib/trial-trac
 export default function DiscoveryPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 to-gray-100/50">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           <span>Loading...</span>
@@ -134,7 +134,7 @@ function DiscoveryContent() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Dramatic Visual */}
-      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900">
+      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-900">
         {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div
@@ -192,7 +192,7 @@ function DiscoveryContent() {
               <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight">
                 Help us tailor
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-200 via-teal-200 to-cyan-200">
                   your experience
                 </span>
               </h1>
@@ -221,7 +221,7 @@ function DiscoveryContent() {
       </div>
 
       {/* Right Panel - Discovery Form */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-50 to-gray-100/50 relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-linear-to-br from-gray-50 to-gray-100/50 relative overflow-hidden">
         {/* Subtle background pattern */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -263,7 +263,7 @@ function DiscoveryContent() {
               </div>
               <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+                  className="h-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -318,7 +318,7 @@ function DiscoveryContent() {
                   return (
                     <div key={question.id} className="space-y-2">
                       <Label htmlFor={question.id} className="text-sm font-medium text-gray-700 flex items-start gap-2">
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex-shrink-0">
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold shrink-0">
                           {index + 1}
                         </span>
                         <span>{question.label}</span>
@@ -347,7 +347,7 @@ function DiscoveryContent() {
               <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 text-base group"
+                  className="w-full h-12 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 text-base group"
                   disabled={loading}
                 >
                   {loading ? (

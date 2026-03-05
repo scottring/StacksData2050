@@ -7,15 +7,14 @@ import {
   ScanText,
   CheckCircle2,
   XCircle,
-  Loader2,
 } from 'lucide-react'
 
 const STEPS = [
-  { key: 'upload', label: 'Upload', activeLabel: 'Uploading...', icon: Upload },
-  { key: 'prepare', label: 'Prepare', activeLabel: 'Converting format...', icon: FileSpreadsheet },
-  { key: 'extract', label: 'Extract', activeLabel: 'AI analyzing...', icon: Sparkles },
-  { key: 'map', label: 'Map', activeLabel: 'Mapping results...', icon: ScanText },
-  { key: 'complete', label: 'Complete', activeLabel: 'Saving...', icon: CheckCircle2 },
+  { key: 'upload', label: 'Upload', icon: Upload },
+  { key: 'prepare', label: 'Prepare', icon: FileSpreadsheet },
+  { key: 'extract', label: 'Extract', icon: Sparkles },
+  { key: 'map', label: 'Map', icon: ScanText },
+  { key: 'complete', label: 'Complete', icon: CheckCircle2 },
 ]
 
 interface ProcessingStepperProps {
@@ -23,6 +22,30 @@ interface ProcessingStepperProps {
   status: 'processing' | 'complete' | 'error'
   error?: string
   message?: string
+}
+
+function SpinnerRing({ size, className }: { size: number; className?: string }) {
+  const r = (size - 4) / 2
+  const circumference = 2 * Math.PI * r
+  return (
+    <svg
+      width={size}
+      height={size}
+      className={`absolute inset-0 m-auto animate-spin ${className || ''}`}
+      style={{ animationDuration: '1.2s' }}
+    >
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeDasharray={`${circumference * 0.3} ${circumference * 0.7}`}
+      />
+    </svg>
+  )
 }
 
 export default function ProcessingStepper({
@@ -53,22 +76,29 @@ export default function ProcessingStepper({
                     ${isComplete
                       ? 'h-11 w-11 bg-emerald-500 shadow-md shadow-emerald-500/20'
                       : isActive
-                        ? 'h-14 w-14 bg-emerald-50 ring-2 ring-emerald-500/30'
+                        ? 'h-14 w-14 bg-emerald-50'
                         : isError
                           ? 'h-14 w-14 bg-red-50 ring-2 ring-red-400/30'
                           : 'h-11 w-11 bg-slate-100'
                     }
                   `}
                 >
+                  {/* Spinning border ring for active step */}
+                  {isActive && (
+                    <SpinnerRing size={56} className="text-emerald-500" />
+                  )}
+
+                  {/* Static background ring for active (behind spinner) */}
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-full ring-2 ring-emerald-500/15" />
+                  )}
+
                   {isComplete ? (
                     <CheckCircle2 className="h-5 w-5 text-white" />
                   ) : isError ? (
                     <XCircle className="h-7 w-7 text-red-500" />
                   ) : isActive ? (
-                    <div className="relative">
-                      <StepIcon className="h-7 w-7 text-emerald-600" />
-                      <Loader2 className="absolute -top-3 -right-3 h-4 w-4 text-emerald-400 animate-spin" />
-                    </div>
+                    <StepIcon className="h-7 w-7 text-emerald-600" />
                   ) : (
                     <StepIcon className={`h-5 w-5 ${isPending ? 'text-slate-400' : 'text-slate-500'}`} />
                   )}
@@ -101,7 +131,7 @@ export default function ProcessingStepper({
                       ${isComplete
                         ? 'bg-emerald-400'
                         : isActive
-                          ? 'bg-gradient-to-r from-emerald-400 to-slate-200'
+                          ? 'bg-linear-to-r from-emerald-400 to-slate-200'
                           : 'bg-slate-200'
                       }
                     `}

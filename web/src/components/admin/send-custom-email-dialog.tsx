@@ -211,7 +211,7 @@ export function SendCustomEmailDialog({
               <Button
                 onClick={handleSend}
                 disabled={sending || recipients.length === 0}
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                className="bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
               >
                 {sending ? (
                   <>

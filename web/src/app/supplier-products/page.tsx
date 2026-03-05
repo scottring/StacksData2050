@@ -181,7 +181,7 @@ export default function ProductsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-sky-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-100 to-sky-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-emerald-600" />
             </div>
             <span className="text-sm font-medium">Loading products...</span>
@@ -202,7 +202,7 @@ export default function ProductsPage() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button size="sm" className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
+          <Button size="sm" className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
             <Plus className="h-4 w-4 mr-2" />
             Request Product Data
           </Button>
@@ -303,7 +303,7 @@ export default function ProductsPage() {
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <div className="h-10 w-10 rounded-xl bg-linear-to-br from-slate-100 to-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform">
                             <Package className="h-5 w-5 text-slate-500" />
                           </div>
                           <div>

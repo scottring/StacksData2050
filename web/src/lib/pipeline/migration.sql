@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS extraction_documents (
   file_size INTEGER,
   mime_type TEXT,
 
-  document_type TEXT NOT NULL CHECK (document_type IN ('sds', 'coa', 'lab_report', 'sap_csv', 'other')),
+  document_type TEXT NOT NULL CHECK (document_type IN ('sds', 'coa', 'lab_report', 'sap_csv', 'questionnaire', 'questionnaire_filled', 'other')),
 
-  status TEXT NOT NULL DEFAULT 'uploaded' CHECK (status IN ('uploaded', 'processing', 'extracted', 'confirmed', 'failed')),
+  status TEXT NOT NULL DEFAULT 'uploaded' CHECK (status IN ('uploaded', 'processing', 'extracted', 'confirmed', 'failed', 'superseded')),
 
   extraction_model TEXT,
   extraction_prompt_version TEXT,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS extraction_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   document_id UUID NOT NULL REFERENCES extraction_documents(id) ON DELETE CASCADE,
 
-  item_type TEXT NOT NULL CHECK (item_type IN ('chemical', 'hazard', 'test_result', 'traceability', 'physical_property')),
+  item_type TEXT NOT NULL CHECK (item_type IN ('chemical', 'hazard', 'test_result', 'traceability', 'physical_property', 'question_requirement', 'questionnaire_metadata')),
 
   data JSONB NOT NULL,
 

@@ -192,7 +192,7 @@ export default function OutgoingRequestsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-100 to-emerald-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-sky-100 to-emerald-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-sky-600" />
             </div>
             <span className="text-sm font-medium">Loading requests...</span>
@@ -211,7 +211,7 @@ export default function OutgoingRequestsPage() {
         >
           <Button
             onClick={() => setRequestDialogOpen(true)}
-            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm"
+            className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm"
           >
             <Plus className="h-4 w-4 mr-2" />
             New Request

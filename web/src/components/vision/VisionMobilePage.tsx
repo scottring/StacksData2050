@@ -127,7 +127,7 @@ export default function VisionMobilePage() {
       <MobileSection className="bg-zinc-950">
         <MobileActBadge act={actDefinitions[2]} />
         {/* Simplified globe visual */}
-        <div className="relative w-48 h-48 rounded-full border border-emerald-500/20 bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center mb-6">
+        <div className="relative w-48 h-48 rounded-full border border-emerald-500/20 bg-linear-to-br from-zinc-900 to-zinc-800 flex items-center justify-center mb-6">
           <div className="absolute inset-2 rounded-full border border-emerald-500/10" />
           <div className="absolute inset-4 rounded-full border border-emerald-500/5" />
           {/* Animated arc */}

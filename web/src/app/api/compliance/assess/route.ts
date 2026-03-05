@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Load frameworks from database or fall back to seeds
-  let frameworks: FrameworkWithRules[]
+  let frameworks: FrameworkWithRules[] = []
 
   const { data: dbFrameworks } = await supabase
     .from('regulatory_frameworks')

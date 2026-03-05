@@ -149,7 +149,7 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
               </div>
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-700 ease-out rounded-full"
+                  className="h-full bg-linear-to-r from-emerald-500 to-emerald-600 transition-all duration-700 ease-out rounded-full"
                   style={{ width: `${metrics.dppReadiness}%` }}
                 />
               </div>
@@ -261,7 +261,7 @@ export function AssociationMetricsDashboard({ metrics }: { metrics: AssociationM
                 <div className="flex items-center gap-2">
                   <div className="relative h-2 w-24 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                     <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500"
+                      className="h-full bg-linear-to-r from-emerald-500 to-emerald-600 transition-all duration-500"
                       style={{ width: `${company.completionRate}%` }}
                     />
                   </div>

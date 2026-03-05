@@ -105,7 +105,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 opacity-0 animate-fade-in-up",
+        "relative overflow-hidden rounded-2xl border bg-linear-to-br p-5 opacity-0 animate-fade-in-up",
         colors.bg,
         colors.border
       )}

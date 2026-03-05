@@ -186,7 +186,7 @@ export default function CustomerProductsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-100 to-sky-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-100 to-sky-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-violet-600" />
             </div>
             <span className="text-sm font-medium">Loading products...</span>
@@ -270,7 +270,7 @@ export default function CustomerProductsPage() {
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <div className="h-10 w-10 rounded-xl bg-linear-to-br from-slate-100 to-slate-50 flex items-center justify-center group-hover:scale-105 transition-transform">
                             <Package className="h-5 w-5 text-slate-500" />
                           </div>
                           <span className="font-medium text-slate-900">{product.name}</span>

@@ -217,7 +217,7 @@ export default function ReportsPage() {
         >
           <Button
             onClick={() => setCreateDialogOpen(true)}
-            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm"
+            className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm"
           >
             <FileText className="h-4 w-4 mr-2" />
             Create Custom Report
@@ -276,7 +276,7 @@ export default function ReportsPage() {
                   <Card
                     className={cn(
                       "group relative overflow-hidden h-full transition-all duration-200 cursor-pointer opacity-0 animate-fade-in-up",
-                      "bg-gradient-to-br border",
+                      "bg-linear-to-br border",
                       colors.bg,
                       colors.border,
                       "hover:shadow-md hover:-translate-y-0.5"

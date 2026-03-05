@@ -45,7 +45,7 @@ export default function HeroSection({ progress }: HeroSectionProps) {
         {[0.2, 0.5, 0.8].map((pos, i) => (
           <div
             key={i}
-            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent animate-data-flow"
+            className="absolute left-0 right-0 h-px bg-linear-to-r from-transparent via-emerald-500/20 to-transparent animate-data-flow"
             style={{
               top: `${pos * 100}%`,
               opacity: fadeOut * 0.5,
@@ -110,7 +110,7 @@ export default function HeroSection({ progress }: HeroSectionProps) {
 
         {/* Separator */}
         <div
-          className="mt-4 h-px w-32 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent opacity-0 animate-fade-in-up"
+          className="mt-4 h-px w-32 bg-linear-to-r from-transparent via-emerald-500/40 to-transparent opacity-0 animate-fade-in-up"
           style={{ animationDelay: '1.4s', animationFillMode: 'forwards' }}
         />
 

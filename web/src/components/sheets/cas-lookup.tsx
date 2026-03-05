@@ -81,7 +81,7 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
 
         {/* Search Input - Premium Glass Design */}
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-linear-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-lg shadow-neutral-900/5 p-6">
             <div className="flex gap-3">
               <div className="flex-1 relative">
@@ -102,7 +102,7 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
                 onClick={handleLookup}
                 disabled={loading || !casNumber.trim()}
                 size="lg"
-                className="h-12 px-6 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl shadow-lg shadow-emerald-600/25 transition-all duration-300 disabled:opacity-50"
+                className="h-12 px-6 bg-linear-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl shadow-lg shadow-emerald-600/25 transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -135,9 +135,9 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
         {/* Chemical Data Display - Animated Card */}
         {chemicalData && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="relative bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-900 dark:to-neutral-950 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl shadow-neutral-900/10 overflow-hidden">
+            <div className="relative bg-linear-to-br from-white to-neutral-50 dark:from-neutral-900 dark:to-neutral-950 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl shadow-neutral-900/10 overflow-hidden">
               {/* Decorative gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 via-transparent to-blue-500/5 pointer-events-none" />
 
               <div className="relative p-8 space-y-6">
                 {/* Header Section */}
@@ -160,7 +160,7 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
                         </a>
                       )}
                     </div>
-                    <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent">
+                    <h2 className="text-3xl font-bold tracking-tight bg-linear-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent">
                       {chemicalData.name}
                     </h2>
                     <p className="text-sm font-mono text-neutral-600 dark:text-neutral-400 tracking-wide">
@@ -200,7 +200,7 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
                     <div className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wider">
                       IUPAC Systematic Name
                     </div>
-                    <div className="text-sm text-blue-900 dark:text-blue-100 break-words leading-relaxed">
+                    <div className="text-sm text-blue-900 dark:text-blue-100 wrap-break-word leading-relaxed">
                       {chemicalData.iupacName}
                     </div>
                   </div>
@@ -272,7 +272,7 @@ export function CASLookup({ onSelect, className }: CASLookupProps) {
                     {/* Action Items */}
                     <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50">
                       <div className="flex items-start gap-3">
-                        <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                        <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                         <div className="space-y-2 flex-1">
                           <div className="font-semibold text-blue-900 dark:text-blue-100 text-sm">
                             Required Documentation
@@ -390,7 +390,7 @@ export function InlineCASLookup({ value, onChange, onChemicalFound }: InlineCASL
           className="h-8 text-sm font-mono"
         />
         {looking ? (
-          <Loader2 className="h-4 w-4 animate-spin text-emerald-600 flex-shrink-0" />
+          <Loader2 className="h-4 w-4 animate-spin text-emerald-600 shrink-0" />
         ) : (
           <Button
             type="button"
@@ -553,7 +553,7 @@ export function InlineChemicalSearch({ value, onChange, onChemicalFound, disable
       {/* Autocomplete dropdown - rendered in portal to avoid overflow clipping */}
       {showSuggestions && suggestions.length > 0 && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed z-[9999] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg max-h-48 overflow-y-auto"
+          className="fixed z-9999 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg max-h-48 overflow-y-auto"
           style={{
             top: dropdownPosition.top,
             left: dropdownPosition.left,

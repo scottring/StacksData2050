@@ -79,7 +79,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Dramatic Visual */}
-      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900">
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-900">
         {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div
@@ -155,11 +155,11 @@ export default function LoginPage() {
 
           {/* Lines */}
           <div
-            className="absolute w-40 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            className="absolute w-40 h-px bg-linear-to-r from-transparent via-white/20 to-transparent"
             style={{ top: '35%', left: '10%', transform: 'rotate(-15deg)', animation: 'shimmer-line 6s ease-in-out infinite' }}
           />
           <div
-            className="absolute w-60 h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent"
+            className="absolute w-60 h-px bg-linear-to-r from-transparent via-emerald-400/20 to-transparent"
             style={{ bottom: '40%', right: '5%', transform: 'rotate(10deg)', animation: 'shimmer-line 8s ease-in-out infinite reverse' }}
           />
         </div>
@@ -187,7 +187,7 @@ export default function LoginPage() {
               <h1 className="font-display text-5xl font-semibold leading-tight tracking-tight">
                 The future of
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-200 via-teal-200 to-cyan-200">
                   compliance data
                 </span>
                 <br />
@@ -220,7 +220,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-gradient-to-br from-gray-50 to-gray-100/50 relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-linear-to-br from-gray-50 to-gray-100/50 relative overflow-hidden">
         {/* Subtle background pattern */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -303,7 +303,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 text-base group"
+                className="w-full h-12 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 text-base group"
                 disabled={loading}
               >
                 {loading ? (

@@ -24,6 +24,7 @@ import {
   Plug,
   Zap,
   FileText,
+  Database,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -132,6 +133,11 @@ const adminNavItems: NavItem[] = [
     href: '/tags',
     icon: Tags,
   },
+  {
+    title: 'Parameters',
+    href: '/parameters',
+    icon: Database,
+  },
 ]
 
 interface NavSectionProps {
@@ -172,7 +178,7 @@ function NavSection({ title, items, pathname }: NavSectionProps) {
                 className={cn(
                   'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
                   isActive
-                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                    ? 'bg-linear-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 )}
               >
@@ -267,7 +273,7 @@ export function Sidebar() {
   const isSettingsActive = pathname === '/settings'
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-slate-200/60 bg-gradient-to-b from-slate-50 to-white">
+    <aside className="flex h-screen w-64 flex-col border-r border-slate-200/60 bg-linear-to-b from-slate-50 to-white">
       {/* Logo */}
       <div className="flex h-16 items-center border-b border-slate-200/60 px-5">
         <Link href="/dashboard" className="flex items-center gap-2 group">
@@ -288,7 +294,7 @@ export function Sidebar() {
             className={cn(
               'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
               isDashboardActive
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                ? 'bg-linear-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             )}
           >
@@ -315,7 +321,7 @@ export function Sidebar() {
             className={cn(
               'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
               isReportsActive
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                ? 'bg-linear-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             )}
           >
@@ -333,7 +339,7 @@ export function Sidebar() {
             className={cn(
               'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
               isIntegrationsActive
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                ? 'bg-linear-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             )}
           >
@@ -356,7 +362,7 @@ export function Sidebar() {
           className={cn(
             'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
             isSettingsActive
-              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+              ? 'bg-linear-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           )}
         >
@@ -375,7 +381,7 @@ export function Sidebar() {
           <DropdownMenuTrigger asChild>
             <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 hover:bg-slate-100 group">
               <Avatar className="h-9 w-9 ring-2 ring-white shadow-sm">
-                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
+                <AvatarFallback className="bg-linear-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>

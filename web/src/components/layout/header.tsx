@@ -64,7 +64,7 @@ export function Header({ title }: HeaderProps) {
 
         {/* Company logo */}
         <div className="flex items-center gap-3 pl-4 border-l border-slate-200/60">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden shadow-sm ring-1 ring-slate-200/50">
+          <div className="h-9 w-9 rounded-xl bg-linear-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden shadow-sm ring-1 ring-slate-200/50">
             {company?.logoUrl ? (
               <img
                 src={company.logoUrl}

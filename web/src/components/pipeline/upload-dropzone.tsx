@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState, useRef } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import { FileUp, CheckCircle2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -8,6 +8,8 @@ import ProcessingStepper from './processing-stepper'
 
 interface UploadDropzoneProps {
   onUploadComplete: (docId: string) => void
+  sheetId?: string
+  defaultDocType?: string
 }
 
 const DOC_TYPES = [
@@ -15,14 +17,21 @@ const DOC_TYPES = [
   { value: 'coa', label: 'Certificate of Analysis (CoA)' },
   { value: 'lab_report', label: 'Lab Report' },
   { value: 'sap_csv', label: 'SAP Export (CSV)' },
+  { value: 'questionnaire', label: 'Customer Questionnaire (Blank)' },
+  { value: 'questionnaire_filled', label: 'Customer Questionnaire (Completed)' },
   { value: 'other', label: 'Other Document' },
 ]
 
-export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
+export default function UploadDropzone({ onUploadComplete, sheetId, defaultDocType }: UploadDropzoneProps) {
   const [dragActive, setDragActive] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [docType, setDocType] = useState('sds')
+  const [docType, setDocType] = useState(defaultDocType || 'sds')
   const [error, setError] = useState<string | null>(null)
+
+  // Sync docType when parent changes the defaultDocType prop
+  useEffect(() => {
+    if (defaultDocType) setDocType(defaultDocType)
+  }, [defaultDocType])
 
   // Processing state
   const [isProcessing, setIsProcessing] = useState(false)
@@ -72,6 +81,7 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
       const formData = new FormData()
       formData.append('file', file)
       formData.append('document_type', docType)
+      if (sheetId) formData.append('sheet_id', sheetId)
 
       const uploadRes = await fetch('/api/extraction/upload', {
         method: 'POST',
@@ -79,7 +89,8 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
       })
 
       if (!uploadRes.ok) {
-        const err = await uploadRes.json()
+        const err = await uploadRes.json().catch(() => ({ error: `Upload failed with status ${uploadRes.status}` }))
+        console.error('[upload] Server error:', err)
         throw new Error(err.error || 'Upload failed')
       }
 
@@ -107,6 +118,7 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
 
       const decoder = new TextDecoder()
       let buffer = ''
+      let gotTerminalEvent = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -124,6 +136,7 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
             const data = JSON.parse(line.slice(6))
 
             if (data.status === 'complete') {
+              gotTerminalEvent = true
               setCurrentStep(4)
               setProcessStatus('complete')
               setStepMessage('')
@@ -133,6 +146,7 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
             }
 
             if (data.status === 'error') {
+              gotTerminalEvent = true
               setProcessStatus('error')
               setError(data.error || 'Processing failed')
               return
@@ -148,10 +162,10 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
         }
       }
 
-      // If stream ended without a complete/error status, check final state
-      if (processStatus === 'processing') {
-        setProcessStatus('complete')
-        setTimeout(() => onUploadComplete(documentId), 1500)
+      // Stream ended without a terminal event — treat as error, not success
+      if (!gotTerminalEvent) {
+        setProcessStatus('error')
+        setError('Processing stream ended unexpectedly. Check server logs.')
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') return
@@ -255,23 +269,25 @@ export default function UploadDropzone({ onUploadComplete }: UploadDropzoneProps
 
       {/* Document type selector */}
       <div className="flex items-center gap-3">
-        <Select value={docType} onValueChange={setDocType}>
-          <SelectTrigger className="flex-1">
-            <SelectValue placeholder="Document type" />
-          </SelectTrigger>
-          <SelectContent>
-            {DOC_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {!defaultDocType && (
+          <Select value={docType} onValueChange={setDocType}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Document type" />
+            </SelectTrigger>
+            <SelectContent>
+              {DOC_TYPES.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <Button
           onClick={handleUploadAndProcess}
           disabled={!file}
-          className="min-w-[140px]"
+          className={defaultDocType ? 'w-full' : 'min-w-[140px]'}
         >
           <FileUp className="h-4 w-4 mr-2" /> Upload & Extract
         </Button>

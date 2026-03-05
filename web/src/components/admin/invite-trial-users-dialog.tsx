@@ -212,7 +212,7 @@ export function InviteTrialUsersDialog({ open, onOpenChange, onSuccess }: Invite
           <div className="space-y-4 py-4">
             {error && (
               <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                 {error}
               </div>
             )}
@@ -319,7 +319,7 @@ anna@supplier.io"
             <Button
               type="submit"
               disabled={submitting || validCount === 0}
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+              className="bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
             >
               {submitting ? (
                 <>

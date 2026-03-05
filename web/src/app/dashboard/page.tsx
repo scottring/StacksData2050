@@ -286,7 +286,7 @@ function StatCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 opacity-0 animate-fade-in-up",
+        "relative overflow-hidden rounded-2xl border bg-linear-to-br p-5 opacity-0 animate-fade-in-up",
         colors.bg,
         colors.border,
         isClickable && "cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all"
@@ -383,7 +383,7 @@ function RefinedDonutChart({
       {/* Chart */}
       <div className="relative">
         {/* Glow effect */}
-        <div className="absolute inset-0 blur-3xl opacity-20 bg-gradient-to-br from-emerald-400 via-sky-400 to-amber-400 rounded-full" />
+        <div className="absolute inset-0 blur-3xl opacity-20 bg-linear-to-br from-emerald-400 via-sky-400 to-amber-400 rounded-full" />
 
         <svg
           width="220"
@@ -480,7 +480,7 @@ function RefinedDonutChart({
               style={{ animationDelay: `${400 + index * 100}ms`, animationFillMode: 'forwards' }}
             >
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
                 style={{ background: `linear-gradient(135deg, ${segment.gradientFrom}, ${segment.gradientTo})` }}
               >
                 <Icon className="h-5 w-5 text-white" />
@@ -542,8 +542,8 @@ function ActivityTimeline({
           >
             {/* Icon */}
             <div className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0 transition-all",
-              "bg-gradient-to-br",
+              "flex h-11 w-11 items-center justify-center rounded-xl shrink-0 transition-all",
+              "bg-linear-to-br",
               sheet.role === 'supplier'
                 ? "from-violet-100 to-violet-50 text-violet-600"
                 : "from-sky-100 to-sky-50 text-sky-600",
@@ -564,14 +564,14 @@ function ActivityTimeline({
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <span className="truncate">{sheet.companyName}</span>
                 <span className="text-slate-300">•</span>
-                <span className="flex-shrink-0 text-slate-400">
+                <span className="shrink-0 text-slate-400">
                   {sheet.role === 'supplier' ? 'You supply' : 'You requested'}
                 </span>
               </div>
             </div>
 
             {/* Status & Time */}
-            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
               <Badge className={cn("border font-medium text-xs px-2.5 py-0.5", statusConfig.className)}>
                 <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5", statusConfig.dotColor)} />
                 {statusConfig.label}
@@ -582,7 +582,7 @@ function ActivityTimeline({
             </div>
 
             {/* Arrow */}
-            <ChevronRight className="h-5 w-5 text-slate-300 flex-shrink-0 transition-all group-hover:text-slate-500 group-hover:translate-x-0.5" />
+            <ChevronRight className="h-5 w-5 text-slate-300 shrink-0 transition-all group-hover:text-slate-500 group-hover:translate-x-0.5" />
           </button>
         )
       })}
@@ -943,7 +943,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-sky-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-100 to-sky-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-emerald-600" />
             </div>
             <span className="text-sm font-medium">Loading your dashboard...</span>
@@ -968,7 +968,7 @@ export default function DashboardPage() {
         <div className="max-w-3xl mx-auto py-12 px-4">
           {/* Welcome Header */}
           <div className="text-center mb-10 opacity-0 animate-fade-in-up" style={{ animationFillMode: 'forwards' }}>
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
               <Sparkles className="h-10 w-10 text-white" />
             </div>
             <h1 className="font-display text-4xl font-semibold text-slate-900 tracking-tight mb-3">
@@ -987,8 +987,8 @@ export default function DashboardPage() {
 
             <div className="grid gap-4">
               {/* Step 1 */}
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-semibold">
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-linear-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-semibold">
                   1
                 </div>
                 <div className="flex-1">
@@ -1007,8 +1007,8 @@ export default function DashboardPage() {
               </div>
 
               {/* Step 2 */}
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-white font-semibold">
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-linear-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-white font-semibold">
                   2
                 </div>
                 <div className="flex-1">
@@ -1027,8 +1027,8 @@ export default function DashboardPage() {
               </div>
 
               {/* Step 3 */}
-              <div className="flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center text-white font-semibold">
+              <div className="flex items-start gap-4 p-5 rounded-2xl bg-linear-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 opacity-0 animate-fade-in-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center text-white font-semibold">
                   3
                 </div>
                 <div className="flex-1">
@@ -1244,7 +1244,7 @@ export default function DashboardPage() {
           {/* Chart Section */}
           <div className="lg:col-span-3">
             <Card className="overflow-hidden border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-200" style={{ animationFillMode: 'forwards' }}>
-              <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+              <CardHeader className="border-b border-slate-100 bg-linear-to-r from-slate-50/80 to-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg font-semibold text-slate-900">Sheet Status</CardTitle>
@@ -1255,7 +1255,7 @@ export default function DashboardPage() {
               <CardContent className="pt-8 pb-8 px-8">
                 {currentTotal === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-slate-100 to-slate-50 flex items-center justify-center mb-4">
                       {viewMode === 'customer' ? (
                         <Building2 className="h-10 w-10 text-slate-400" />
                       ) : (
@@ -1272,7 +1272,7 @@ export default function DashboardPage() {
                     {viewMode === 'customer' && (
                       <button
                         onClick={() => setRequestDialogOpen(true)}
-                        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-sm hover:shadow-md hover:from-emerald-500 hover:to-emerald-400 transition-all"
+                        className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-sm hover:shadow-md hover:from-emerald-500 hover:to-emerald-400 transition-all"
                       >
                         <Sparkles className="h-4 w-4" />
                         Request Product Data
@@ -1293,7 +1293,7 @@ export default function DashboardPage() {
           {/* Recent Activity */}
           <div className="lg:col-span-2">
             <Card className="h-full border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-300" style={{ animationFillMode: 'forwards' }}>
-              <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+              <CardHeader className="border-b border-slate-100 bg-linear-to-r from-slate-50/80 to-white">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg font-semibold text-slate-900">Recent Activity</CardTitle>
@@ -1332,7 +1332,7 @@ export default function DashboardPage() {
         <div className="grid gap-6 md:grid-cols-2">
           {/* Request Tracking */}
           <Card className="border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-400" style={{ animationFillMode: 'forwards' }}>
-            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+            <CardHeader className="border-b border-slate-100 bg-linear-to-r from-slate-50/80 to-white">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg font-semibold text-slate-900">Request Tracking</CardTitle>
@@ -1350,7 +1350,7 @@ export default function DashboardPage() {
             <CardContent className="p-5">
               <div className="grid gap-4 grid-cols-2">
                 <Link href="/requests/outgoing" className="group">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 hover:shadow-md transition-all">
+                  <div className="p-4 rounded-xl bg-linear-to-br from-sky-50 to-sky-100/50 border border-sky-200/50 hover:shadow-md transition-all">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center">
                         <Send className="h-5 w-5 text-white" />
@@ -1368,7 +1368,7 @@ export default function DashboardPage() {
                   </div>
                 </Link>
                 <Link href="/requests/incoming" className="group">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 hover:shadow-md transition-all">
+                  <div className="p-4 rounded-xl bg-linear-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 hover:shadow-md transition-all">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center">
                         <Inbox className="h-5 w-5 text-white" />
@@ -1391,7 +1391,7 @@ export default function DashboardPage() {
 
           {/* Compliance Intelligence */}
           <Card className="border-slate-200/60 shadow-sm opacity-0 animate-scale-in animation-delay-500" style={{ animationFillMode: 'forwards' }}>
-            <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50/80 to-white">
+            <CardHeader className="border-b border-slate-100 bg-linear-to-r from-slate-50/80 to-white">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg font-semibold text-slate-900">Compliance Intelligence</CardTitle>

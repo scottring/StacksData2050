@@ -138,7 +138,7 @@ export default function Act2ChipperMachine({ progress }: Act2Props) {
             })}
           </div>
 
-          <div className="relative w-96 h-52 rounded-2xl border-2 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden shadow-2xl"
+          <div className="relative w-96 h-52 rounded-2xl border-2 bg-linear-to-br from-zinc-800 to-zinc-900 overflow-hidden shadow-2xl"
             style={{
               borderColor: machineActive ? `rgba(16,185,129,${0.2 + glowIntensity * 0.4})` : 'rgba(63,63,70,1)',
             }}
@@ -149,7 +149,7 @@ export default function Act2ChipperMachine({ progress }: Act2Props) {
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="absolute h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent"
+                    className="absolute h-px bg-linear-to-r from-transparent via-emerald-400/30 to-transparent"
                     style={{
                       top: `${20 + i * 8}%`,
                       left: '20%',

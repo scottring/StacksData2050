@@ -9,4 +9,4 @@ export function getAnthropicClient(): Anthropic {
   return new Anthropic({ apiKey })
 }
 
-export const EXTRACTION_MODEL = 'claude-sonnet-4-5-20250929'
+export const EXTRACTION_MODEL = 'claude-sonnet-4-6'

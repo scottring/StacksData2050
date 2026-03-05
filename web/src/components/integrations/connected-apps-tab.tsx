@@ -182,7 +182,7 @@ export function ConnectedAppsTab() {
                   <ul className="text-sm space-y-1.5 mb-4 flex-1">
                     {integration.features.map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-green-600 shrink-0" />
                         {feature}
                       </li>
                     ))}

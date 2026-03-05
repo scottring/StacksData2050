@@ -31,6 +31,10 @@ export async function POST(request: NextRequest) {
     return new Response('Document is already being processed', { status: 409 })
   }
 
+  if (doc.status === 'extracted') {
+    return new Response('Document has already been extracted', { status: 409 })
+  }
+
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
@@ -77,4 +81,4 @@ export async function POST(request: NextRequest) {
   })
 }
 
-export const maxDuration = 60
+export const maxDuration = 300 // 5 minutes — questionnaire extraction can take 3+ minutes

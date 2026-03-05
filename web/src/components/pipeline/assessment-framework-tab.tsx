@@ -99,7 +99,7 @@ export default function AssessmentFrameworkTab({
                   className="flex items-start gap-3 cursor-pointer"
                   onClick={() => setExpandedResult(isExpanded ? null : result.id)}
                 >
-                  <Icon className={`h-4 w-4 mt-0.5 flex-shrink-0 ${STATUS_COLOR[result.status]}`} />
+                  <Icon className={`h-4 w-4 mt-0.5 shrink-0 ${STATUS_COLOR[result.status]}`} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-slate-900">{result.message}</span>
@@ -113,7 +113,7 @@ export default function AssessmentFrameworkTab({
                       <span className="text-[10px] font-mono text-slate-400">{result.rule_code}</span>
                     )}
                   </div>
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     {isExpanded ? (
                       <ChevronUp className="h-4 w-4 text-slate-400" />
                     ) : (

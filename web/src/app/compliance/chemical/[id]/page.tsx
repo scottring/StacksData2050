@@ -190,7 +190,7 @@ export default async function ChemicalDetailPage({
               <ul className="space-y-1">
                 {chemical.warnings.map((warning: string, idx: number) => (
                   <li key={idx} className="flex items-start text-sm">
-                    <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 text-amber-500 flex-shrink-0" />
+                    <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 text-amber-500 shrink-0" />
                     <span>{warning}</span>
                   </li>
                 ))}

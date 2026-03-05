@@ -37,6 +37,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'File size exceeds 50MB limit' }, { status: 400 })
   }
 
+  // If the same file was already extracted, mark the old one as superseded so the new upload replaces it
+  const { data: existing } = await supabase
+    .from('extraction_documents')
+    .select('id, status')
+    .eq('uploaded_by', user.id)
+    .eq('file_name', file.name)
+    .in('status', ['processing', 'extracted'])
+    .order('created_at', { ascending: false })
+
+  if (existing && existing.length > 0) {
+    // If one is actively processing, block the upload to avoid wasting tokens
+    const processing = existing.find(d => d.status === 'processing')
+    if (processing) {
+      console.log('[upload] Blocking duplicate — file is currently processing:', processing.id)
+      return NextResponse.json(processing)
+    }
+    // Mark old extracted docs as superseded so the new upload takes over
+    const oldIds = existing.map(d => d.id)
+    console.log('[upload] Superseding', oldIds.length, 'old doc(s) for re-upload:', file.name)
+    await supabase
+      .from('extraction_documents')
+      .update({ status: 'superseded' })
+      .in('id', oldIds)
+  }
+
   // Get user's company
   const { data: profile } = await supabase
     .from('users')
@@ -58,10 +83,12 @@ export async function POST(request: NextRequest) {
     })
 
   if (uploadError) {
+    console.error('[upload] Storage upload failed:', uploadError.message)
     return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
   }
 
   // Create database record
+  console.log('[upload] Inserting doc record:', { documentType, fileName: file.name, companyId: profile?.company_id })
   const { data: doc, error: dbError } = await supabase
     .from('extraction_documents')
     .insert({
@@ -80,6 +107,7 @@ export async function POST(request: NextRequest) {
 
   if (dbError) {
     // Clean up uploaded file
+    console.error('[upload] DB insert failed:', dbError.message, dbError.code, dbError.details)
     await supabase.storage.from(BUCKET_NAME).remove([filePath])
     return NextResponse.json({ error: `Database error: ${dbError.message}` }, { status: 500 })
   }

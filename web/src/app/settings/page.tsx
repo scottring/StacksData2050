@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
         {/* Profile Settings */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-100" style={{ animationFillMode: 'forwards' }}>
-          <CardHeader className="bg-gradient-to-br from-slate-50/50 to-white border-b border-slate-100">
+          <CardHeader className="bg-linear-to-br from-slate-50/50 to-white border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-sky-100">
                 <User className="h-5 w-5 text-sky-600" />
@@ -73,7 +73,7 @@ export default function SettingsPage() {
               </label>
               <Input defaultValue="+1 (555) 123-4567" className="rounded-xl border-slate-200 focus:border-sky-300 focus:ring-sky-200" />
             </div>
-            <Button className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
+            <Button className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
               <Save className="h-4 w-4 mr-2" />
               Save Changes
             </Button>
@@ -82,7 +82,7 @@ export default function SettingsPage() {
 
         {/* Company Settings */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-150" style={{ animationFillMode: 'forwards' }}>
-          <CardHeader className="bg-gradient-to-br from-slate-50/50 to-white border-b border-slate-100">
+          <CardHeader className="bg-linear-to-br from-slate-50/50 to-white border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-violet-100">
                 <Building2 className="h-5 w-5 text-violet-600" />
@@ -116,7 +116,7 @@ export default function SettingsPage() {
 
         {/* Custom Questions */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-200" style={{ animationFillMode: 'forwards' }}>
-          <CardHeader className="bg-gradient-to-br from-slate-50/50 to-white border-b border-slate-100">
+          <CardHeader className="bg-linear-to-br from-slate-50/50 to-white border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-amber-100">
                 <MessageSquarePlus className="h-5 w-5 text-amber-600" />
@@ -145,7 +145,7 @@ export default function SettingsPage() {
 
         {/* Notification Settings */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-250" style={{ animationFillMode: 'forwards' }}>
-          <CardHeader className="bg-gradient-to-br from-slate-50/50 to-white border-b border-slate-100">
+          <CardHeader className="bg-linear-to-br from-slate-50/50 to-white border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-rose-100">
                 <Bell className="h-5 w-5 text-rose-600" />
@@ -195,7 +195,7 @@ export default function SettingsPage() {
 
         {/* Security Settings */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-300" style={{ animationFillMode: 'forwards' }}>
-          <CardHeader className="bg-gradient-to-br from-slate-50/50 to-white border-b border-slate-100">
+          <CardHeader className="bg-linear-to-br from-slate-50/50 to-white border-b border-slate-100">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-slate-100">
                 <Shield className="h-5 w-5 text-slate-600" />

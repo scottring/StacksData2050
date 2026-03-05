@@ -25,11 +25,11 @@ export default function Act1SupplierIsland({ progress }: Act1Props) {
   return (
     <section className="relative flex h-screen items-center justify-center overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950" />
+      <div className="absolute inset-0 bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950" />
 
       {/* Island "platform" visual */}
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[80%] max-w-4xl rounded-t-[50%] bg-gradient-to-t from-emerald-900/20 to-transparent transition-all duration-1000"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 h-24 w-[80%] max-w-4xl rounded-t-[50%] bg-linear-to-t from-emerald-900/20 to-transparent transition-all duration-1000"
         style={{ opacity: showIsland ? 0.6 : 0 }}
       />
 

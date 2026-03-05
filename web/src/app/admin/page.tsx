@@ -66,7 +66,7 @@ export default function AdminPage() {
       // Fetch all users
       const { data: usersData, error: usersError } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name, role, company_id')
+        .select('id, email, full_name, role, company_id')
         .order('email')
 
       if (usersError) {
@@ -86,8 +86,8 @@ export default function AdminPage() {
       const formattedUsers = (usersData || []).map((u: any) => ({
         id: u.id,
         email: u.email,
-        first_name: u.first_name,
-        last_name: u.last_name,
+        first_name: u.full_name,
+        last_name: null,
         role: u.role || 'user',
         company_id: u.company_id,
         company_name: u.company_id ? companyMap.get(u.company_id) || null : null,

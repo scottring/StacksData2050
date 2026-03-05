@@ -1018,7 +1018,7 @@ export default function TrialsPage() {
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {selectedActivity.events.slice(0, 50).map((event) => (
                       <div key={event.id} className="flex items-start gap-3 text-sm py-2 border-b last:border-0">
-                        <div className="flex-shrink-0 w-24 text-muted-foreground text-xs">
+                        <div className="shrink-0 w-24 text-muted-foreground text-xs">
                           {new Date(event.created_at).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',

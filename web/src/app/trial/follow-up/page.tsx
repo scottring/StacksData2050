@@ -12,7 +12,7 @@ import { trackFollowUpCompleted } from '@/lib/trial-tracking'
 export default function FollowUpPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 to-gray-100/50">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           <span>Loading...</span>
@@ -113,7 +113,7 @@ function FollowUpContent() {
   // Success state
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100/50 p-6">
         <div className="max-w-md text-center">
           <div className="mx-auto w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-6">
             <CheckCircle2 className="h-10 w-10 text-emerald-600" />
@@ -135,7 +135,7 @@ function FollowUpContent() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-[40%] relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900">
+      <div className="hidden lg:flex lg:w-[40%] relative overflow-hidden bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-900">
         {/* Animated gradient orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div
@@ -169,7 +169,7 @@ function FollowUpContent() {
             <h1 className="font-display text-3xl font-semibold leading-tight">
               How&apos;s your
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-200">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-200 to-teal-200">
                 trial going?
               </span>
             </h1>
@@ -185,7 +185,7 @@ function FollowUpContent() {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-50 to-gray-100/50">
+      <div className="flex-1 flex flex-col bg-linear-to-br from-gray-50 to-gray-100/50">
         {/* Mobile logo */}
         <div className="lg:hidden p-6 pb-0">
           <Image
@@ -222,7 +222,7 @@ function FollowUpContent() {
                 return (
                   <div key={question.id} className="space-y-2">
                     <Label htmlFor={question.id} className="text-sm font-medium text-gray-700 flex items-start gap-2">
-                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex-shrink-0">
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold shrink-0">
                         {index + 1}
                       </span>
                       <span>{question.label}</span>
@@ -244,7 +244,7 @@ function FollowUpContent() {
               {/* NPS Rating */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700 flex items-start gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold shrink-0">
                     4
                   </span>
                   <span>How likely would you be to recommend this trial to a colleague?</span>
@@ -276,7 +276,7 @@ function FollowUpContent() {
               <div className="pt-4">
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 group"
+                  className="w-full h-12 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 group"
                   disabled={loading}
                 >
                   {loading ? (

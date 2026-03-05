@@ -59,7 +59,7 @@ export default async function ManufacturerImportPage() {
         />
 
         <div className="opacity-0 animate-fade-in-up animation-delay-100" style={{ animationFillMode: 'forwards' }}>
-          <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white p-6 mb-6">
+          <div className="rounded-2xl border border-slate-200/60 bg-linear-to-br from-slate-50/50 to-white p-6 mb-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-emerald-100 shrink-0">
                 <FileSpreadsheet className="h-6 w-6 text-emerald-600" />

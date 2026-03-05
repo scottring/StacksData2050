@@ -105,7 +105,7 @@ export function ApiKeysTab() {
                 </Button>
               </div>
             </div>
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Button onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create API Key

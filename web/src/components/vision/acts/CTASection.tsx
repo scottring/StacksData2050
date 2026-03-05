@@ -6,7 +6,7 @@ export default function CTASection() {
   return (
     <section className="relative flex min-h-[50vh] flex-col items-center justify-center overflow-hidden px-6 py-24">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950" />
+      <div className="absolute inset-0 bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950" />
 
       {/* Emerald glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.08),transparent_70%)]" />

@@ -232,7 +232,7 @@ export default function Act4StacksIntelligence({ progress }: Act4Props) {
           style={{ opacity: showLanes ? 1 : 0 }}
         >
           <div
-            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700"
+            className="h-full bg-linear-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700"
             style={{ width: `${(completedLanes / 6) * 100}%` }}
           />
         </div>

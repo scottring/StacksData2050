@@ -248,7 +248,7 @@ export default function QuestionsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center gap-3 text-slate-500">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-100 to-amber-100 animate-pulse" />
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-100 to-amber-100 animate-pulse" />
               <Loader2 className="h-6 w-6 animate-spin absolute inset-0 m-auto text-violet-600" />
             </div>
             <span className="text-sm font-medium">Loading questions...</span>
@@ -271,7 +271,7 @@ export default function QuestionsPage() {
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
+              <Button size="sm" className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Custom Question
               </Button>
@@ -363,7 +363,7 @@ export default function QuestionsPage() {
                   <Button
                     onClick={handleCreateQuestion}
                     disabled={saving || !newQuestion.content.trim()}
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400"
+                    className="rounded-xl bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400"
                   >
                     {saving ? (
                       <>

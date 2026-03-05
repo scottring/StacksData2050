@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Inbox, Globe2 } from 'lucide-react'
+import { Inbox, Globe2, FileSpreadsheet } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 
@@ -27,9 +27,9 @@ export default function StationLayout({ children }: StationLayoutProps) {
 
         <div className="flex h-screen">
           {/* Left sidebar - request list */}
-          <aside className="flex w-72 flex-col border-r border-white/[0.06] bg-zinc-900/50 backdrop-blur-sm">
+          <aside className="flex w-72 flex-col border-r border-white/6 bg-zinc-900/50 backdrop-blur-sm">
             {/* Logo */}
-            <div className="flex h-14 items-center border-b border-white/[0.06] px-5">
+            <div className="flex h-14 items-center border-b border-white/6 px-5">
               <Link href="/station" className="flex items-center gap-2.5 group">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
                   <Globe2 className="h-4 w-4 text-emerald-400" />
@@ -53,11 +53,23 @@ export default function StationLayout({ children }: StationLayoutProps) {
                   'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
                   pathname === '/station'
                     ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/4'
                 )}
               >
                 <Inbox className="h-4 w-4" />
                 <span>Pending Requests</span>
+              </Link>
+              <Link
+                href="/station/ingest"
+                className={cn(
+                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
+                  pathname?.startsWith('/station/ingest')
+                    ? 'bg-violet-500/10 text-violet-400 ring-1 ring-violet-500/20'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/4'
+                )}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Import External</span>
               </Link>
             </nav>
           </aside>

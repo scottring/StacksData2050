@@ -195,7 +195,7 @@ export function WebhooksTab() {
                 Each webhook includes an HMAC signature for verification.
               </p>
             </div>
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Button onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Webhook
