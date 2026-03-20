@@ -109,36 +109,26 @@ export function UpdateRequestDialog({ open, onOpenChange, request }: UpdateReque
         .update({ status: 'pending' })
         .eq('id', request.sheet_id)
 
-      // Send notification email to supplier
+      // Send notification email via server (bypasses RLS for supplier lookup)
       try {
-        const { data: supplierUsers } = await supabase
-          .from('users')
-          .select('email, full_name')
-          .eq('company_id', request.supplier_company_id)
-          .not('email', 'ilike', '%placeholder%')
-          .limit(1)
-
         const { data: requesterCompany } = await supabase
           .from('companies')
           .select('name')
           .eq('id', userData?.company_id)
           .single()
 
-        if (supplierUsers && supplierUsers.length > 0) {
-          await fetch('/api/requests/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              requestId: request.id,
-              sheetId: request.sheet_id,
-              supplierEmail: supplierUsers[0].email,
-              supplierName: supplierUsers[0].full_name,
-              productName: request.sheet_name,
-              requesterName: userData?.full_name,
-              requesterCompany: requesterCompany?.name,
-            }),
-          })
-        }
+        await fetch('/api/requests/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requestId: request.id,
+            sheetId: request.sheet_id,
+            supplierCompanyId: request.supplier_company_id,
+            productName: request.sheet_name,
+            requesterName: userData?.full_name,
+            requesterCompany: requesterCompany?.name,
+          }),
+        })
       } catch (emailError) {
         console.error('Error sending update notification:', emailError)
       }

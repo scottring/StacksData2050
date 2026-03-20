@@ -79,7 +79,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     }
   }, [open])
 
-  // Fetch contacts when supplier changes
+  // Fetch contacts when supplier changes (via API to bypass RLS)
   useEffect(() => {
     async function fetchContacts() {
       if (!formData.supplierId) {
@@ -88,31 +88,24 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       }
 
       setLoadingContacts(true)
-      const supabase = createClient()
 
-      const { data: contacts } = await supabase
-        .from('users')
-        .select('id, email, full_name')
-        .eq('company_id', formData.supplierId)
-        .order('full_name')
+      try {
+        const res = await fetch(`/api/companies/${formData.supplierId}/contacts`)
+        const validContacts = res.ok ? await res.json() : []
 
-      // Filter out placeholder emails and unknown names
-      const validContacts = (contacts || []).filter(c =>
-        c.email &&
-        !c.email.includes('placeholder') &&
-        c.full_name &&
-        c.full_name !== 'Unknown'
-      )
+        setSupplierContacts(validContacts)
 
-      setSupplierContacts(validContacts)
-      setLoadingContacts(false)
-
-      // Auto-select if only one contact
-      if (validContacts.length === 1) {
-        setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
-      } else {
-        setFormData(prev => ({ ...prev, selectedContactId: '' }))
+        // Auto-select if only one contact
+        if (validContacts.length === 1) {
+          setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
+        } else {
+          setFormData(prev => ({ ...prev, selectedContactId: '' }))
+        }
+      } catch {
+        setSupplierContacts([])
       }
+
+      setLoadingContacts(false)
     }
 
     fetchContacts()
@@ -322,36 +315,9 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           .eq('id', invitationId)
       }
 
-      // Send email notification to supplier
+      // Send email notification to supplier (server-side lookup bypasses RLS)
       if (supplierMode === 'existing' && formData.supplierId) {
         try {
-          let supplierEmail: string | null = null
-          let supplierName: string | null = null
-
-          // Use selected contact if one was chosen
-          if (formData.selectedContactId) {
-            const selectedContact = supplierContacts.find(c => c.id === formData.selectedContactId)
-            if (selectedContact) {
-              supplierEmail = selectedContact.email
-              supplierName = selectedContact.full_name
-            }
-          }
-
-          // Fall back to first valid contact if no contact was selected
-          if (!supplierEmail) {
-            const { data: supplierUsers } = await supabase
-              .from('users')
-              .select('email, full_name')
-              .eq('company_id', formData.supplierId)
-              .not('email', 'ilike', '%placeholder%')
-              .limit(1)
-
-            if (supplierUsers && supplierUsers.length > 0) {
-              supplierEmail = supplierUsers[0].email
-              supplierName = supplierUsers[0].full_name
-            }
-          }
-
           // Get requester's company name
           const { data: requesterCompany } = await supabase
             .from('companies')
@@ -359,21 +325,27 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
             .eq('id', userData.company_id)
             .single()
 
-          if (supplierEmail) {
-            await fetch('/api/requests/notify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                requestId: newRequest.id,
-                sheetId: newSheet.id,
-                supplierEmail,
-                supplierName,
-                productName: formData.productName,
-                requesterName: userData.full_name,
-                requesterCompany: requesterCompany?.name,
-              })
+          // Use selected contact if available, otherwise let server look up by company
+          const selectedContact = formData.selectedContactId
+            ? supplierContacts.find(c => c.id === formData.selectedContactId)
+            : null
+
+          await fetch('/api/requests/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              requestId: newRequest.id,
+              sheetId: newSheet.id,
+              supplierCompanyId: formData.supplierId,
+              ...(selectedContact?.email && {
+                supplierEmail: selectedContact.email,
+                supplierName: selectedContact.full_name,
+              }),
+              productName: formData.productName,
+              requesterName: userData.full_name,
+              requesterCompany: requesterCompany?.name,
             })
-          }
+          })
         } catch (emailError) {
           console.error('Error sending request notification:', emailError)
           // Non-fatal: continue even if email fails
