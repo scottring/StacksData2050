@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { CompanyUsers } from '@/components/settings/company-users'
 
 export default function SettingsPage() {
   return (
@@ -113,6 +114,9 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Team Members */}
+        <CompanyUsers />
 
         {/* Custom Questions */}
         <Card className="rounded-2xl border-slate-200/60 shadow-sm overflow-hidden opacity-0 animate-fade-in-up animation-delay-200" style={{ animationFillMode: 'forwards' }}>
