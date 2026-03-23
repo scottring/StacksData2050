@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil } from 'lucide-react'
+import { Pencil, ClipboardCheck } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
@@ -39,10 +39,18 @@ export default async function SheetViewPage({
   const { id: sheetId } = await params
   const supabase = await createClient()
 
+  // Get current user's company
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+  let userCompanyId: string | null = null
+  if (authUser) {
+    const { data: profile } = await supabase.from('users').select('company_id').eq('id', authUser.id).single()
+    userCompanyId = profile?.company_id || null
+  }
+
   // Fetch sheet info
   const { data: sheet } = await supabase
     .from('sheets')
-    .select('id, name, status, company_id, companies!sheets_company_id_fkey(name)')
+    .select('id, name, status, company_id, requesting_company_id, companies!sheets_company_id_fkey(name)')
     .eq('id', sheetId)
     .single()
 
@@ -410,12 +418,21 @@ export default async function SheetViewPage({
           </div>
           <div className="ml-auto flex items-center gap-3">
             <Badge variant="outline">{sheet.status || 'draft'}</Badge>
-            <Link href={`/sheets/${sheetId}/edit`}>
-              <Button size="sm">
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Sheet
-              </Button>
-            </Link>
+            {userCompanyId === sheet.requesting_company_id && ['submitted', 'flagged'].includes(sheet.status || '') ? (
+              <Link href={`/sheets/${sheetId}/review`}>
+                <Button size="sm" variant="default">
+                  <ClipboardCheck className="h-4 w-4 mr-2" />
+                  Review
+                </Button>
+              </Link>
+            ) : (
+              <Link href={`/sheets/${sheetId}/edit`}>
+                <Button size="sm">
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit Sheet
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
