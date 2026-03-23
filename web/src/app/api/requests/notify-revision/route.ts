@@ -1,13 +1,39 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
+import { createClient } from '@supabase/supabase-js'
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
 export async function POST(request: Request) {
   try {
-    const { sheetId, supplierEmail, supplierName, productName, flaggedCount, observations } = await request.json()
+    const body = await request.json()
+    const { sheetId, productName, flaggedCount, observations } = body
+    let supplierEmail = body.supplierEmail
+    let supplierName = body.supplierName
+
+    // Server-side lookup if email not provided but company ID is
+    if (!supplierEmail && body.supplierCompanyId) {
+      const supabase = getServiceClient()
+      const { data: supplierUsers } = await supabase
+        .from('users')
+        .select('email, full_name')
+        .eq('company_id', body.supplierCompanyId)
+        .not('email', 'ilike', '%placeholder%')
+        .limit(1)
+      if (supplierUsers && supplierUsers.length > 0) {
+        supplierEmail = supplierUsers[0].email
+        supplierName = supplierName || supplierUsers[0].full_name
+      }
+    }
 
     if (!supplierEmail) {
       return NextResponse.json({ error: 'Supplier email required' }, { status: 400 })

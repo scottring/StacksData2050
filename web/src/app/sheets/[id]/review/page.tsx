@@ -467,27 +467,18 @@ export default function ReviewPage() {
         .single()
 
       if (request) {
-        const { data: supplierUsers } = await supabase
-          .from('users')
-          .select('email, full_name')
-          .eq('company_id', request.requesting_from_id)
-          .limit(1)
-
-        if (supplierUsers && supplierUsers.length > 0) {
-          // Send revision notification
-          fetch('/api/requests/notify-revision', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sheetId,
-              supplierEmail: supplierUsers[0].email,
-              supplierName: supplierUsers[0].full_name,
-              productName: data.sheet.name,
-              flaggedCount: unresolvedFlagCount,
-              observations: observations || null,
-            })
-          }).catch(console.error)
-        }
+        // Send revision notification -- server resolves email via service role
+        fetch('/api/requests/notify-revision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sheetId,
+            supplierCompanyId: request.requesting_from_id,
+            productName: data.sheet.name,
+            flaggedCount: unresolvedFlagCount,
+            observations: observations || null,
+          })
+        }).catch(console.error)
       }
 
       router.push('/dashboard')

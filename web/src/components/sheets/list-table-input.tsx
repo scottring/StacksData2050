@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Trash2 } from 'lucide-react'
@@ -32,9 +32,34 @@ export function ListTableInput({
   disabled = false,
   columns = DEFAULT_COLUMNS
 }: ListTableInputProps) {
-  const [rows, setRows] = useState<ListTableRow[]>(
-    existingRows.length > 0 ? existingRows : []
-  )
+  const tableRef = useRef<HTMLTableElement>(null)
+  const [rows, setRows] = useState<ListTableRow[]>(() => {
+    if (existingRows.length > 0) return existingRows
+    if (disabled) return []
+    // Start with one empty row so the table is ready for input
+    const initialRow: ListTableRow = {
+      id: `row-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      values: columns.reduce((acc, col) => ({ ...acc, [col.key]: '' }), {})
+    }
+    return [initialRow]
+  })
+
+  // Notify parent of the initial row
+  const initialNotified = useRef(false)
+  useEffect(() => {
+    if (!initialNotified.current && existingRows.length === 0 && !disabled && rows.length === 1) {
+      onRowsChange(rows)
+      initialNotified.current = true
+    }
+  }, [])
+
+  // Focus the first input cell on mount when starting with an empty row
+  useEffect(() => {
+    if (existingRows.length === 0 && !disabled && tableRef.current) {
+      const firstInput = tableRef.current.querySelector<HTMLInputElement>('tbody input')
+      firstInput?.focus()
+    }
+  }, [])
 
   // Sync rows state when existingRows changes (e.g., when data loads)
   // Use a simple heuristic: length and first row ID
@@ -80,7 +105,7 @@ export function ListTableInput({
     <div className="space-y-3">
       {rows.length > 0 && (
         <div className="border rounded-lg overflow-hidden">
-          <table className="w-full">
+          <table ref={tableRef} className="w-full">
             <thead className="bg-muted/50">
               <tr>
                 {columns.map(col => (

@@ -33,33 +33,23 @@ export async function POST(request: Request) {
       .single()
     
     if (requestData) {
-      // Get customer's user for notification
-      const { data: customerUsers } = await supabase
-        .from('users')
-        .select('email, full_name')
-        .eq('company_id', requestData.requestor_id)
-        .limit(1)
-      
       // Get sheet name
       const { data: sheet } = await supabase
         .from('sheets')
         .select('name')
         .eq('id', sheet_id)
         .single()
-      
-      if (customerUsers && customerUsers.length > 0) {
-        // Send notification (non-blocking)
-        fetch(new URL('/api/requests/notify-submitted', request.url).toString(), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sheetId: sheet_id,
-            customerEmail: customerUsers[0].email,
-            customerName: customerUsers[0].full_name,
-            productName: sheet?.name || 'Product',
-          })
-        }).catch(console.error)
-      }
+
+      // Send notification (non-blocking) -- notify-submitted resolves email via service role
+      fetch(new URL('/api/requests/notify-submitted', request.url).toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheetId: sheet_id,
+          customerCompanyId: requestData.requestor_id,
+          productName: sheet?.name || 'Product',
+        })
+      }).catch(console.error)
     }
     
     return NextResponse.json({ success: true })
