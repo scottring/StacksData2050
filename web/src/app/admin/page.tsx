@@ -21,8 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 interface User {
   id: string
   email: string
-  first_name: string | null
-  last_name: string | null
+  full_name: string | null
   role: string
   company_id: string | null
   company_name: string | null
@@ -40,57 +39,32 @@ export default function AdminPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const supabase = createClient()
-
-      // Get current user's role
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      const response = await fetch('/api/admin/users')
+      if (response.status === 401) {
         router.push('/login')
         return
       }
-
-      const { data: profile } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-
-      if (profile?.role !== 'super_admin') {
+      if (response.status === 403) {
         setError('Access denied. Super admin privileges required.')
         setLoading(false)
         return
       }
-
-      setCurrentUserRole(profile.role)
-
-      // Fetch all users
-      const { data: usersData, error: usersError } = await supabase
-        .from('users')
-        .select('id, email, first_name, last_name, role, company_id')
-        .order('email')
-
-      if (usersError) {
-        console.error('Error fetching users:', usersError)
+      if (!response.ok) {
         setError('Failed to load users')
         setLoading(false)
         return
       }
 
-      // Fetch all companies for name lookup
-      const { data: companiesData } = await supabase
-        .from('companies')
-        .select('id, name')
+      const data = await response.json()
+      setCurrentUserRole('super_admin')
 
-      const companyMap = new Map((companiesData || []).map(c => [c.id, c.name]))
-
-      const formattedUsers = (usersData || []).map((u: any) => ({
+      const formattedUsers = (data.users || []).map((u: any) => ({
         id: u.id,
         email: u.email,
-        first_name: u.first_name,
-        last_name: u.last_name,
+        full_name: u.full_name,
         role: u.role || 'user',
         company_id: u.company_id,
-        company_name: u.company_id ? companyMap.get(u.company_id) || null : null,
+        company_name: u.company_name,
       }))
 
       setUsers(formattedUsers)
@@ -110,8 +84,7 @@ export default function AdminPage() {
         users.filter(
           (u) =>
             u.email.toLowerCase().includes(query) ||
-            u.first_name?.toLowerCase().includes(query) ||
-            u.last_name?.toLowerCase().includes(query) ||
+            u.full_name?.toLowerCase().includes(query) ||
             u.company_name?.toLowerCase().includes(query)
         )
       )
@@ -270,8 +243,8 @@ export default function AdminPage() {
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {user.first_name || user.last_name
-                                ? `${user.first_name || ''} ${user.last_name || ''}`.trim()
+                              {user.full_name && user.full_name !== 'Unknown'
+                                ? user.full_name
                                 : 'Unnamed User'}
                             </p>
                             <p className="text-sm text-muted-foreground">{user.email}</p>
