@@ -113,11 +113,9 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   async function fetchData() {
     setLoading(true)
     const supabase = createClient()
-    // Fetch suppliers (companies with show_as_supplier = true)
-    const { data: supplierData } = await supabase
-      .from('companies')
-      .select('*')
-      .order('name')
+    // Fetch suppliers via API (bypasses RLS so cross-customer suppliers are visible)
+    const supplierResponse = await fetch('/api/suppliers/list')
+    const supplierData = supplierResponse.ok ? await supplierResponse.json() : []
     // Fetch tags (HQ 2.0.1, HQ2.1, etc.)
     const { data: tagData } = await supabase
       .from('tags')
@@ -189,36 +187,22 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       if (!userData?.company_id) throw new Error('No company found')
       let supplierCompanyId = formData.supplierId
       let invitationId: string | null = null
-      // Handle new supplier invitation
+      // Handle new supplier invitation (server-side to bypass companies RLS)
       if (supplierMode === 'new') {
-        // Generate unique token
-        const token = crypto.randomUUID()
-        
-        // Create company FIRST so we can link invitation to it
-        const { data: newSupplierCompany, error: companyError } = await supabase
-          .from('companies')
-          .insert({
-            name: formData.newSupplierCompanyName || `Invited: ${formData.newSupplierEmail}`,
-          })
-          .select()
-          .single()
-        if (companyError) throw companyError
-        supplierCompanyId = newSupplierCompany.id
-
-        // Create invitation record with company_id linked
-        const { data: invitation, error: inviteError } = await supabase
-          .from('invitations')
-          .insert({
+        const createRes = await fetch('/api/invitations/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             email: formData.newSupplierEmail,
-            company_name: formData.newSupplierCompanyName || null,
-            company_id: newSupplierCompany.id, // Link to the company we just created
-            token,
-            created_by: user.id,
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          })
-          .select()
-          .single()
-        if (inviteError) throw inviteError
+            companyName: formData.newSupplierCompanyName,
+          }),
+        })
+        if (!createRes.ok) {
+          const { error: errMsg } = await createRes.json().catch(() => ({ error: 'Failed to invite supplier' }))
+          throw new Error(errMsg || 'Failed to invite supplier')
+        }
+        const { company: newSupplierCompany, invitation } = await createRes.json()
+        supplierCompanyId = newSupplierCompany.id
         invitationId = invitation.id
         // Send invitation email via API route
         try {

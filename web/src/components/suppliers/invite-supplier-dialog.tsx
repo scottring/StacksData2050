@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import {
   Dialog,
   DialogContent,
@@ -36,51 +35,22 @@ export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSu
     setError(null)
 
     try {
-      const supabase = createClient()
-
-      // Get current user info
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('company_id, full_name')
-        .eq('id', user.id)
-        .single()
-
-      if (!userData?.company_id) throw new Error('No company found')
-
-      // Generate unique token
-      const token = crypto.randomUUID()
-
-      // Create company record for the new supplier
-      const { data: newCompany, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          name: formData.companyName || `Invited: ${formData.email}`,
-        })
-        .select()
-        .single()
-
-      if (companyError) throw companyError
-
-      // Create invitation record
-      const { data: invitation, error: inviteError } = await supabase
-        .from('invitations')
-        .insert({
+      const createRes = await fetch('/api/invitations/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           email: formData.email,
-          company_name: formData.companyName || null,
-          company_id: newCompany.id,
-          token,
-          created_by: user.id,
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        })
-        .select()
-        .single()
+          companyName: formData.companyName,
+        }),
+      })
 
-      if (inviteError) throw inviteError
+      if (!createRes.ok) {
+        const { error: errMsg } = await createRes.json().catch(() => ({ error: 'Failed to create invitation' }))
+        throw new Error(errMsg || 'Failed to create invitation')
+      }
 
-      // Send invitation email
+      const { invitation, inviterName } = await createRes.json()
+
       await fetch('/api/invitations/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,7 +58,7 @@ export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSu
           invitationId: invitation.id,
           email: formData.email,
           companyName: formData.companyName,
-          inviterName: userData.full_name,
+          inviterName,
         })
       })
 
