@@ -38,6 +38,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
 
 interface Company {
   id: string
@@ -65,6 +66,7 @@ export default function ProductsPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterSupplier, setFilterSupplier] = useState<string>('all')
   const [userCompanyId, setUserCompanyId] = useState<string | null>(null)
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false)
 
   useEffect(() => {
     async function fetchProducts() {
@@ -202,7 +204,11 @@ export default function ProductsPage() {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button size="sm" className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm">
+          <Button
+            size="sm"
+            className="rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-sm"
+            onClick={() => setRequestDialogOpen(true)}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Request Product Data
           </Button>
@@ -353,6 +359,7 @@ export default function ProductsPage() {
           </Table>
         </div>
       </div>
+      <RequestSheetDialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen} />
     </AppLayout>
   )
 }
