@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // TODO: Create user_role enum in database, then import from database.types
@@ -103,8 +104,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (userData.has_logged_in === false) {
-    void supabase.from('users').update({ has_logged_in: true }).eq('id', user.id)
+  if (userData.has_logged_in === false && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const service = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+    void service.from('users').update({ has_logged_in: true }).eq('id', user.id)
   }
 
   // Super admins bypass all role checks
