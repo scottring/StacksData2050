@@ -1,9 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
-
-type ServiceClient = ReturnType<typeof createClient>
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export async function companiesHaveRelationship(
-  serviceClient: ServiceClient,
+  serviceClient: SupabaseClient,
   myCompanyId: string,
   targetCompanyId: string
 ): Promise<boolean> {
