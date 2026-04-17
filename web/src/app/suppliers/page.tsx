@@ -72,7 +72,12 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
     ).length
 
     const companyUsers = (users || []).filter(u => u.company_id === company.id)
-    const primaryContact = companyUsers.find(u => u.role === 'admin') || companyUsers[0] || null
+    const primaryContact =
+      companyUsers.find(u => u.is_company_main_contact === true) ||
+      companyUsers.find(
+        u => u.full_name && u.full_name !== 'Unknown' && !u.email?.includes('placeholder')
+      ) ||
+      null
 
     return {
       company,
