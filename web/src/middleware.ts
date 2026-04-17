@@ -91,7 +91,7 @@ export async function middleware(request: NextRequest) {
   // Get user's role from users table
   const { data: userData } = await supabase
     .from('users')
-    .select('role')
+    .select('role, has_logged_in')
     .eq('id', user.id)
     .single()
 
@@ -101,6 +101,10 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  if (userData.has_logged_in === false) {
+    void supabase.from('users').update({ has_logged_in: true }).eq('id', user.id)
   }
 
   // Super admins bypass all role checks
