@@ -176,6 +176,11 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     async function fetchUser() {
@@ -332,6 +337,23 @@ export function Sidebar() {
         </Link>
 
         {/* User profile */}
+        {!mounted ? (
+          <div
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium"
+            aria-hidden="true"
+          >
+            <Avatar className="h-9 w-9 ring-2 ring-white shadow-sm">
+              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
+                &nbsp;
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 text-left min-w-0">
+              <p className="text-sm font-medium text-slate-900 truncate">&nbsp;</p>
+              <p className="text-xs text-slate-500 truncate">&nbsp;</p>
+            </div>
+            <ChevronDown className="h-4 w-4 text-slate-400" />
+          </div>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 hover:bg-slate-100 group">
@@ -391,6 +413,7 @@ export function Sidebar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        )}
       </div>
     </aside>
   )
