@@ -37,13 +37,23 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
     .select('*, companies!sheets_company_id_fkey(id, name, logo_url, location)')
     .eq('requesting_company_id', myCompanyId)
 
-  if (!sheets || sheets.length === 0) return []
+  const { data: requests } = await supabase
+    .from('requests')
+    .select('requesting_from_id')
+    .eq('requestor_id', myCompanyId)
+    .neq('show_as_removed', true)
 
-  const supplierCompanyIds = [...new Set(
-    sheets
-      .map(s => s.company_id)
-      .filter((id): id is string => id !== null)
-  )]
+  const allSheets = sheets ?? []
+
+  const supplierIdsFromSheets = allSheets
+    .map(s => s.company_id)
+    .filter((id): id is string => !!id && id !== myCompanyId)
+
+  const supplierIdsFromRequests = (requests ?? [])
+    .map(r => r.requesting_from_id)
+    .filter((id): id is string => !!id && id !== myCompanyId)
+
+  const supplierCompanyIds = [...new Set([...supplierIdsFromSheets, ...supplierIdsFromRequests])]
 
   if (supplierCompanyIds.length === 0) return []
 
@@ -61,7 +71,7 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
     .in('company_id', supplierCompanyIds)
 
   const suppliersWithStats: SupplierWithStats[] = companies.map(company => {
-    const companySheets = sheets.filter(s => s.company_id === company.id)
+    const companySheets = allSheets.filter(s => s.company_id === company.id)
 
     const openTasks = companySheets.filter(
       s => s.status === 'in_progress' || s.status === 'pending'

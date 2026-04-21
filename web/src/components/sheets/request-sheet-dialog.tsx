@@ -201,24 +201,27 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           const { error: errMsg } = await createRes.json().catch(() => ({ error: 'Failed to invite supplier' }))
           throw new Error(errMsg || 'Failed to invite supplier')
         }
-        const { company: newSupplierCompany, invitation } = await createRes.json()
+        const { company: newSupplierCompany, invitation, existingUser } = await createRes.json()
         supplierCompanyId = newSupplierCompany.id
-        invitationId = invitation.id
-        // Send invitation email via API route
-        try {
-          await fetch('/api/invitations/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              invitationId: invitation.id,
-              email: formData.newSupplierEmail,
-              companyName: formData.newSupplierCompanyName,
-              inviterName: userData.full_name,
+        invitationId = invitation?.id ?? null
+
+        if (!existingUser && invitation) {
+          // Send invitation email via API route
+          try {
+            await fetch('/api/invitations/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                invitationId: invitation.id,
+                email: formData.newSupplierEmail,
+                companyName: formData.newSupplierCompanyName,
+                inviterName: userData.full_name,
+              })
             })
-          })
-        } catch (emailError) {
-          console.error('Error sending invitation email:', emailError)
-          // Non-fatal: continue with request creation
+          } catch (emailError) {
+            console.error('Error sending invitation email:', emailError)
+            // Non-fatal: continue with request creation
+          }
         }
       }
       // Create new sheet

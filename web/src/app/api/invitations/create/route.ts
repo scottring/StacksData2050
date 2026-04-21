@@ -35,6 +35,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No company found for user' }, { status: 400 })
     }
 
+    const { data: existingUser } = await service
+      .from('users')
+      .select('id, company_id, full_name, email, companies:company_id (id, name)')
+      .ilike('email', email)
+      .maybeSingle()
+
+    if (existingUser?.company_id) {
+      if (existingUser.company_id === userData.company_id) {
+        return NextResponse.json(
+          { error: 'That email belongs to a user at your own company.' },
+          { status: 400 }
+        )
+      }
+
+      const existingCompany = Array.isArray(existingUser.companies)
+        ? existingUser.companies[0]
+        : existingUser.companies
+
+      return NextResponse.json({
+        existingUser: true,
+        company: existingCompany ?? { id: existingUser.company_id, name: null },
+        invitation: null,
+        inviterName: userData.full_name,
+        requestingCompanyId: userData.company_id,
+      })
+    }
+
     const { data: newCompany, error: companyError } = await service
       .from('companies')
       .insert({ name: companyName || `Invited: ${email}` })
@@ -60,6 +87,7 @@ export async function POST(request: Request) {
     if (inviteError) throw inviteError
 
     return NextResponse.json({
+      existingUser: false,
       company: newCompany,
       invitation,
       inviterName: userData.full_name,
