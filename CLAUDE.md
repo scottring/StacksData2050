@@ -256,29 +256,42 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
 ## Environment Variables
 
-### Web Application (.env.local)
+Two Supabase projects: **prod** (`yrguoooxamecsjtkfqcw`) and **dev** (`cvsevqcmfiwkjuwppeir`).
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://yrguoooxamecsjtkfqcw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon_key>
-SUPABASE_SERVICE_ROLE_KEY=<service_role_key>
+All local env files default to dev. Production credentials require explicit opt-in.
+
+### Web Application
+
+- `.env.local` -- local dev, points to dev Supabase
+- `.env.production` -- used by Vercel production builds, points to prod Supabase
+
+### Utility Scripts (/stacks root)
+
+- `.env` -- default, points to dev Supabase
+- `.env.production` -- explicit prod access: `npx tsx --env-file=.env.production <script>.ts`
+
+### Vercel
+
+Env vars are scoped by environment in Vercel dashboard:
+- **Production** scope: prod Supabase credentials
+- **Preview/Development** scope: dev Supabase credentials
+
+### RLS and Service Role
+
+Client-side Supabase (anon key) respects RLS. For cross-company lookups (e.g. fetching supplier contacts from a customer session), use server-side API routes with service role key:
+
+```typescript
+import { createClient } from '@supabase/supabase-js'
+
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 ```
 
-### Migration Scripts (.env in /stacks root)
-
-```bash
-# Supabase
-SUPABASE_URL=https://yrguoooxamecsjtkfqcw.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<service_role_key>
-
-# Bubble.io (for migration only)
-BUBBLE_API_URL=https://app.stacksdata.com/version-live
-BUBBLE_API_TOKEN=<api_token>
-
-# Options
-DRY_RUN=false
-BATCH_SIZE=100
-```
+See `/web/src/app/api/companies/[id]/contacts/route.ts` and `/web/src/app/api/requests/notify/route.ts` for examples.
 
 ## Recent Bug Fixes & Patterns
 

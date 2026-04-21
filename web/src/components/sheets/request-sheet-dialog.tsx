@@ -79,7 +79,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     }
   }, [open])
 
-  // Fetch contacts when supplier changes
+  // Fetch contacts when supplier changes (via API to bypass RLS)
   useEffect(() => {
     async function fetchContacts() {
       if (!formData.supplierId) {
@@ -88,31 +88,24 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       }
 
       setLoadingContacts(true)
-      const supabase = createClient()
 
-      const { data: contacts } = await supabase
-        .from('users')
-        .select('id, email, full_name')
-        .eq('company_id', formData.supplierId)
-        .order('full_name')
+      try {
+        const res = await fetch(`/api/companies/${formData.supplierId}/contacts`)
+        const validContacts = res.ok ? await res.json() : []
 
-      // Filter out placeholder emails and unknown names
-      const validContacts = (contacts || []).filter(c =>
-        c.email &&
-        !c.email.includes('placeholder') &&
-        c.full_name &&
-        c.full_name !== 'Unknown'
-      )
+        setSupplierContacts(validContacts)
 
-      setSupplierContacts(validContacts)
-      setLoadingContacts(false)
-
-      // Auto-select if only one contact
-      if (validContacts.length === 1) {
-        setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
-      } else {
-        setFormData(prev => ({ ...prev, selectedContactId: '' }))
+        // Auto-select if only one contact
+        if (validContacts.length === 1) {
+          setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
+        } else {
+          setFormData(prev => ({ ...prev, selectedContactId: '' }))
+        }
+      } catch {
+        setSupplierContacts([])
       }
+
+      setLoadingContacts(false)
     }
 
     fetchContacts()
@@ -120,11 +113,9 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   async function fetchData() {
     setLoading(true)
     const supabase = createClient()
-    // Fetch suppliers (companies with show_as_supplier = true)
-    const { data: supplierData } = await supabase
-      .from('companies')
-      .select('*')
-      .order('name')
+    // Fetch suppliers via API (bypasses RLS so cross-customer suppliers are visible)
+    const supplierResponse = await fetch('/api/suppliers/list')
+    const supplierData = supplierResponse.ok ? await supplierResponse.json() : []
     // Fetch tags (HQ 2.0.1, HQ2.1, etc.)
     const { data: tagData } = await supabase
       .from('tags')
@@ -196,52 +187,41 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
       if (!userData?.company_id) throw new Error('No company found')
       let supplierCompanyId = formData.supplierId
       let invitationId: string | null = null
-      // Handle new supplier invitation
+      // Handle new supplier invitation (server-side to bypass companies RLS)
       if (supplierMode === 'new') {
-        // Generate unique token
-        const token = crypto.randomUUID()
-        
-        // Create company FIRST so we can link invitation to it
-        const { data: newSupplierCompany, error: companyError } = await supabase
-          .from('companies')
-          .insert({
-            name: formData.newSupplierCompanyName || `Invited: ${formData.newSupplierEmail}`,
-          })
-          .select()
-          .single()
-        if (companyError) throw companyError
-        supplierCompanyId = newSupplierCompany.id
-
-        // Create invitation record with company_id linked
-        const { data: invitation, error: inviteError } = await supabase
-          .from('invitations')
-          .insert({
+        const createRes = await fetch('/api/invitations/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             email: formData.newSupplierEmail,
-            company_name: formData.newSupplierCompanyName || null,
-            company_id: newSupplierCompany.id, // Link to the company we just created
-            token,
-            created_by: user.id,
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          })
-          .select()
-          .single()
-        if (inviteError) throw inviteError
-        invitationId = invitation.id
-        // Send invitation email via API route
-        try {
-          await fetch('/api/invitations/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              invitationId: invitation.id,
-              email: formData.newSupplierEmail,
-              companyName: formData.newSupplierCompanyName,
-              inviterName: userData.full_name,
+            companyName: formData.newSupplierCompanyName,
+          }),
+        })
+        if (!createRes.ok) {
+          const { error: errMsg } = await createRes.json().catch(() => ({ error: 'Failed to invite supplier' }))
+          throw new Error(errMsg || 'Failed to invite supplier')
+        }
+        const { company: newSupplierCompany, invitation, existingUser } = await createRes.json()
+        supplierCompanyId = newSupplierCompany.id
+        invitationId = invitation?.id ?? null
+
+        if (!existingUser && invitation) {
+          // Send invitation email via API route
+          try {
+            await fetch('/api/invitations/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                invitationId: invitation.id,
+                email: formData.newSupplierEmail,
+                companyName: formData.newSupplierCompanyName,
+                inviterName: userData.full_name,
+              })
             })
-          })
-        } catch (emailError) {
-          console.error('Error sending invitation email:', emailError)
-          // Non-fatal: continue with request creation
+          } catch (emailError) {
+            console.error('Error sending invitation email:', emailError)
+            // Non-fatal: continue with request creation
+          }
         }
       }
       // Create new sheet
@@ -322,36 +302,9 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           .eq('id', invitationId)
       }
 
-      // Send email notification to supplier
+      // Send email notification to supplier (server-side lookup bypasses RLS)
       if (supplierMode === 'existing' && formData.supplierId) {
         try {
-          let supplierEmail: string | null = null
-          let supplierName: string | null = null
-
-          // Use selected contact if one was chosen
-          if (formData.selectedContactId) {
-            const selectedContact = supplierContacts.find(c => c.id === formData.selectedContactId)
-            if (selectedContact) {
-              supplierEmail = selectedContact.email
-              supplierName = selectedContact.full_name
-            }
-          }
-
-          // Fall back to first valid contact if no contact was selected
-          if (!supplierEmail) {
-            const { data: supplierUsers } = await supabase
-              .from('users')
-              .select('email, full_name')
-              .eq('company_id', formData.supplierId)
-              .not('email', 'ilike', '%placeholder%')
-              .limit(1)
-
-            if (supplierUsers && supplierUsers.length > 0) {
-              supplierEmail = supplierUsers[0].email
-              supplierName = supplierUsers[0].full_name
-            }
-          }
-
           // Get requester's company name
           const { data: requesterCompany } = await supabase
             .from('companies')
@@ -359,21 +312,27 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
             .eq('id', userData.company_id)
             .single()
 
-          if (supplierEmail) {
-            await fetch('/api/requests/notify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                requestId: newRequest.id,
-                sheetId: newSheet.id,
-                supplierEmail,
-                supplierName,
-                productName: formData.productName,
-                requesterName: userData.full_name,
-                requesterCompany: requesterCompany?.name,
-              })
+          // Use selected contact if available, otherwise let server look up by company
+          const selectedContact = formData.selectedContactId
+            ? supplierContacts.find(c => c.id === formData.selectedContactId)
+            : null
+
+          await fetch('/api/requests/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              requestId: newRequest.id,
+              sheetId: newSheet.id,
+              supplierCompanyId: formData.supplierId,
+              ...(selectedContact?.email && {
+                supplierEmail: selectedContact.email,
+                supplierName: selectedContact.full_name,
+              }),
+              productName: formData.productName,
+              requesterName: userData.full_name,
+              requesterCompany: requesterCompany?.name,
             })
-          }
+          })
         } catch (emailError) {
           console.error('Error sending request notification:', emailError)
           // Non-fatal: continue even if email fails

@@ -26,6 +26,7 @@ interface User {
   full_name?: string | null
   company_id?: string | null
   role?: string | null
+  is_company_main_contact?: boolean | null
   created_at?: string | null
   modified_at?: string | null
   bubble_id?: string | null
@@ -157,7 +158,12 @@ export default function CustomersPage() {
         const lastActivity = allDates[0] || null
 
         const companyUsers = ((users || []) as User[]).filter(u => u.company_id === company.id)
-        const primaryContact = companyUsers.find(u => u.role === 'admin') || companyUsers[0] || null
+        const primaryContact =
+          companyUsers.find(u => u.is_company_main_contact === true) ||
+          companyUsers.find(
+            u => u.full_name && u.full_name !== 'Unknown' && !u.email?.includes('placeholder')
+          ) ||
+          null
 
         return {
           company,

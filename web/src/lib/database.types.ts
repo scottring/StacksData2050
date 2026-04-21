@@ -10,27 +10,30 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.4"
   }
   public: {
     Tables: {
       _migration_id_map: {
         Row: {
           bubble_id: string
+          created_at: string | null
           entity_type: string
-          migrated_at: string | null
+          id: string
           supabase_id: string
         }
         Insert: {
           bubble_id: string
+          created_at?: string | null
           entity_type: string
-          migrated_at?: string | null
+          id?: string
           supabase_id: string
         }
         Update: {
           bubble_id?: string
+          created_at?: string | null
           entity_type?: string
-          migrated_at?: string | null
+          id?: string
           supabase_id?: string
         }
         Relationships: []
@@ -71,10 +74,82 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_answer_documents_answer"
+            foreignKeyName: "answer_documents_answer_id_fkey"
             columns: ["answer_id"]
             isOneToOne: false
             referencedRelation: "answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      answer_flags: {
+        Row: {
+          answer_id: string
+          flagged_at: string | null
+          flagged_by: string | null
+          id: string
+          reason: string
+          resolved_at: string | null
+          resolved_by: string | null
+          sheet_id: string
+          status: string | null
+        }
+        Insert: {
+          answer_id: string
+          flagged_at?: string | null
+          flagged_by?: string | null
+          id?: string
+          reason: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sheet_id: string
+          status?: string | null
+        }
+        Update: {
+          answer_id?: string
+          flagged_at?: string | null
+          flagged_by?: string | null
+          id?: string
+          reason?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          sheet_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answer_flags_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_flags_flagged_by_fkey"
+            columns: ["flagged_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_flags_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answer_flags_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
             referencedColumns: ["id"]
           },
         ]
@@ -183,26 +258,26 @@ export type Database = {
       }
       answer_text_choices: {
         Row: {
-          answer_id: string | null
+          answer_id: string
           id: string
           order_number: number | null
-          text_choice: string | null
+          text_choice: string
         }
         Insert: {
-          answer_id?: string | null
+          answer_id: string
           id?: string
           order_number?: number | null
-          text_choice?: string | null
+          text_choice: string
         }
         Update: {
-          answer_id?: string | null
+          answer_id?: string
           id?: string
           order_number?: number | null
-          text_choice?: string | null
+          text_choice?: string
         }
         Relationships: [
           {
-            foreignKeyName: "fk_answer_text_choices_answer"
+            foreignKeyName: "answer_text_choices_answer_id_fkey"
             columns: ["answer_id"]
             isOneToOne: false
             referencedRelation: "answers"
@@ -212,6 +287,7 @@ export type Database = {
       }
       answers: {
         Row: {
+          additional_notes: string | null
           answer_id_number: number | null
           answer_name: string | null
           boolean_value: boolean | null
@@ -222,11 +298,9 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           custom_comment_text: string | null
-          custom_list_row_id: string | null
           custom_row_text: string | null
           customer_id: string | null
           date_value: string | null
-          enter_value_id: string | null
           file_url: string | null
           id: string
           import_double_check: string | null
@@ -238,6 +312,7 @@ export type Database = {
           originating_question_id: string | null
           parent_question_id: string | null
           parent_subsection_id: string | null
+          question_id: string | null
           sheet_id: string | null
           slug: string | null
           stack_id: string | null
@@ -250,6 +325,7 @@ export type Database = {
           version_in_sheet: number | null
         }
         Insert: {
+          additional_notes?: string | null
           answer_id_number?: number | null
           answer_name?: string | null
           boolean_value?: boolean | null
@@ -260,11 +336,9 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           custom_comment_text?: string | null
-          custom_list_row_id?: string | null
           custom_row_text?: string | null
           customer_id?: string | null
           date_value?: string | null
-          enter_value_id?: string | null
           file_url?: string | null
           id?: string
           import_double_check?: string | null
@@ -276,6 +350,7 @@ export type Database = {
           originating_question_id?: string | null
           parent_question_id?: string | null
           parent_subsection_id?: string | null
+          question_id?: string | null
           sheet_id?: string | null
           slug?: string | null
           stack_id?: string | null
@@ -288,6 +363,7 @@ export type Database = {
           version_in_sheet?: number | null
         }
         Update: {
+          additional_notes?: string | null
           answer_id_number?: number | null
           answer_name?: string | null
           boolean_value?: boolean | null
@@ -298,11 +374,9 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           custom_comment_text?: string | null
-          custom_list_row_id?: string | null
           custom_row_text?: string | null
           customer_id?: string | null
           date_value?: string | null
-          enter_value_id?: string | null
           file_url?: string | null
           id?: string
           import_double_check?: string | null
@@ -314,6 +388,7 @@ export type Database = {
           originating_question_id?: string | null
           parent_question_id?: string | null
           parent_subsection_id?: string | null
+          question_id?: string | null
           sheet_id?: string | null
           slug?: string | null
           stack_id?: string | null
@@ -362,13 +437,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "answers_list_table_row_id_fkey"
-            columns: ["list_table_row_id"]
-            isOneToOne: false
-            referencedRelation: "list_table_rows"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "answers_originating_question_id_fkey"
             columns: ["originating_question_id"]
             isOneToOne: false
@@ -390,6 +458,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "answers_sheet_id_fkey"
             columns: ["sheet_id"]
             isOneToOne: false
@@ -408,13 +483,6 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_answers_enter_value"
-            columns: ["enter_value_id"]
-            isOneToOne: false
-            referencedRelation: "answers"
             referencedColumns: ["id"]
           },
         ]
@@ -476,6 +544,209 @@ export type Database = {
         }
         Relationships: []
       }
+      canonical_answer_links: {
+        Row: {
+          answer_id: string | null
+          canonical_parameter_id: string | null
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          answer_id?: string | null
+          canonical_parameter_id?: string | null
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          answer_id?: string | null
+          canonical_parameter_id?: string | null
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canonical_answer_links_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "canonical_answer_links_canonical_parameter_id_fkey"
+            columns: ["canonical_parameter_id"]
+            isOneToOne: false
+            referencedRelation: "canonical_parameters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      canonical_parameter_tags: {
+        Row: {
+          canonical_parameter_id: string
+          created_at: string | null
+          tag_id: string
+        }
+        Insert: {
+          canonical_parameter_id: string
+          created_at?: string | null
+          tag_id: string
+        }
+        Update: {
+          canonical_parameter_id?: string
+          created_at?: string | null
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canonical_parameter_tags_canonical_parameter_id_fkey"
+            columns: ["canonical_parameter_id"]
+            isOneToOne: false
+            referencedRelation: "canonical_parameters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "canonical_parameter_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      canonical_parameters: {
+        Row: {
+          code: string
+          created_at: string | null
+          data_type: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          legacy_question_id: string | null
+          name: string
+          polarity: string | null
+          section: string | null
+          sort_order: number | null
+          subsection: string | null
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          legacy_question_id?: string | null
+          name: string
+          polarity?: string | null
+          section?: string | null
+          sort_order?: number | null
+          subsection?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          data_type?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          legacy_question_id?: string | null
+          name?: string
+          polarity?: string | null
+          section?: string | null
+          sort_order?: number | null
+          subsection?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "canonical_parameters_legacy_question_id_fkey"
+            columns: ["legacy_question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chemical_inventory: {
+        Row: {
+          cas_number: string
+          chemical_name: string | null
+          created_at: string | null
+          data_source: string | null
+          hazards: string[] | null
+          id: string
+          inchi_key: string | null
+          is_epa_tosca: boolean | null
+          is_food_contact_restricted: boolean | null
+          is_pfas: boolean | null
+          is_prop65: boolean | null
+          is_reach_svhc: boolean | null
+          is_rohs: boolean | null
+          iupac_name: string | null
+          last_updated: string | null
+          molecular_formula: string | null
+          molecular_weight: number | null
+          pubchem_cid: number | null
+          restrictions: string[] | null
+          risk_level: string | null
+          synonyms: string[] | null
+          warnings: string[] | null
+        }
+        Insert: {
+          cas_number: string
+          chemical_name?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          hazards?: string[] | null
+          id?: string
+          inchi_key?: string | null
+          is_epa_tosca?: boolean | null
+          is_food_contact_restricted?: boolean | null
+          is_pfas?: boolean | null
+          is_prop65?: boolean | null
+          is_reach_svhc?: boolean | null
+          is_rohs?: boolean | null
+          iupac_name?: string | null
+          last_updated?: string | null
+          molecular_formula?: string | null
+          molecular_weight?: number | null
+          pubchem_cid?: number | null
+          restrictions?: string[] | null
+          risk_level?: string | null
+          synonyms?: string[] | null
+          warnings?: string[] | null
+        }
+        Update: {
+          cas_number?: string
+          chemical_name?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          hazards?: string[] | null
+          id?: string
+          inchi_key?: string | null
+          is_epa_tosca?: boolean | null
+          is_food_contact_restricted?: boolean | null
+          is_pfas?: boolean | null
+          is_prop65?: boolean | null
+          is_reach_svhc?: boolean | null
+          is_rohs?: boolean | null
+          iupac_name?: string | null
+          last_updated?: string | null
+          molecular_formula?: string | null
+          molecular_weight?: number | null
+          pubchem_cid?: number | null
+          restrictions?: string[] | null
+          risk_level?: string | null
+          synonyms?: string[] | null
+          warnings?: string[] | null
+        }
+        Relationships: []
+      }
       choices: {
         Row: {
           bubble_id: string | null
@@ -487,6 +758,7 @@ export type Database = {
           modified_at: string | null
           order_number: number | null
           parent_question_id: string | null
+          question_id: string | null
         }
         Insert: {
           bubble_id?: string | null
@@ -498,6 +770,7 @@ export type Database = {
           modified_at?: string | null
           order_number?: number | null
           parent_question_id?: string | null
+          question_id?: string | null
         }
         Update: {
           bubble_id?: string | null
@@ -509,6 +782,7 @@ export type Database = {
           modified_at?: string | null
           order_number?: number | null
           parent_question_id?: string | null
+          question_id?: string | null
         }
         Relationships: [
           {
@@ -525,41 +799,39 @@ export type Database = {
             referencedRelation: "questions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "choices_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
         ]
       }
       comments: {
         Row: {
-          bubble_id: string | null
-          comment_type: string | null
-          content: string | null
+          content: string
           created_at: string | null
           created_by: string | null
           id: string
-          modified_at: string | null
-          parent_entity_id: string | null
-          parent_entity_type: string | null
+          parent_id: string
+          parent_type: string
         }
         Insert: {
-          bubble_id?: string | null
-          comment_type?: string | null
-          content?: string | null
+          content: string
           created_at?: string | null
           created_by?: string | null
           id?: string
-          modified_at?: string | null
-          parent_entity_id?: string | null
-          parent_entity_type?: string | null
+          parent_id: string
+          parent_type: string
         }
         Update: {
-          bubble_id?: string | null
-          comment_type?: string | null
-          content?: string | null
+          content?: string
           created_at?: string | null
           created_by?: string | null
           id?: string
-          modified_at?: string | null
-          parent_entity_id?: string | null
-          parent_entity_type?: string | null
+          parent_id?: string
+          parent_type?: string
         }
         Relationships: [
           {
@@ -574,10 +846,9 @@ export type Database = {
       companies: {
         Row: {
           active: boolean | null
-          admin_id: string | null
           bubble_id: string | null
           created_at: string | null
-          created_by: string | null
+          email_domain: string | null
           email_suffix: string | null
           hide_hq_import: boolean | null
           id: string
@@ -589,26 +860,23 @@ export type Database = {
           name: string
           name_lower_case: string | null
           patch_status_applied: boolean | null
-          plan_id: string | null
           plan_started_at: string | null
           premium_features_requested: string[] | null
           show_as_supplier: boolean | null
           slug: string | null
-          stack_id: string | null
           subscription_anniversary_date: string | null
           subscription_cancel_at_trial: boolean | null
           subscription_canceled: boolean | null
           subscription_expired: boolean | null
           subscription_sheets_allowed: number | null
           subscription_trial_ends: string | null
-          supplier_assignment_log: string[] | null
+          type: string | null
         }
         Insert: {
           active?: boolean | null
-          admin_id?: string | null
           bubble_id?: string | null
           created_at?: string | null
-          created_by?: string | null
+          email_domain?: string | null
           email_suffix?: string | null
           hide_hq_import?: boolean | null
           id?: string
@@ -620,26 +888,23 @@ export type Database = {
           name: string
           name_lower_case?: string | null
           patch_status_applied?: boolean | null
-          plan_id?: string | null
           plan_started_at?: string | null
           premium_features_requested?: string[] | null
           show_as_supplier?: boolean | null
           slug?: string | null
-          stack_id?: string | null
           subscription_anniversary_date?: string | null
           subscription_cancel_at_trial?: boolean | null
           subscription_canceled?: boolean | null
           subscription_expired?: boolean | null
           subscription_sheets_allowed?: number | null
           subscription_trial_ends?: string | null
-          supplier_assignment_log?: string[] | null
+          type?: string | null
         }
         Update: {
           active?: boolean | null
-          admin_id?: string | null
           bubble_id?: string | null
           created_at?: string | null
-          created_by?: string | null
+          email_domain?: string | null
           email_suffix?: string | null
           hide_hq_import?: boolean | null
           id?: string
@@ -651,73 +916,19 @@ export type Database = {
           name?: string
           name_lower_case?: string | null
           patch_status_applied?: boolean | null
-          plan_id?: string | null
           plan_started_at?: string | null
           premium_features_requested?: string[] | null
           show_as_supplier?: boolean | null
           slug?: string | null
-          stack_id?: string | null
           subscription_anniversary_date?: string | null
           subscription_cancel_at_trial?: boolean | null
           subscription_canceled?: boolean | null
           subscription_expired?: boolean | null
           subscription_sheets_allowed?: number | null
           subscription_trial_ends?: string | null
-          supplier_assignment_log?: string[] | null
+          type?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "companies_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "companies_stack_id_fkey"
-            columns: ["stack_id"]
-            isOneToOne: false
-            referencedRelation: "stacks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_companies_created_by"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      company_demo_interactions: {
-        Row: {
-          company_id: string
-          demo_company_id: string
-        }
-        Insert: {
-          company_id: string
-          demo_company_id: string
-        }
-        Update: {
-          company_id?: string
-          demo_company_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_demo_interactions_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "company_demo_interactions_demo_company_id_fkey"
-            columns: ["demo_company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       company_employees: {
         Row: {
@@ -779,9 +990,107 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          accepted_at: string | null
+          company_id: string | null
+          company_name: string | null
+          created_at: string | null
+          created_by: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          invitation_type: string | null
+          notes: string | null
+          request_id: string | null
+          sent_at: string | null
+          token: string
+          trial_batch_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          invitation_type?: string | null
+          notes?: string | null
+          request_id?: string | null
+          sent_at?: string | null
+          token: string
+          trial_batch_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          invitation_type?: string | null
+          notes?: string | null
+          request_id?: string | null
+          sent_at?: string | null
+          token?: string
+          trial_batch_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_invitations_trial_batch"
+            columns: ["trial_batch_id"]
+            isOneToOne: false
+            referencedRelation: "trial_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "approved_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "pending_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       list_table_columns: {
         Row: {
           bubble_id: string | null
+          choice_options: Json | null
           created_at: string | null
           created_by: string | null
           id: string
@@ -789,10 +1098,12 @@ export type Database = {
           name: string
           order_number: number | null
           parent_table_id: string | null
+          question_id: string | null
           response_type: string | null
         }
         Insert: {
           bubble_id?: string | null
+          choice_options?: Json | null
           created_at?: string | null
           created_by?: string | null
           id?: string
@@ -800,10 +1111,12 @@ export type Database = {
           name: string
           order_number?: number | null
           parent_table_id?: string | null
+          question_id?: string | null
           response_type?: string | null
         }
         Update: {
           bubble_id?: string | null
+          choice_options?: Json | null
           created_at?: string | null
           created_by?: string | null
           id?: string
@@ -811,6 +1124,7 @@ export type Database = {
           name?: string
           order_number?: number | null
           parent_table_id?: string | null
+          question_id?: string | null
           response_type?: string | null
         }
         Relationships: [
@@ -826,6 +1140,13 @@ export type Database = {
             columns: ["parent_table_id"]
             isOneToOne: false
             referencedRelation: "list_tables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_table_columns_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
             referencedColumns: ["id"]
           },
         ]
@@ -900,41 +1221,77 @@ export type Database = {
           },
         ]
       }
+      normalization_mappings: {
+        Row: {
+          canonical_parameter_id: string | null
+          created_at: string | null
+          id: string
+          legacy_question_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_parameter_id?: string | null
+          created_at?: string | null
+          id?: string
+          legacy_question_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_parameter_id?: string | null
+          created_at?: string | null
+          id?: string
+          legacy_question_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "normalization_mappings_canonical_parameter_id_fkey"
+            columns: ["canonical_parameter_id"]
+            isOneToOne: false
+            referencedRelation: "canonical_parameters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "normalization_mappings_legacy_question_id_fkey"
+            columns: ["legacy_question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           company_id: string | null
           created_at: string | null
+          event_type: string
           id: string
-          link: string | null
-          message: string | null
-          read: boolean | null
           read_at: string | null
-          title: string
-          type: string
+          sent_at: string | null
+          sheet_id: string | null
           user_id: string | null
         }
         Insert: {
           company_id?: string | null
           created_at?: string | null
+          event_type: string
           id?: string
-          link?: string | null
-          message?: string | null
-          read?: boolean | null
           read_at?: string | null
-          title: string
-          type: string
+          sent_at?: string | null
+          sheet_id?: string | null
           user_id?: string | null
         }
         Update: {
           company_id?: string | null
           created_at?: string | null
+          event_type?: string
           id?: string
-          link?: string | null
-          message?: string | null
-          read?: boolean | null
           read_at?: string | null
-          title?: string
-          type?: string
+          sent_at?: string | null
+          sheet_id?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -943,6 +1300,20 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1015,6 +1386,51 @@ export type Database = {
           },
         ]
       }
+      question_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          question_id: string
+          sheet_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          question_id: string
+          sheet_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          question_id?: string
+          sheet_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_comments_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_comments_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       question_companies: {
         Row: {
           company_id: string
@@ -1030,14 +1446,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_question_companies_company"
+            foreignKeyName: "question_companies_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_question_companies_question"
+            foreignKeyName: "question_companies_question_id_fkey"
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "questions"
@@ -1047,16 +1463,22 @@ export type Database = {
       }
       question_tags: {
         Row: {
-          question_id: string
-          tag_id: string
+          created_at: string | null
+          id: string
+          question_id: string | null
+          tag_id: string | null
         }
         Insert: {
-          question_id: string
-          tag_id: string
+          created_at?: string | null
+          id?: string
+          question_id?: string | null
+          tag_id?: string | null
         }
         Update: {
-          question_id?: string
-          tag_id?: string
+          created_at?: string | null
+          id?: string
+          question_id?: string | null
+          tag_id?: string | null
         }
         Relationships: [
           {
@@ -1078,7 +1500,6 @@ export type Database = {
       questions: {
         Row: {
           a_q_help: string | null
-          association_id: string | null
           bubble_id: string | null
           clarification: string | null
           clarification_yes_no: boolean | null
@@ -1101,22 +1522,20 @@ export type Database = {
           question_description: string | null
           question_id_number: number | null
           question_type: string | null
-          questioneiar_id: string | null
           required: boolean | null
+          response_type: string | null
           section_name_sort: string | null
           section_sort_number: number | null
           slug: string | null
-          stack_id: string | null
           static_text: string | null
+          subsection_id: string | null
           subsection_name_sort: string | null
           subsection_sort_number: number | null
           support_file_reason: string | null
           support_file_requested: boolean | null
-          the_association_id: string | null
         }
         Insert: {
           a_q_help?: string | null
-          association_id?: string | null
           bubble_id?: string | null
           clarification?: string | null
           clarification_yes_no?: boolean | null
@@ -1139,22 +1558,20 @@ export type Database = {
           question_description?: string | null
           question_id_number?: number | null
           question_type?: string | null
-          questioneiar_id?: string | null
           required?: boolean | null
+          response_type?: string | null
           section_name_sort?: string | null
           section_sort_number?: number | null
           slug?: string | null
-          stack_id?: string | null
           static_text?: string | null
+          subsection_id?: string | null
           subsection_name_sort?: string | null
           subsection_sort_number?: number | null
           support_file_reason?: string | null
           support_file_requested?: boolean | null
-          the_association_id?: string | null
         }
         Update: {
           a_q_help?: string | null
-          association_id?: string | null
           bubble_id?: string | null
           clarification?: string | null
           clarification_yes_no?: boolean | null
@@ -1177,25 +1594,24 @@ export type Database = {
           question_description?: string | null
           question_id_number?: number | null
           question_type?: string | null
-          questioneiar_id?: string | null
           required?: boolean | null
+          response_type?: string | null
           section_name_sort?: string | null
           section_sort_number?: number | null
           slug?: string | null
-          stack_id?: string | null
           static_text?: string | null
+          subsection_id?: string | null
           subsection_name_sort?: string | null
           subsection_sort_number?: number | null
           support_file_reason?: string | null
           support_file_requested?: boolean | null
-          the_association_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "questions_association_id_fkey"
-            columns: ["association_id"]
+            foreignKeyName: "fk_questions_parent_choice"
+            columns: ["parent_choice_id"]
             isOneToOne: false
-            referencedRelation: "associations"
+            referencedRelation: "choices"
             referencedColumns: ["id"]
           },
           {
@@ -1220,13 +1636,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "questions_parent_choice_id_fkey"
-            columns: ["parent_choice_id"]
-            isOneToOne: false
-            referencedRelation: "choices"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "questions_parent_section_id_fkey"
             columns: ["parent_section_id"]
             isOneToOne: false
@@ -1241,44 +1650,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "questions_stack_id_fkey"
-            columns: ["stack_id"]
+            foreignKeyName: "questions_subsection_id_fkey"
+            columns: ["subsection_id"]
             isOneToOne: false
-            referencedRelation: "stacks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "questions_the_association_id_fkey"
-            columns: ["the_association_id"]
-            isOneToOne: false
-            referencedRelation: "associations"
+            referencedRelation: "subsections"
             referencedColumns: ["id"]
           },
         ]
       }
       request_tags: {
         Row: {
+          created_at: string | null
+          id: string
           request_id: string
           tag_id: string
         }
         Insert: {
+          created_at?: string | null
+          id?: string
           request_id: string
           tag_id: string
         }
         Update: {
+          created_at?: string | null
+          id?: string
           request_id?: string
           tag_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "fk_request_tags_request"
+            foreignKeyName: "request_tags_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "approved_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_tags_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "pending_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_tags_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "requests"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_request_tags_tag"
+            foreignKeyName: "request_tags_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
@@ -1305,13 +1727,18 @@ export type Database = {
           last_share_date_2: string | null
           manufacturer_marked_as_provided: boolean | null
           modified_at: string | null
+          notes: string | null
+          owner_company_id: string | null
           processed: boolean | null
           product_name: string | null
+          reader_company_id: string | null
           requesting_from_id: string | null
           requestor_id: string | null
           sheet_id: string | null
           show_as_removed: boolean | null
           slug: string | null
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
           bubble_id?: string | null
@@ -1331,13 +1758,18 @@ export type Database = {
           last_share_date_2?: string | null
           manufacturer_marked_as_provided?: boolean | null
           modified_at?: string | null
+          notes?: string | null
+          owner_company_id?: string | null
           processed?: boolean | null
           product_name?: string | null
+          reader_company_id?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
           show_as_removed?: boolean | null
           slug?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
           bubble_id?: string | null
@@ -1357,13 +1789,18 @@ export type Database = {
           last_share_date_2?: string | null
           manufacturer_marked_as_provided?: boolean | null
           modified_at?: string | null
+          notes?: string | null
+          owner_company_id?: string | null
           processed?: boolean | null
           product_name?: string | null
+          reader_company_id?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
           show_as_removed?: boolean | null
           slug?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1371,6 +1808,20 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_owner_company_id_fkey"
+            columns: ["owner_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_reader_company_id_fkey"
+            columns: ["reader_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
           {
@@ -1440,7 +1891,6 @@ export type Database = {
           modified_at: string | null
           name: string
           order_number: number | null
-          questionnaire_id: string | null
           questionnaire_text: string | null
           stack_id: string | null
         }
@@ -1454,7 +1904,6 @@ export type Database = {
           modified_at?: string | null
           name: string
           order_number?: number | null
-          questionnaire_id?: string | null
           questionnaire_text?: string | null
           stack_id?: string | null
         }
@@ -1468,7 +1917,6 @@ export type Database = {
           modified_at?: string | null
           name?: string
           order_number?: number | null
-          questionnaire_id?: string | null
           questionnaire_text?: string | null
           stack_id?: string | null
         }
@@ -1492,6 +1940,64 @@ export type Database = {
             columns: ["stack_id"]
             isOneToOne: false
             referencedRelation: "stacks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sheet_chemicals: {
+        Row: {
+          answer_id: string | null
+          chemical_id: string
+          concentration: number | null
+          concentration_unit: string | null
+          created_at: string | null
+          id: string
+          list_table_row_id: string | null
+          sheet_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          answer_id?: string | null
+          chemical_id: string
+          concentration?: number | null
+          concentration_unit?: string | null
+          created_at?: string | null
+          id?: string
+          list_table_row_id?: string | null
+          sheet_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          answer_id?: string | null
+          chemical_id?: string
+          concentration?: number | null
+          concentration_unit?: string | null
+          created_at?: string | null
+          id?: string
+          list_table_row_id?: string | null
+          sheet_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sheet_chemicals_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sheet_chemicals_chemical_id_fkey"
+            columns: ["chemical_id"]
+            isOneToOne: false
+            referencedRelation: "chemical_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sheet_chemicals_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
             referencedColumns: ["id"]
           },
         ]
@@ -1544,14 +2050,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_sheet_questions_question"
+            foreignKeyName: "sheet_questions_question_id_fkey"
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "questions"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_sheet_questions_sheet"
+            foreignKeyName: "sheet_questions_sheet_id_fkey"
             columns: ["sheet_id"]
             isOneToOne: false
             referencedRelation: "sheets"
@@ -1703,14 +2209,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_sheet_users_sheet"
+            foreignKeyName: "sheet_supplier_users_assigned_sheet_id_fkey"
             columns: ["sheet_id"]
             isOneToOne: false
             referencedRelation: "sheets"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_sheet_users_user"
+            foreignKeyName: "sheet_supplier_users_assigned_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -1720,14 +2226,20 @@ export type Database = {
       }
       sheet_tags: {
         Row: {
+          created_at: string | null
+          id: string
           sheet_id: string
           tag_id: string
         }
         Insert: {
+          created_at?: string | null
+          id?: string
           sheet_id: string
           tag_id: string
         }
         Update: {
+          created_at?: string | null
+          id?: string
           sheet_id?: string
           tag_id?: string
         }
@@ -1750,7 +2262,8 @@ export type Database = {
       }
       sheets: {
         Row: {
-          requesting_company_id: string | null
+          approved_at: string | null
+          assigned_to_company_id: string | null
           bubble_id: string | null
           company_id: string | null
           contact_profile_id: string | null
@@ -1768,13 +2281,16 @@ export type Database = {
           name: string
           name_lower_case: string | null
           new_name: boolean | null
-          status: string | null
+          new_status: string | null
           original_requestor_assoc_id: string | null
           prev_sheet_id: string | null
+          requesting_company_id: string | null
           requestor_email: string | null
           requestor_name: string | null
           slug: string | null
           stack_id: string | null
+          status: string | null
+          submitted_at: string | null
           supplier_assignment_log: string[] | null
           test_being_deleted: boolean | null
           unread_comment: boolean | null
@@ -1788,7 +2304,8 @@ export type Database = {
           version_lock: boolean | null
         }
         Insert: {
-          requesting_company_id?: string | null
+          approved_at?: string | null
+          assigned_to_company_id?: string | null
           bubble_id?: string | null
           company_id?: string | null
           contact_profile_id?: string | null
@@ -1806,13 +2323,16 @@ export type Database = {
           name: string
           name_lower_case?: string | null
           new_name?: boolean | null
-          status?: string | null
+          new_status?: string | null
           original_requestor_assoc_id?: string | null
           prev_sheet_id?: string | null
+          requesting_company_id?: string | null
           requestor_email?: string | null
           requestor_name?: string | null
           slug?: string | null
           stack_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
           supplier_assignment_log?: string[] | null
           test_being_deleted?: boolean | null
           unread_comment?: boolean | null
@@ -1826,7 +2346,8 @@ export type Database = {
           version_lock?: boolean | null
         }
         Update: {
-          requesting_company_id?: string | null
+          approved_at?: string | null
+          assigned_to_company_id?: string | null
           bubble_id?: string | null
           company_id?: string | null
           contact_profile_id?: string | null
@@ -1844,13 +2365,16 @@ export type Database = {
           name?: string
           name_lower_case?: string | null
           new_name?: boolean | null
-          status?: string | null
+          new_status?: string | null
           original_requestor_assoc_id?: string | null
           prev_sheet_id?: string | null
+          requesting_company_id?: string | null
           requestor_email?: string | null
           requestor_name?: string | null
           slug?: string | null
           stack_id?: string | null
+          status?: string | null
+          submitted_at?: string | null
           supplier_assignment_log?: string[] | null
           test_being_deleted?: boolean | null
           unread_comment?: boolean | null
@@ -1865,22 +2389,8 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_sheets_father_sheet"
-            columns: ["father_sheet_id"]
-            isOneToOne: false
-            referencedRelation: "sheets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_sheets_prev_sheet"
-            columns: ["prev_sheet_id"]
-            isOneToOne: false
-            referencedRelation: "sheets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sheets_requesting_company_id_fkey"
-            columns: ["requesting_company_id"]
+            foreignKeyName: "sheets_assigned_to_company_id_fkey"
+            columns: ["assigned_to_company_id"]
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
@@ -1893,6 +2403,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sheets_contact_profile_id_fkey"
+            columns: ["contact_profile_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sheets_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -1900,8 +2417,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sheets_father_sheet_id_fkey"
+            columns: ["father_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sheets_original_requestor_assoc_id_fkey"
             columns: ["original_requestor_assoc_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sheets_prev_sheet_id_fkey"
+            columns: ["prev_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sheets_requesting_company_id_fkey"
+            columns: ["requesting_company_id"]
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
@@ -2167,8 +2705,189 @@ export type Database = {
           },
         ]
       }
+      trial_activity_events: {
+        Row: {
+          created_at: string | null
+          email: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          page_path: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          page_path?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      trial_batches: {
+        Row: {
+          accepted_count: number | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          name: string
+          sent_count: number | null
+          total_count: number | null
+        }
+        Insert: {
+          accepted_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name: string
+          sent_count?: number | null
+          total_count?: number | null
+        }
+        Update: {
+          accepted_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name?: string
+          sent_count?: number | null
+          total_count?: number | null
+        }
+        Relationships: []
+      }
+      trial_discovery_responses: {
+        Row: {
+          biggest_surprise: string | null
+          company_name: string | null
+          concerns_questions: string | null
+          created_at: string | null
+          email: string
+          follow_up_responded_at: string | null
+          follow_up_sent_at: string | null
+          id: string
+          impact_measurement: string | null
+          invitation_id: string | null
+          learning_goals: string | null
+          likelihood_to_recommend: number | null
+          motivation_interest: string | null
+          platform_experience: string | null
+          remaining_questions: string | null
+          responded_at: string | null
+          success_definition: string | null
+          trial_completed_at: string | null
+          trial_started_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          biggest_surprise?: string | null
+          company_name?: string | null
+          concerns_questions?: string | null
+          created_at?: string | null
+          email: string
+          follow_up_responded_at?: string | null
+          follow_up_sent_at?: string | null
+          id?: string
+          impact_measurement?: string | null
+          invitation_id?: string | null
+          learning_goals?: string | null
+          likelihood_to_recommend?: number | null
+          motivation_interest?: string | null
+          platform_experience?: string | null
+          remaining_questions?: string | null
+          responded_at?: string | null
+          success_definition?: string | null
+          trial_completed_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          biggest_surprise?: string | null
+          company_name?: string | null
+          concerns_questions?: string | null
+          created_at?: string | null
+          email?: string
+          follow_up_responded_at?: string | null
+          follow_up_sent_at?: string | null
+          id?: string
+          impact_measurement?: string | null
+          invitation_id?: string | null
+          learning_goals?: string | null
+          likelihood_to_recommend?: number | null
+          motivation_interest?: string | null
+          platform_experience?: string | null
+          remaining_questions?: string | null
+          responded_at?: string | null
+          success_definition?: string | null
+          trial_completed_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_discovery_responses_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trial_issues: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          reporter_email: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reporter_email?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reporter_email?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
+          _deprecated_can_add_associations: boolean | null
+          _deprecated_can_add_companies: boolean | null
+          _deprecated_can_add_new_questions: boolean | null
+          _deprecated_can_add_new_sheet: boolean | null
+          _deprecated_can_add_new_stack: boolean | null
+          _deprecated_can_add_new_user: boolean | null
+          _deprecated_can_change_answers: boolean | null
+          _deprecated_can_change_sheet_status: boolean | null
+          _deprecated_can_change_status: boolean | null
+          _deprecated_can_run_reports: boolean | null
+          _deprecated_can_see_all_sheets: boolean | null
           a_lnk: string | null
           bubble_id: string | null
           comments: string | null
@@ -2180,6 +2899,7 @@ export type Database = {
           emails_changes: string[] | null
           first_name: string | null
           full_name: string | null
+          has_logged_in: boolean
           id: string
           invitation_sent: boolean | null
           is_company_main_contact: boolean | null
@@ -2191,7 +2911,9 @@ export type Database = {
           is_sup_get_email_notifications: boolean | null
           is_sup_reviewer: boolean | null
           is_sup_view_question_menu: boolean | null
+          is_super_admin: boolean | null
           is_supplier_pointguard: boolean | null
+          job_title: string | null
           language: string | null
           last_name: string | null
           modified_at: string | null
@@ -2205,14 +2927,23 @@ export type Database = {
           prospect_agree: boolean | null
           prospect_company_text: string | null
           prospect_paid: boolean | null
-          prospect_plan_id: string | null
-          role: string | null
+          role: Database["public"]["Enums"]["user_role"]
           self_sign_up_invitation_code: string | null
           slug: string | null
-          stack_id: string | null
           user_type: string | null
         }
         Insert: {
+          _deprecated_can_add_associations?: boolean | null
+          _deprecated_can_add_companies?: boolean | null
+          _deprecated_can_add_new_questions?: boolean | null
+          _deprecated_can_add_new_sheet?: boolean | null
+          _deprecated_can_add_new_stack?: boolean | null
+          _deprecated_can_add_new_user?: boolean | null
+          _deprecated_can_change_answers?: boolean | null
+          _deprecated_can_change_sheet_status?: boolean | null
+          _deprecated_can_change_status?: boolean | null
+          _deprecated_can_run_reports?: boolean | null
+          _deprecated_can_see_all_sheets?: boolean | null
           a_lnk?: string | null
           bubble_id?: string | null
           comments?: string | null
@@ -2224,7 +2955,8 @@ export type Database = {
           emails_changes?: string[] | null
           first_name?: string | null
           full_name?: string | null
-          id?: string
+          has_logged_in?: boolean
+          id: string
           invitation_sent?: boolean | null
           is_company_main_contact?: boolean | null
           is_company_point_person?: boolean | null
@@ -2235,7 +2967,9 @@ export type Database = {
           is_sup_get_email_notifications?: boolean | null
           is_sup_reviewer?: boolean | null
           is_sup_view_question_menu?: boolean | null
+          is_super_admin?: boolean | null
           is_supplier_pointguard?: boolean | null
+          job_title?: string | null
           language?: string | null
           last_name?: string | null
           modified_at?: string | null
@@ -2249,14 +2983,23 @@ export type Database = {
           prospect_agree?: boolean | null
           prospect_company_text?: string | null
           prospect_paid?: boolean | null
-          prospect_plan_id?: string | null
-          role?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
           self_sign_up_invitation_code?: string | null
           slug?: string | null
-          stack_id?: string | null
           user_type?: string | null
         }
         Update: {
+          _deprecated_can_add_associations?: boolean | null
+          _deprecated_can_add_companies?: boolean | null
+          _deprecated_can_add_new_questions?: boolean | null
+          _deprecated_can_add_new_sheet?: boolean | null
+          _deprecated_can_add_new_stack?: boolean | null
+          _deprecated_can_add_new_user?: boolean | null
+          _deprecated_can_change_answers?: boolean | null
+          _deprecated_can_change_sheet_status?: boolean | null
+          _deprecated_can_change_status?: boolean | null
+          _deprecated_can_run_reports?: boolean | null
+          _deprecated_can_see_all_sheets?: boolean | null
           a_lnk?: string | null
           bubble_id?: string | null
           comments?: string | null
@@ -2268,6 +3011,7 @@ export type Database = {
           emails_changes?: string[] | null
           first_name?: string | null
           full_name?: string | null
+          has_logged_in?: boolean
           id?: string
           invitation_sent?: boolean | null
           is_company_main_contact?: boolean | null
@@ -2279,7 +3023,9 @@ export type Database = {
           is_sup_get_email_notifications?: boolean | null
           is_sup_reviewer?: boolean | null
           is_sup_view_question_menu?: boolean | null
+          is_super_admin?: boolean | null
           is_supplier_pointguard?: boolean | null
+          job_title?: string | null
           language?: string | null
           last_name?: string | null
           modified_at?: string | null
@@ -2293,11 +3039,9 @@ export type Database = {
           prospect_agree?: boolean | null
           prospect_company_text?: string | null
           prospect_paid?: boolean | null
-          prospect_plan_id?: string | null
-          role?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
           self_sign_up_invitation_code?: string | null
           slug?: string | null
-          stack_id?: string | null
           user_type?: string | null
         }
         Relationships: [
@@ -2308,27 +3052,208 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "users_stack_id_fkey"
-            columns: ["stack_id"]
-            isOneToOne: false
-            referencedRelation: "stacks"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      approved_requests: {
+        Row: {
+          bubble_id: string | null
+          comment_requestor: string | null
+          comment_supplier: string | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          creator_email: string | null
+          days_to_first_share: number | null
+          days_to_first_share_2: number | null
+          days_to_last_share: number | null
+          days_to_last_share_2: number | null
+          first_shared_date: string | null
+          first_shared_date_2: string | null
+          id: string | null
+          last_share_date: string | null
+          last_share_date_2: string | null
+          manufacturer_marked_as_provided: boolean | null
+          modified_at: string | null
+          notes: string | null
+          owner_company_id: string | null
+          owner_company_name: string | null
+          processed: boolean | null
+          product_name: string | null
+          reader_company_id: string | null
+          reader_company_name: string | null
+          requesting_from_id: string | null
+          requestor_id: string | null
+          sheet_id: string | null
+          sheet_name: string | null
+          show_as_removed: boolean | null
+          slug: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_owner_company_id_fkey"
+            columns: ["owner_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_reader_company_id_fkey"
+            columns: ["reader_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_requesting_from_id_fkey"
+            columns: ["requesting_from_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_requestor_id_fkey"
+            columns: ["requestor_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pending_requests: {
+        Row: {
+          bubble_id: string | null
+          comment_requestor: string | null
+          comment_supplier: string | null
+          created_at: string | null
+          created_by: string | null
+          created_by_name: string | null
+          creator_email: string | null
+          days_to_first_share: number | null
+          days_to_first_share_2: number | null
+          days_to_last_share: number | null
+          days_to_last_share_2: number | null
+          first_shared_date: string | null
+          first_shared_date_2: string | null
+          id: string | null
+          last_share_date: string | null
+          last_share_date_2: string | null
+          manufacturer_marked_as_provided: boolean | null
+          modified_at: string | null
+          notes: string | null
+          owner_company_id: string | null
+          owner_company_name: string | null
+          processed: boolean | null
+          product_name: string | null
+          reader_company_id: string | null
+          reader_company_name: string | null
+          requesting_from_id: string | null
+          requestor_id: string | null
+          sheet_id: string | null
+          sheet_name: string | null
+          show_as_removed: boolean | null
+          slug: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_owner_company_id_fkey"
+            columns: ["owner_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_reader_company_id_fkey"
+            columns: ["reader_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_requesting_from_id_fkey"
+            columns: ["requesting_from_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_requestor_id_fkey"
+            columns: ["requestor_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sheet_answers_display: {
+        Row: {
+          additional_notes: string | null
+          boolean_value: boolean | null
+          choice_content: string | null
+          choice_id: string | null
+          created_at: string | null
+          date_value: string | null
+          id: string | null
+          list_table_column_choice_options: Json | null
+          list_table_column_id: string | null
+          list_table_column_name: string | null
+          list_table_column_order: number | null
+          list_table_column_response_type: string | null
+          list_table_row_id: string | null
+          modified_at: string | null
+          number_value: number | null
+          question_content: string | null
+          question_id: string | null
+          question_name: string | null
+          question_order: number | null
+          response_type: string | null
+          section_sort_number: number | null
+          sheet_id: string | null
+          subsection_sort_number: number | null
+          text_value: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      get_my_company_id: { Args: never; Returns: string }
       is_super_admin: { Args: never; Returns: boolean }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
+      user_company_id: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "editor" | "viewer" | "reviewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2455,22 +3380,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "editor", "viewer", "reviewer"],
+    },
   },
 } as const
-
-// Convenience type aliases for common tables
-export type Answer = Tables<'answers'>
-export type Question = Tables<'questions'>
-export type Sheet = Tables<'sheets'>
-export type Section = Tables<'sections'>
-export type Subsection = Tables<'subsections'>
-export type Choice = Tables<'choices'>
-export type Company = Tables<'companies'>
-export type User = Tables<'users'>
-export type ListTable = Tables<'list_tables'>
-export type ListTableColumn = Tables<'list_table_columns'>
-export type ListTableRow = Tables<'list_table_rows'>
-export type Tag = Tables<'tags'>
-export type Request = Tables<'requests'>
-export type SheetStatus = Tables<'sheet_statuses'>

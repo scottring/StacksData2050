@@ -13,7 +13,6 @@ import {
 import {
   ArrowLeft,
   Building2,
-  Mail,
   MapPin,
   FileText,
   ChevronRight,
@@ -26,14 +25,13 @@ import type { Database } from '@/lib/database.types'
 import Link from 'next/link'
 import { SupplierDetailActions } from '@/components/suppliers/supplier-detail-actions'
 import { CreateFirstSheetButton } from '@/components/suppliers/create-first-sheet-button'
+import { ContactsCard } from '@/components/contacts/contacts-card'
 
 type Company = Database['public']['Tables']['companies']['Row']
-type User = Database['public']['Tables']['users']['Row']
 type Sheet = Database['public']['Tables']['sheets']['Row']
 
 interface SupplierDetails {
   company: Company
-  contacts: User[]
   sheets: Sheet[]
   myCompanyId: string
 }
@@ -106,12 +104,6 @@ async function getSupplierDetails(supplierId: string): Promise<SupplierDetails |
     return null
   }
 
-  // Fetch contacts at supplier company
-  const { data: contacts } = await supabase
-    .from('users')
-    .select('*')
-    .eq('company_id', supplierId)
-
   // Fetch sheets where:
   // - This company is the supplier (company_id = supplierId)
   // - My company requested them (requesting_company_id = myCompanyId)
@@ -124,7 +116,6 @@ async function getSupplierDetails(supplierId: string): Promise<SupplierDetails |
 
   return {
     company,
-    contacts: contacts || [],
     sheets: sheets || [],
     myCompanyId
   }
@@ -155,15 +146,8 @@ export default async function SupplierDetailPage({
     )
   }
 
-  const { company, contacts, sheets } = details
+  const { company, sheets } = details
 
-  // Filter out placeholder contacts
-  const realContacts = contacts.filter(c =>
-    c.full_name &&
-    c.full_name !== 'Unknown' &&
-    !c.email?.includes('placeholder')
-  )
-  const primaryContact = realContacts.find(c => c.role === 'admin') || realContacts[0]
   const completedSheets = sheets.filter(s => s.status === 'approved' || s.status === 'imported').length
   const inProgressSheets = sheets.filter(s => s.status === 'in_progress').length
   const pendingSheets = sheets.filter(s => s.status === 'pending' || s.status === 'flagged').length
@@ -312,60 +296,9 @@ export default async function SupplierDetailPage({
             </Card>
           </div>
 
-          {/* Contact info - takes 1/3 */}
+          {/* Contacts - takes 1/3 */}
           <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Primary Contact</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {primaryContact ? (
-                  <div className="space-y-3">
-                    <div className="font-medium text-lg">
-                      {primaryContact.full_name || 'No name'}
-                    </div>
-                    {primaryContact.email && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Mail className="h-4 w-4" />
-                        <a
-                          href={`mailto:${primaryContact.email}`}
-                          className="hover:text-foreground transition-colors"
-                        >
-                          {primaryContact.email}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground">No contact assigned</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {realContacts.length > 1 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Other Contacts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {realContacts
-                      .filter(c => c.id !== primaryContact?.id)
-                      .slice(0, 3)
-                      .map(contact => (
-                        <div key={contact.id} className="text-sm">
-                          <div className="font-medium">
-                            {contact.full_name}
-                          </div>
-                          {contact.email && (
-                            <div className="text-muted-foreground">{contact.email}</div>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            <ContactsCard companyId={company.id} />
           </div>
         </div>
       </div>

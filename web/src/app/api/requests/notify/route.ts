@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 
@@ -7,12 +8,39 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
+function getServiceClient() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
 export async function POST(request: Request) {
   try {
-    const { requestId, sheetId, supplierEmail, supplierName, productName, requesterName, requesterCompany } = await request.json()
+    const body = await request.json()
+    const { requestId, sheetId, productName, requesterName, requesterCompany } = body
+
+    // Resolve supplier email: accept direct email or look up by company ID
+    let supplierEmail = body.supplierEmail
+    let supplierName = body.supplierName
+
+    if (!supplierEmail && body.supplierCompanyId) {
+      const supabase = getServiceClient()
+      const { data: supplierUsers } = await supabase
+        .from('users')
+        .select('email, full_name')
+        .eq('company_id', body.supplierCompanyId)
+        .not('email', 'ilike', '%placeholder%')
+        .limit(1)
+
+      if (supplierUsers && supplierUsers.length > 0) {
+        supplierEmail = supplierUsers[0].email
+        supplierName = supplierName || supplierUsers[0].full_name
+      }
+    }
 
     if (!supplierEmail) {
-      return NextResponse.json({ error: 'Supplier email required' }, { status: 400 })
+      return NextResponse.json({ error: 'No supplier contact found' }, { status: 400 })
     }
 
     // Generate respond URL

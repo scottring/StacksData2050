@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, CheckCircle2, Mail } from 'lucide-react'
+import { Loader2, CheckCircle2, Mail, AlertTriangle, Copy } from 'lucide-react'
 
 interface InviteSupplierDialogProps {
   open: boolean
@@ -21,10 +20,16 @@ interface InviteSupplierDialogProps {
   onSuccess?: () => void
 }
 
+type SendResult =
+  | { kind: 'sent'; email: string }
+  | { kind: 'blocked'; email: string; reason: string; signupUrl: string }
+  | { kind: 'connected'; email: string; companyName: string | null; alreadyConnected: boolean }
+
 export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSupplierDialogProps) {
   const [submitting, setSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [result, setResult] = useState<SendResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     companyName: '',
@@ -36,71 +41,72 @@ export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSu
     setError(null)
 
     try {
-      const supabase = createClient()
-
-      // Get current user info
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('company_id, full_name')
-        .eq('id', user.id)
-        .single()
-
-      if (!userData?.company_id) throw new Error('No company found')
-
-      // Generate unique token
-      const token = crypto.randomUUID()
-
-      // Create company record for the new supplier
-      const { data: newCompany, error: companyError } = await supabase
-        .from('companies')
-        .insert({
-          name: formData.companyName || `Invited: ${formData.email}`,
-        })
-        .select()
-        .single()
-
-      if (companyError) throw companyError
-
-      // Create invitation record
-      const { data: invitation, error: inviteError } = await supabase
-        .from('invitations')
-        .insert({
+      const createRes = await fetch('/api/invitations/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           email: formData.email,
-          company_name: formData.companyName || null,
-          company_id: newCompany.id,
-          token,
-          created_by: user.id,
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          companyName: formData.companyName,
+        }),
+      })
+
+      if (!createRes.ok) {
+        const { error: errMsg } = await createRes.json().catch(() => ({ error: 'Failed to create invitation' }))
+        throw new Error(errMsg || 'Failed to create invitation')
+      }
+
+      const createBody = await createRes.json()
+      const { invitation, inviterName, existingUser, company } = createBody
+
+      if (existingUser) {
+        const ensureRes = await fetch('/api/relationships/ensure', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ supplierCompanyId: company.id }),
         })
-        .select()
-        .single()
+        const ensureBody = await ensureRes.json().catch(() => ({} as any))
 
-      if (inviteError) throw inviteError
+        if (!ensureRes.ok && !ensureBody?.alreadyConnected) {
+          throw new Error(ensureBody?.error || 'Failed to connect to existing supplier')
+        }
 
-      // Send invitation email
-      await fetch('/api/invitations/send', {
+        setResult({
+          kind: 'connected',
+          email: formData.email,
+          companyName: company?.name ?? null,
+          alreadyConnected: !!ensureBody?.alreadyConnected,
+        })
+        onSuccess?.()
+        return
+      }
+
+      const sendRes = await fetch('/api/invitations/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           invitationId: invitation.id,
           email: formData.email,
           companyName: formData.companyName,
-          inviterName: userData.full_name,
+          inviterName,
         })
       })
 
-      setSuccess(true)
-      onSuccess?.()
+      const sendBody = await sendRes.json().catch(() => ({} as any))
+      if (!sendRes.ok) {
+        throw new Error(sendBody?.error || sendBody?.details || 'Failed to send invitation email')
+      }
 
-      // Reset and close after short delay
-      setTimeout(() => {
-        setFormData({ email: '', companyName: '' })
-        setSuccess(false)
-        onOpenChange(false)
-      }, 2000)
+      if (sendBody?.emailBlocked) {
+        setResult({
+          kind: 'blocked',
+          email: formData.email,
+          reason: sendBody.blockedReason || 'UNKNOWN',
+          signupUrl: sendBody.signupUrl,
+        })
+      } else {
+        setResult({ kind: 'sent', email: formData.email })
+      }
+      onSuccess?.()
 
     } catch (err: any) {
       console.error('Error inviting supplier:', err)
@@ -114,12 +120,13 @@ export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSu
     if (!submitting) {
       setFormData({ email: '', companyName: '' })
       setError(null)
-      setSuccess(false)
+      setResult(null)
+      setCopied(false)
       onOpenChange(false)
     }
   }
 
-  if (success) {
+  if (result?.kind === 'sent') {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent>
@@ -130,10 +137,82 @@ export function InviteSupplierDialog({ open, onOpenChange, onSuccess }: InviteSu
             <div className="text-center">
               <h3 className="text-lg font-semibold">Invitation Sent!</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                We've sent an invitation email to {formData.email}
+                We've sent an invitation email to {result.email}
               </p>
             </div>
+            <Button variant="outline" onClick={handleClose}>Close</Button>
           </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  if (result?.kind === 'connected') {
+    const companyLabel = result.companyName || 'the supplier'
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent>
+          <div className="flex flex-col items-center justify-center py-8 gap-4">
+            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle2 className="h-8 w-8 text-green-600" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">
+                {result.alreadyConnected ? 'Already Connected' : 'Connected!'}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {result.alreadyConnected
+                  ? `You are already connected to ${companyLabel} (${result.email} is an existing user).`
+                  : `${result.email} already has an account at ${companyLabel}. They will see your request on their dashboard.`}
+              </p>
+            </div>
+            <Button variant="outline" onClick={handleClose}>Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  if (result?.kind === 'blocked') {
+    const reasonLabel =
+      result.reason === 'DISABLE_OUTBOUND_EMAILS'
+        ? 'Outbound email is disabled in this environment (DISABLE_OUTBOUND_EMAILS=true).'
+        : result.reason === 'SENDGRID_NOT_CONFIGURED'
+          ? 'SendGrid is not configured in this environment.'
+          : 'Email delivery was skipped.'
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-700">
+              <AlertTriangle className="h-5 w-5" />
+              Invitation created, email not sent
+            </DialogTitle>
+            <DialogDescription>
+              {reasonLabel} The invitation row exists, but no email was delivered to {result.email}. Copy the signup link below and share it manually.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label>Signup link</Label>
+            <div className="flex gap-2">
+              <Input readOnly value={result.signupUrl} onFocus={(e) => e.currentTarget.select()} />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(result.signupUrl)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                {copied ? 'Copied' : 'Copy'}
+              </Button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleClose}>Close</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     )

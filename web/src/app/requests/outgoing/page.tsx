@@ -16,9 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, Loader2, FileText, Plus, ChevronRight, Send, CheckCircle2, Clock } from 'lucide-react'
+import { Search, Loader2, FileText, Plus, ChevronRight, Send, CheckCircle2, Clock, RefreshCw } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
+import { UpdateRequestDialog } from '@/components/sheets/update-request-dialog'
 import { cn } from '@/lib/utils'
 
 interface OutgoingRequest {
@@ -37,6 +38,7 @@ interface OutgoingRequest {
   } | null
   request_tags: Array<{
     tag: {
+      id: string
       name: string
     }
   }>
@@ -48,6 +50,16 @@ export default function OutgoingRequestsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
+  const [updateTarget, setUpdateTarget] = useState<{
+    id: string
+    sheet_id: string
+    sheet_name: string
+    supplier_name: string
+    supplier_company_id: string
+    existing_tags: string[]
+    existing_tag_ids: string[]
+  } | null>(null)
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
 
@@ -96,23 +108,23 @@ export default function OutgoingRequestsPage() {
     }
 
     const requestIds = requestData?.map((r: any) => r.id) || []
-    const tagsByRequest: Record<string, string[]> = {}
+    const tagsByRequest: Record<string, Array<{ id: string; name: string }>> = {}
     if (requestIds.length > 0) {
       const { data: rtData } = await supabase.from("request_tags").select("request_id, tag_id").in("request_id", requestIds)
       const tagIds = [...new Set(rtData?.map((rt: any) => rt.tag_id) || [])]
 
       if (tagIds.length > 0) {
         const { data: tagsData } = await supabase.from("tags").select("id, name").in("id", tagIds)
-        const tagNameMap = new Map(tagsData?.map((t: any) => [t.id, t.name]) || [])
+        const tagMap = new Map(tagsData?.map((t: any) => [t.id, { id: t.id, name: t.name }]) || [])
 
         rtData?.forEach((rt: any) => {
           if (!tagsByRequest[rt.request_id]) tagsByRequest[rt.request_id] = []
-          const name = tagNameMap.get(rt.tag_id)
-          if (name) tagsByRequest[rt.request_id].push(name)
+          const tag = tagMap.get(rt.tag_id)
+          if (tag) tagsByRequest[rt.request_id].push(tag)
         })
       }
     }
-    const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(name => ({ tag: { name } })) }))
+    const requestsWithTags = requestData?.map((r: any) => ({ ...r, request_tags: (tagsByRequest[r.id] || []).map(t => ({ tag: t })) }))
     setRequests((requestsWithTags as any) || [])
     setLoading(false)
   }, [])
@@ -247,7 +259,7 @@ export default function OutgoingRequestsPage() {
                 <TableHead className="font-semibold text-slate-700">Tags</TableHead>
                 <TableHead className="font-semibold text-slate-700">Status</TableHead>
                 <TableHead className="font-semibold text-slate-700">Created</TableHead>
-                <TableHead className="w-[100px]"></TableHead>
+                <TableHead className="w-[180px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -300,10 +312,33 @@ export default function OutgoingRequestsPage() {
                         })}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="rounded-lg text-slate-600 hover:text-slate-900">
-                          View
-                          <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="rounded-lg text-slate-600 hover:text-slate-900"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setUpdateTarget({
+                                id: request.id,
+                                sheet_id: request.sheet?.id || '',
+                                sheet_name: request.sheet?.name || '',
+                                supplier_name: request.reader_company?.name || '',
+                                supplier_company_id: request.reader_company?.id || '',
+                                existing_tags: request.request_tags?.map(rt => rt.tag.name) || [],
+                                existing_tag_ids: request.request_tags?.map(rt => rt.tag.id) || [],
+                              })
+                              setUpdateDialogOpen(true)
+                            }}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-1" />
+                            Update
+                          </Button>
+                          <Button variant="ghost" size="sm" className="rounded-lg text-slate-600 hover:text-slate-900">
+                            View
+                            <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )
@@ -317,6 +352,15 @@ export default function OutgoingRequestsPage() {
       <RequestSheetDialog
         open={requestDialogOpen}
         onOpenChange={setRequestDialogOpen}
+      />
+
+      <UpdateRequestDialog
+        open={updateDialogOpen}
+        onOpenChange={(open) => {
+          setUpdateDialogOpen(open)
+          if (!open) fetchRequests()
+        }}
+        request={updateTarget}
       />
     </AppLayout>
   )

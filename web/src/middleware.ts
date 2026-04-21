@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // TODO: Create user_role enum in database, then import from database.types
@@ -59,8 +60,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  console.log('[Middleware]', request.nextUrl.pathname, { userId: user?.id })
-
   // API routes that use API key authentication (skip session auth)
   if (request.nextUrl.pathname.startsWith('/api/v1/')) {
     // These routes handle their own authentication via API keys
@@ -68,7 +67,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Public routes (login, home, etc.)
-  const publicPaths = ['/', '/login', '/auth']
+  const publicPaths = ['/', '/login', '/auth', '/vision', '/demo']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path)
   )
@@ -93,7 +92,7 @@ export async function middleware(request: NextRequest) {
   // Get user's role from users table
   const { data: userData } = await supabase
     .from('users')
-    .select('role')
+    .select('role, has_logged_in')
     .eq('id', user.id)
     .single()
 
@@ -103,6 +102,14 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  if (userData.has_logged_in === false && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const service = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+    void service.from('users').update({ has_logged_in: true }).eq('id', user.id)
   }
 
   // Super admins bypass all role checks

@@ -63,16 +63,19 @@ function SignupContent() {
         return
       }
 
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('invitations')
-        .select('*')
-        .eq('token', token)
-        .is('accepted_at', null)
-        .gt('expires_at', new Date().toISOString())
-        .single()
+      const validateRes = await fetch('/api/invitations/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
 
-      if (error || !data) {
+      if (!validateRes.ok) {
+        setLoading(false)
+        return
+      }
+
+      const { invitation: data } = await validateRes.json()
+      if (!data) {
         setLoading(false)
         return
       }
@@ -197,65 +200,36 @@ function SignupContent() {
         throw new Error('Failed to create user account')
       }
 
-      // Check if the user needs email confirmation
-      if (!authData.session) {
-        await supabase
-          .from('invitations')
-          .update({ accepted_at: new Date().toISOString() })
-          .eq('id', invitation!.id)
+      // Finalize the app-level user row, company link, and invitation acceptance
+      // on the server with the service role (avoids RLS + works even when
+      // email confirmation is required and no session is returned).
+      const completeRes = await fetch('/api/auth/complete-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          authUserId: authData.user.id,
+          fullName: formData.fullName,
+          companyName: formData.companyName,
+        }),
+      })
 
+      if (!completeRes.ok) {
+        const body = await completeRes.json().catch(() => ({} as any))
+        throw new Error(body?.error || 'Failed to finalize account')
+      }
+
+      const { redirectSheetId } = await completeRes.json()
+
+      if (!authData.session) {
         setSignupComplete(true)
         setSubmitting(false)
         return
       }
 
-      // Determine company_id: use existing company or create new one
-      let companyId: string
-
-      if (invitation!.company_id) {
-        companyId = invitation!.company_id
-      } else {
-        const { data: company, error: companyError } = await supabase
-          .from('companies')
-          .insert({ name: formData.companyName })
-          .select()
-          .single()
-
-        if (companyError) throw companyError
-        companyId = company.id
-      }
-
-      // Create user record
-      const { error: userError } = await supabase
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          email: invitation!.email,
-          full_name: formData.fullName,
-          company_id: companyId,
-          role: 'company_admin',
-        })
-
-      if (userError) throw userError
-
-      // Mark invitation as accepted
-      await supabase
-        .from('invitations')
-        .update({ accepted_at: new Date().toISOString() })
-        .eq('id', invitation!.id)
-
-      // Redirect to request/sheet if linked
-      if (invitation!.request_id) {
-        const { data: request } = await supabase
-          .from('requests')
-          .select('sheet_id')
-          .eq('id', invitation!.request_id)
-          .single()
-
-        if (request) {
-          router.push(`/sheets/${request.sheet_id}`)
-          return
-        }
+      if (redirectSheetId) {
+        router.push(`/sheets/${redirectSheetId}`)
+        return
       }
 
       router.push('/dashboard')

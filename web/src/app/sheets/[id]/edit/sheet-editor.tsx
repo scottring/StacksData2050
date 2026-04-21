@@ -434,26 +434,16 @@ export function SheetEditor({
         .single()
 
       if (request) {
-        // Get customer's primary user email for notification
-        const { data: customerUsers } = await supabase
-          .from('users')
-          .select('email, full_name')
-          .eq('company_id', request.requestor_id)
-          .limit(1)
-
-        if (customerUsers && customerUsers.length > 0) {
-          // Send notification (non-blocking)
-          fetch('/api/requests/notify-submitted', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sheetId,
-              customerEmail: customerUsers[0].email,
-              customerName: customerUsers[0].full_name,
-              productName: sheetName,
-            })
-          }).catch(console.error)
-        }
+        // Send notification (non-blocking) -- server resolves email via service role
+        fetch('/api/requests/notify-submitted', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sheetId,
+            customerCompanyId: request.requestor_id,
+            productName: sheetName,
+          })
+        }).catch(console.error)
       }
 
       // Redirect to dashboard with success message

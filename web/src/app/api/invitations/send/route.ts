@@ -90,46 +90,45 @@ Click here to sign up: ${signupUrl}
 This invitation will expire in 30 days.
     `.trim()
 
-    // Send email via SendGrid
-    // TESTING SAFEGUARD: Check if emails are disabled
     if (process.env.DISABLE_OUTBOUND_EMAILS === 'true') {
       console.log('📧 EMAIL BLOCKED (DISABLE_OUTBOUND_EMAILS=true)')
       console.log('Would send to:', email)
       console.log('Signup URL:', signupUrl)
-      
-      // Still update sent_at for testing flow
-      await supabase
-        .from('invitations')
-        .update({ sent_at: new Date().toISOString() })
-        .eq('id', invitationId)
-      
-      return NextResponse.json({ success: true, emailBlocked: true })
+      return NextResponse.json({
+        success: true,
+        emailBlocked: true,
+        blockedReason: 'DISABLE_OUTBOUND_EMAILS',
+        signupUrl,
+      })
     }
 
-    // Send email via SendGrid
-    if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
-      await sgMail.send({
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL,
-        subject: `You've been invited to join StacksData`,
-        text: emailText,
-        html: emailHtml,
-      })
-      console.log('Invitation email sent to:', email)
-    } else {
-      // Fallback: log to console if SendGrid not configured
+    if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_FROM_EMAIL) {
       console.warn('SendGrid not configured. Email not sent.')
       console.log('Would send email to:', email)
       console.log('Signup URL:', signupUrl)
+      return NextResponse.json({
+        success: true,
+        emailBlocked: true,
+        blockedReason: 'SENDGRID_NOT_CONFIGURED',
+        signupUrl,
+      })
     }
 
-    // Update sent_at timestamp
+    await sgMail.send({
+      to: email,
+      from: process.env.SENDGRID_FROM_EMAIL,
+      subject: `You've been invited to join StacksData`,
+      text: emailText,
+      html: emailHtml,
+    })
+    console.log('Invitation email sent to:', email)
+
     await supabase
       .from('invitations')
       .update({ sent_at: new Date().toISOString() })
       .eq('id', invitationId)
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, emailBlocked: false, signupUrl })
   } catch (error: any) {
     console.error('Error sending invitation:', error)
     return NextResponse.json({
