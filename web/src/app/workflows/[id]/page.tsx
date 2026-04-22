@@ -15,6 +15,7 @@ import {
   type ConditionEntry,
 } from '@/components/workflows/conditions-log'
 import { WorkflowActions } from '@/components/workflows/workflow-actions'
+import { ProductDetailsCard } from '@/components/workflows/product-details-card'
 import type {
   WorkflowRole,
   WorkflowStatus,
@@ -31,6 +32,8 @@ type WorkflowDetail = {
   updated_at: string
   submitted_at: string | null
   approved_at: string | null
+  zone_a_data: Record<string, unknown>
+  zone_b_data: Record<string, unknown>
   plants: { id: string; code: string; name: string } | null
   sheets: { id: string; name: string } | null
   requestor: { id: string; full_name: string | null; email: string | null } | null
@@ -85,11 +88,12 @@ export default async function WorkflowDetailPage({
 
   const { data: profile } = await supabase
     .from('users')
-    .select('role')
+    .select('role, is_super_admin')
     .eq('id', user.id)
     .single()
+  const isSuperAdmin = profile?.is_super_admin === true || profile?.role === 'super_admin'
   const isAdminOrEditor =
-    profile?.role === 'admin' || profile?.role === 'editor' || profile?.role === 'super_admin'
+    profile?.role === 'admin' || profile?.role === 'editor' || isSuperAdmin
 
   // Fetch via API-equivalent query to get the nested structure we need.
   const { data: workflow } = await supabase
@@ -97,6 +101,7 @@ export default async function WorkflowDetailPage({
     .select(
       `id, company_id, plant_id, sheet_id, requestor_user_id, status,
        created_at, updated_at, submitted_at, approved_at,
+       zone_a_data, zone_b_data,
        plants:plant_id ( id, code, name ),
        sheets:sheet_id ( id, name ),
        requestor:requestor_user_id ( id, full_name, email )`
@@ -191,6 +196,11 @@ export default async function WorkflowDetailPage({
           </CardContent>
         </Card>
 
+        <ProductDetailsCard
+          zoneA={(detail.zone_a_data ?? {}) as Record<string, unknown>}
+          zoneB={(detail.zone_b_data ?? {}) as Record<string, unknown>}
+        />
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Approval pipeline</CardTitle>
@@ -216,6 +226,7 @@ export default async function WorkflowDetailPage({
               status={detail.status}
               isRequestor={isRequestor}
               canTriage={canTriage}
+              isSuperAdmin={isSuperAdmin}
               activeStep={
                 activeStep ? { id: activeStep.id, role: ROLE_LABELS[activeStep.role] } : null
               }

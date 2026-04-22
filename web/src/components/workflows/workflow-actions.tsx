@@ -20,6 +20,7 @@ type Props = {
   status: WorkflowStatus
   isRequestor: boolean
   canTriage: boolean
+  isSuperAdmin: boolean
   activeStep: { id: string; role: string } | null
   canSignActive: boolean
 }
@@ -29,6 +30,7 @@ export function WorkflowActions({
   status,
   isRequestor,
   canTriage,
+  isSuperAdmin,
   activeStep,
   canSignActive,
 }: Props) {
@@ -62,9 +64,10 @@ export function WorkflowActions({
     }
   }
 
-  const showSubmit = status === 'draft' && isRequestor
+  const showSubmit = status === 'draft' && (isRequestor || isSuperAdmin)
   const showTriage = status === 'triage' && canTriage
-  const showSign = status === 'in_review' && canSignActive && activeStep
+  const showSign =
+    status === 'in_review' && (canSignActive || isSuperAdmin) && activeStep
 
   if (!showSubmit && !showTriage && !showSign && !error) {
     return null

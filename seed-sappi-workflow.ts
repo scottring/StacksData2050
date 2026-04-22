@@ -23,14 +23,18 @@
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: '.env.local' })
-dotenv.config({ path: '.env' })
+// Load .env only — matches the convention used by other utility scripts
+// in this directory. Avoid .env.local, which points at local Supabase.
+dotenv.config()
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  console.error(
+    'Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) / SUPABASE_SERVICE_ROLE_KEY'
+  )
   process.exit(1)
 }
 

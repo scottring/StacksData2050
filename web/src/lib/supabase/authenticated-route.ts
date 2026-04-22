@@ -7,7 +7,7 @@ export async function getAuthenticatedUser() {
 
   const { data: profile } = await supabase
     .from('users')
-    .select('company_id, role')
+    .select('company_id, role, is_super_admin')
     .eq('id', user.id)
     .single()
 
@@ -18,6 +18,6 @@ export async function getAuthenticatedUser() {
     user,
     companyId: profile.company_id,
     role: profile.role,
-    isSuperAdmin: profile.role === 'super_admin',
+    isSuperAdmin: profile.is_super_admin === true || profile.role === 'super_admin',
   }
 }

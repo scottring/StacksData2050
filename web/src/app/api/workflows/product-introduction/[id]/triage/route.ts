@@ -120,9 +120,17 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to create workflow steps' }, { status: 500 })
   }
 
+  // Edge case: if every step was skipped (no role has an assignee at this
+  // plant), there's no one to sign. Auto-approve so the workflow isn't
+  // permanently stuck in in_review with zero pending steps.
+  const anyPending = stepRows.some((s) => s.decision === 'pending')
+  const nextStatus = anyPending ? 'in_review' : 'approved'
+  const update: Record<string, string | null> = { status: nextStatus }
+  if (!anyPending) update.approved_at = new Date().toISOString()
+
   const { data: updated, error: advanceError } = await auth.supabase
     .from('product_introduction_workflows')
-    .update({ status: 'in_review' })
+    .update(update)
     .eq('id', id)
     .select('*')
     .single()
