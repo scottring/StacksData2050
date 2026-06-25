@@ -131,6 +131,7 @@ export async function getSheetExportData(
     .from('answers')
     .select(`
       id,
+      question_id,
       parent_question_id,
       originating_question_id,
       text_value,
@@ -145,10 +146,12 @@ export async function getSheetExportData(
     `)
     .eq('sheet_id', sheetId)
 
-  // Create answer lookup by question ID
+  // Create answer lookup by question ID.
+  // Answers link to their question via question_id; fall back to the
+  // parent/originating fields for legacy rows where question_id is null.
   const answerMap = new Map<string, any>()
   for (const answer of answers || []) {
-    const qId = answer.parent_question_id || answer.originating_question_id
+    const qId = answer.question_id || answer.parent_question_id || answer.originating_question_id
     if (qId && !answer.list_table_row_id) {
       answerMap.set(qId, answer)
     }
