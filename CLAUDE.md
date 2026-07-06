@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Personal memory lives in the vault, not here
+
+Scott Kaufman's life and work memory is in his Obsidian vault at `~/Documents/scotts-world`. That vault is the single source of truth across every project, every agent (Michael on Telegram, every Claude Code instance, this one), and every location (MacBook, Mac Mini, phone via Obsidian Mobile).
+
+**When you learn anything about Scott's priorities, people, projects, or goals that extends beyond this codebase:**
+
+- Quick thought / context → append a timestamped line to `~/Documents/scotts-world/inbox/captures.md`
+- Structured info (new person, project, task, idea) → create/update a file under `~/Documents/scotts-world/{people,projects,tasks,ideas}/` following the YAML frontmatter conventions in `~/Documents/scotts-world/CLAUDE.md`
+- Feedback about how Scott wants to work → the vault's auto-memory at `/Users/scottkaufman/.claude/projects/-Users-scottkaufman-Documents-scotts-world/memory/` (it persists across scotts-world sessions)
+
+**Do NOT** keep Scott-related memory in this repo's CLAUDE.md, this project's Claude Code auto-memory, or any local state that other agents can't see. Siloed memory is the trust-killer. The vault auto-commits every 5 minutes and syncs to every location.
+
 ## Project Overview
 
 Stacks Data 2050 is a supplier compliance intelligence platform for the paper/packaging industry that was migrated from Bubble.io to Supabase. The system manages supplier product questionnaires (221 questions per sheet) with hierarchical question structures, tags for versioning (e.g., HQ 2.0.1 vs HQ2.1), chemical compliance tracking, and supply chain intelligence.
