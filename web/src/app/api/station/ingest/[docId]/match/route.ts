@@ -52,6 +52,10 @@ export async function GET(
     return NextResponse.json({ error: 'Document not found' }, { status: 404 })
   }
 
+  if (doc.company_id !== companyId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   if (doc.document_type !== 'questionnaire' && doc.document_type !== 'questionnaire_filled') {
     return NextResponse.json({ error: 'Document is not a questionnaire' }, { status: 400 })
   }

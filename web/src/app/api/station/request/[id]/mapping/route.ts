@@ -28,6 +28,12 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   // 1. Fetch the request and its sheet
   const { data: request } = await supabase
     .from('requests')
@@ -41,6 +47,14 @@ export async function GET(
 
   const sheet = request.sheet as unknown as Record<string, unknown>
   const sheetId = sheet.id as string
+
+  const hasAccess =
+    !!userData?.company_id &&
+    (sheet.company_id === userData.company_id || sheet.requesting_company_id === userData.company_id)
+
+  if (!hasAccess) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   // 2. Get tag IDs for this sheet
   const { data: sheetTags } = await supabase

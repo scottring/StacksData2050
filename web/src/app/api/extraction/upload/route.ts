@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'file and document_type are required' }, { status: 400 })
   }
 
-  if (!ALLOWED_TYPES.includes(file.type) && !file.name.endsWith('.csv')) {
+  const csvOk = file.name.endsWith('.csv') && (file.type === 'text/csv' || file.type === 'application/vnd.ms-excel' || file.type === 'text/plain' || file.type === '')
+
+  if (!ALLOWED_TYPES.includes(file.type) && !csvOk) {
     return NextResponse.json({ error: 'File type not allowed. Upload PDF, CSV, or Excel files.' }, { status: 400 })
   }
 

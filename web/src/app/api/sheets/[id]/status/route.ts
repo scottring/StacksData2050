@@ -46,13 +46,15 @@ export async function PATCH(
     return NextResponse.json({ error: 'Sheet not found' }, { status: 404 })
   }
 
-  if (userData?.company_id) {
-    const hasAccess =
-      sheet.company_id === userData.company_id ||
-      sheet.requesting_company_id === userData.company_id
-    if (!hasAccess) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+  if (!userData?.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const hasAccess =
+    sheet.company_id === userData.company_id ||
+    sheet.requesting_company_id === userData.company_id
+  if (!hasAccess) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { error } = await supabase

@@ -13,6 +13,12 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   // Fetch assessment
   const { data: assessment, error } = await supabase
     .from('compliance_assessments')
@@ -22,6 +28,10 @@ export async function GET(
 
   if (error || !assessment) {
     return NextResponse.json({ error: 'Assessment not found' }, { status: 404 })
+  }
+
+  if (!userData?.company_id || assessment.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   // Fetch results

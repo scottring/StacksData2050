@@ -215,7 +215,11 @@ export async function POST(request: NextRequest) {
     framework_code: frameworks.find(f => f.id === r.framework_id)?.code || null,
   }))
 
-  await supabase.from('compliance_results').insert(resultsToInsert)
+  const { error: resultsError } = await supabase.from('compliance_results').insert(resultsToInsert)
+
+  if (resultsError) {
+    return NextResponse.json({ error: 'Failed to save compliance results', detail: resultsError.message }, { status: 500 })
+  }
 
   return NextResponse.json({
     assessment_id: savedAssessment.id,

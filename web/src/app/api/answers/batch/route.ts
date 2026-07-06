@@ -113,18 +113,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Only check access if we have a matching users row
-    if (userData) {
-      const hasAccess =
-        sheet.company_id === userData.company_id ||
-        sheet.requesting_company_id === userData.company_id
+    // Deny by default: no users row or no company_id means access cannot be verified
+    if (!userData?.company_id) {
+      return NextResponse.json(
+        { error: 'You do not have access to this sheet' },
+        { status: 403 }
+      )
+    }
 
-      if (!hasAccess) {
-        return NextResponse.json(
-          { error: 'You do not have access to this sheet' },
-          { status: 403 }
-        )
-      }
+    const hasAccess =
+      sheet.company_id === userData.company_id ||
+      sheet.requesting_company_id === userData.company_id
+
+    if (!hasAccess) {
+      return NextResponse.json(
+        { error: 'You do not have access to this sheet' },
+        { status: 403 }
+      )
     }
 
     // Get existing answers for this sheet to determine update vs insert.

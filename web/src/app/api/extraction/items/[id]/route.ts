@@ -16,15 +16,31 @@ export async function PATCH(
   const body = await request.json()
   const { data, review_status } = body
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   // Fetch existing item to save original
   const { data: existing } = await supabase
     .from('extraction_items')
-    .select('data, original_data')
+    .select('data, original_data, document_id')
     .eq('id', id)
     .single()
 
   if (!existing) {
     return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+  }
+
+  const { data: doc } = await supabase
+    .from('extraction_documents')
+    .select('company_id')
+    .eq('id', existing.document_id)
+    .single()
+
+  if (!userData?.company_id || !doc || doc.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const updatePayload: Record<string, unknown> = {

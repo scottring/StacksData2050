@@ -13,6 +13,12 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   // Fetch document record
   const { data: doc, error } = await supabase
     .from('generated_documents')
@@ -22,6 +28,10 @@ export async function GET(
 
   if (error || !doc) {
     return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+  }
+
+  if (!userData?.company_id || doc.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   if (doc.status !== 'ready' || !doc.file_path) {

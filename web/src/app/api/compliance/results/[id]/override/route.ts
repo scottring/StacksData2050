@@ -20,6 +20,37 @@ export async function PATCH(
     return NextResponse.json({ error: 'override_reason is required' }, { status: 400 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
+  if (!userData?.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  // Resolve the owning assessment's company via the result's assessment_id
+  const { data: existingResult } = await supabase
+    .from('compliance_results')
+    .select('id, assessment_id')
+    .eq('id', id)
+    .single()
+
+  if (!existingResult) {
+    return NextResponse.json({ error: 'Result not found' }, { status: 404 })
+  }
+
+  const { data: assessment } = await supabase
+    .from('compliance_assessments')
+    .select('company_id')
+    .eq('id', existingResult.assessment_id)
+    .single()
+
+  if (!assessment || assessment.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   // Update the result
   const { data: result, error } = await supabase
     .from('compliance_results')

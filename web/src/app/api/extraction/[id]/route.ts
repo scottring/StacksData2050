@@ -13,6 +13,12 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   const { data: doc, error: docError } = await supabase
     .from('extraction_documents')
     .select('*')
@@ -21,6 +27,10 @@ export async function GET(
 
   if (docError || !doc) {
     return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+  }
+
+  if (!userData?.company_id || doc.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { data: items } = await supabase
@@ -45,15 +55,25 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
   // Get document to find storage file path
   const { data: doc } = await supabase
     .from('extraction_documents')
-    .select('file_path')
+    .select('file_path, company_id')
     .eq('id', id)
     .single()
 
   if (!doc) {
     return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+  }
+
+  if (!userData?.company_id || doc.company_id !== userData.company_id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   // Delete extraction items (cascade should handle this, but be explicit)
