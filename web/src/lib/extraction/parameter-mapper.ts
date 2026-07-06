@@ -97,13 +97,37 @@ interface MatchRule {
 
 const MATCH_RULES: MatchRule[] = [
   // Chemical / CAS matches
-  { keywords: ['cas', 'cas number', 'cas no', 'cas#', 'cas registry'], itemType: 'chemical', dataField: 'cas_number', confidenceBonus: 0.95 },
-  { keywords: ['chemical name', 'substance name', 'ingredient'], itemType: 'chemical', dataField: 'chemical_name', confidenceBonus: 0.9 },
-  { keywords: ['concentration', 'weight %', 'wt%', 'weight percent'], itemType: 'chemical', dataField: 'concentration_max_pct', confidenceBonus: 0.85 },
-  { keywords: ['function', 'role in product', 'function in product'], itemType: 'chemical', dataField: 'function_in_product', confidenceBonus: 0.8 },
+  // NOTE: bare 'cas' dropped -- collides with "CAS 64-17-5" embedded in yes/no
+  // questions ("Is ethanol (CAS 64-17-5) intentionally added...") that are not
+  // asking for a CAS number value.
+  { keywords: ['cas number', 'cas no', 'cas#', 'cas registry'], itemType: 'chemical', dataField: 'cas_number', confidenceBonus: 0.95 },
+  // NOTE: bare 'ingredient' dropped -- matches "dairy based ingredients" in a
+  // yes/no allergen question, not a request for a chemical name.
+  { keywords: ['chemical name', 'substance name'], itemType: 'chemical', dataField: 'chemical_name', confidenceBonus: 0.9 },
+  // NOTE: bare 'concentration' dropped entirely. HQ2.1 has ~32 questions containing
+  // "concentration" and every one of them is a regulatory gate ("does the product
+  // contain <SVHC/PFAS/POP/etc.> in concentrations exceeding 0.1%?") or a follow-up
+  // asking for the concentration of THAT SPECIFIC flagged substance, not any
+  // generic chemical's concentration. A generic chemical.concentration_max_pct
+  // value is not a safe answer to any of them.
+  { keywords: ['weight %', 'wt%', 'weight percent'], itemType: 'chemical', dataField: 'concentration_max_pct', confidenceBonus: 0.85 },
+  // NOTE: bare 'function' dropped. It matches HQ2.1's "Function in Application"
+  // (a product-level question, e.g. "sizing agent"), but findBestMatch has no
+  // way to pick the PRIMARY chemical among several extracted from one SDS --
+  // it returns whichever chemical item wins on raw confidence, which in real
+  // multi-substance SDS documents is frequently a trace impurity or preservative,
+  // not the product's actual function. Verified against every calibration SDS
+  // with >1 chemical item: wrong chemical picked in the majority of cases
+  // (e.g. a "SIZING AGENT" product mapped to "Hazardous Air Pollutant (HAP)
+  // impurity/component"). Kept as an honest gap; narrower multi-word phrases
+  // are retained for exact per-substance asks, which don't occur in HQ2.1.
+  { keywords: ['role in product', 'function in product'], itemType: 'chemical', dataField: 'function_in_product', confidenceBonus: 0.8 },
 
   // Hazard matches
-  { keywords: ['ghs', 'classification', 'hazard class'], itemType: 'hazard', dataField: 'ghs_classification', confidenceBonus: 0.9 },
+  // NOTE: bare 'classification' dropped -- matches an unrelated Swiss food-contact
+  // ink regulation's column classification ("classification (A or B) from column 6"),
+  // not GHS classification.
+  { keywords: ['ghs', 'ghs classification', 'hazard class'], itemType: 'hazard', dataField: 'ghs_classification', confidenceBonus: 0.9 },
   { keywords: ['signal word'], itemType: 'hazard', dataField: 'signal_word', confidenceBonus: 0.95 },
   { keywords: ['hazard statement', 'h-statement', 'h statement'], itemType: 'hazard', dataField: 'hazard_statements', confidenceBonus: 0.9 },
   { keywords: ['precautionary', 'p-statement', 'p statement'], itemType: 'hazard', dataField: 'precautionary_statements', confidenceBonus: 0.9 },
@@ -111,7 +135,9 @@ const MATCH_RULES: MatchRule[] = [
   // Physical property matches
   { keywords: ['appearance', 'visual'], itemType: 'physical_property', dataField: 'appearance', confidenceBonus: 0.85 },
   { keywords: ['odor', 'smell', 'odour'], itemType: 'physical_property', dataField: 'odor', confidenceBonus: 0.85 },
-  { keywords: ['ph', 'acidity', 'alkalinity'], itemType: 'physical_property', dataField: 'ph', confidenceBonus: 0.9 },
+  // NOTE: bare 'ph' dropped -- substring of "graphic", "paragraph",
+  // "Encephalopathy/Encephalopathies", none of which are pH questions.
+  { keywords: ['acidity', 'alkalinity', 'ph value', 'ph level'], itemType: 'physical_property', dataField: 'ph', confidenceBonus: 0.9 },
   { keywords: ['boiling point'], itemType: 'physical_property', dataField: 'boiling_point', confidenceBonus: 0.9 },
   { keywords: ['flash point'], itemType: 'physical_property', dataField: 'flash_point', confidenceBonus: 0.9 },
   { keywords: ['density', 'specific gravity'], itemType: 'physical_property', dataField: 'density', confidenceBonus: 0.9 },
@@ -122,22 +148,40 @@ const MATCH_RULES: MatchRule[] = [
   { keywords: ['test result', 'test value', 'migration', 'sml', 'specific migration'], itemType: 'test_result', dataField: 'result_value', confidenceBonus: 0.8 },
 
   // Traceability matches
-  { keywords: ['batch', 'batch number', 'lot number', 'lot'], itemType: 'traceability', dataField: 'batch_number', confidenceBonus: 0.9 },
+  // NOTE: bare 'batch' dropped -- substring of "Masterbatches" in a question
+  // about base-polymer supplier listings, not a batch number. Bare 'lot' dropped
+  // for the same substring-collision risk (e.g. "allotment").
+  { keywords: ['batch number', 'lot number'], itemType: 'traceability', dataField: 'batch_number', confidenceBonus: 0.9 },
   { keywords: ['manufacturing date', 'production date', 'date of manufacture'], itemType: 'traceability', dataField: 'manufacturing_date', confidenceBonus: 0.9 },
-  { keywords: ['expiry', 'expiration', 'shelf life'], itemType: 'traceability', dataField: 'expiry_date', confidenceBonus: 0.9 },
-  { keywords: ['manufacturing site', 'production site', 'plant', 'factory'], itemType: 'traceability', dataField: 'manufacturing_site', confidenceBonus: 0.85 },
-  { keywords: ['country of origin', 'origin'], itemType: 'traceability', dataField: 'country_of_origin', confidenceBonus: 0.85 },
+  // NOTE: bare 'expiration' dropped -- matches "specify an expiration date" for a
+  // Kosher/Halal certificate, not a chemical's shelf life/expiry.
+  { keywords: ['shelf life', 'expiry date'], itemType: 'traceability', dataField: 'expiry_date', confidenceBonus: 0.9 },
+  // NOTE: bare 'plant' and bare 'production site' dropped. 'plant' matches
+  // "derived from plant (wheat, grape...) source" (botanical origin, not a
+  // manufacturing site). 'production site' (singular) matches "its production
+  // site or line have a Kosher/Halal certification" -- replaced with the plural
+  // 'production sites' which only matches the genuine "Production sites" question.
+  // Bare 'factory' dropped as an unnecessary collision risk with no observed use.
+  { keywords: ['manufacturing site', 'production sites'], itemType: 'traceability', dataField: 'manufacturing_site', confidenceBonus: 0.85 },
+  // NOTE: bare 'origin' dropped -- matches "substances of animal origin", a yes/no
+  // allergen question, not a request for country of origin.
+  { keywords: ['country of origin'], itemType: 'traceability', dataField: 'country_of_origin', confidenceBonus: 0.85 },
 ]
 
 // Section-name-based context matching (fallback when keyword match isn't specific)
+// NOTE: 'chemical' key dropped. The fallback loop matches any field whose name
+// (with underscores replaced by spaces) contains the question's first word. For
+// "Product Description or Chemical Characterization" the first word "product" is
+// a substring of the field name "function_in_product", so this context key
+// produced a false match (function_in_product value answering a product
+// description question). 'ingredient'/'substance'/'composition' keys are kept
+// since no HQ2.1 question both starts with "product" and contains those words.
 const SECTION_CONTEXT: Record<string, ExtractionItem['item_type'][]> = {
   'composition': ['chemical'],
   'ingredient': ['chemical'],
   'substance': ['chemical'],
-  'chemical': ['chemical'],
   'hazard': ['hazard'],
   'ghs': ['hazard'],
-  'classification': ['hazard'],
   'physical': ['physical_property'],
   'chemical properties': ['physical_property'],
   'toxicolog': ['test_result', 'hazard'],
