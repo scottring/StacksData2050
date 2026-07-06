@@ -21,6 +21,8 @@ import {
   User,
   Shield,
   ChevronRight,
+  Radar,
+  Factory,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -48,6 +50,19 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>
   children?: NavItem[]
 }
+
+const surfaceNavItems: NavItem[] = [
+  {
+    title: 'Command Center',
+    href: '/command',
+    icon: Radar,
+  },
+  {
+    title: 'Processing Station',
+    href: '/station',
+    icon: Factory,
+  },
+]
 
 const customerNavItems: NavItem[] = [
   {
@@ -264,6 +279,8 @@ export function Sidebar() {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <NavSection title="Surfaces" items={surfaceNavItems} pathname={pathname} />
+
         {/* Dashboard */}
         <nav className="mb-4">
           <Link

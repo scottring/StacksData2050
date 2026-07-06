@@ -17,6 +17,7 @@ import {
   Building2,
   ChevronRight,
   Workflow,
+  BarChart3,
 } from 'lucide-react'
 import type { CompanyNode, RequestArc } from '@/lib/geo'
 
@@ -351,6 +352,22 @@ export default function CommandClient({ requests, companyName, totals }: Command
           >
             <Workflow className="h-3.5 w-3.5 text-emerald-400" />
             <span className="flex-1">Product Introductions</span>
+            <ChevronRight className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />
+          </Link>
+          <Link
+            href="/suppliers"
+            className="flex items-center gap-2.5 rounded-xl bg-white/4 hover:bg-white/6 border border-white/6 px-3.5 py-2.5 text-xs text-zinc-300 hover:text-white transition-colors group"
+          >
+            <Building2 className="h-3.5 w-3.5 text-amber-400" />
+            <span className="flex-1">Suppliers</span>
+            <ChevronRight className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />
+          </Link>
+          <Link
+            href="/reports"
+            className="flex items-center gap-2.5 rounded-xl bg-white/4 hover:bg-white/6 border border-white/6 px-3.5 py-2.5 text-xs text-zinc-300 hover:text-white transition-colors group"
+          >
+            <BarChart3 className="h-3.5 w-3.5 text-rose-400" />
+            <span className="flex-1">Reports</span>
             <ChevronRight className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" />
           </Link>
         </div>
