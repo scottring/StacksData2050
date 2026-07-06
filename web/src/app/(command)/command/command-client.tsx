@@ -278,7 +278,7 @@ export default function CommandClient({ requests, companyName }: CommandClientPr
       </div>
 
       {/* Right panel: Globe accent + quick info */}
-      <aside className="hidden xl:flex w-80 flex-col border-l border-white/6 bg-zinc-900/30">
+      <aside className="hidden lg:flex w-80 flex-col border-l border-white/6 bg-zinc-900/30">
         {/* Mini globe */}
         <div className="h-72 relative overflow-hidden">
           {globeData && (
