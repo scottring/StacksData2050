@@ -14,7 +14,7 @@
 export interface ExtractionItem {
   id: string
   document_id: string
-  item_type: 'chemical' | 'hazard' | 'test_result' | 'physical_property' | 'traceability'
+  item_type: 'chemical' | 'hazard' | 'test_result' | 'physical_property' | 'traceability' | 'product_identity'
   data: Record<string, unknown>
   confidence: number
 }
@@ -93,6 +93,13 @@ interface MatchRule {
   dataField: string
   /** Base confidence bonus for this match type */
   confidenceBonus: number
+  /**
+   * When true, a keyword only matches if it equals the ENTIRE trimmed question
+   * content (case-insensitive), not merely a substring. Needed for single-word
+   * questions like "Producer" whose keyword would otherwise collide with the
+   * same word embedded in unrelated longer questions.
+   */
+  exact?: boolean
 }
 
 const MATCH_RULES: MatchRule[] = [
@@ -166,6 +173,15 @@ const MATCH_RULES: MatchRule[] = [
   // NOTE: bare 'origin' dropped -- matches "substances of animal origin", a yes/no
   // allergen question, not a request for country of origin.
   { keywords: ['country of origin'], itemType: 'traceability', dataField: 'country_of_origin', confidenceBonus: 0.85 },
+
+  // Product identity matches (document-level extraction fields, synthesized
+  // into pseudo-items by the mapping route -- see process.ts, which writes
+  // product_name/manufacturer onto extraction_documents, not extraction_items).
+  // NOTE: 'producer' must be `exact` -- HQ2.1 Q1.1.4 content is literally just
+  // "Producer", but the bare substring also appears inside Q3.1.3 ("...published
+  // by ECHA with the respective producer under PT 6?"), a yes/no biocidal-
+  // substance-list question that is not asking for our supplier's name.
+  { keywords: ['producer'], itemType: 'product_identity', dataField: 'manufacturer', confidenceBonus: 0.9, exact: true },
 ]
 
 // Section-name-based context matching (fallback when keyword match isn't specific)
@@ -241,8 +257,11 @@ function findBestMatch(
   const candidates: MatchCandidate[] = []
 
   // 1. Try keyword-based matching
+  const trimmedContent = content.trim()
   for (const rule of MATCH_RULES) {
-    const matchedKeyword = rule.keywords.find((kw) => content.includes(kw))
+    const matchedKeyword = rule.keywords.find((kw) =>
+      rule.exact ? trimmedContent === kw : content.includes(kw),
+    )
     if (!matchedKeyword) continue
 
     // Find extraction items of the matching type

@@ -124,14 +124,14 @@ export async function GET(
   // 5. Get extraction documents for this sheet
   const { data: extractionDocs } = await supabase
     .from('extraction_documents')
-    .select('id')
+    .select('id, product_name, supplier_name')
     .eq('sheet_id', sheetId)
     .in('status', ['extracted', 'confirmed'])
 
   const docIds = (extractionDocs || []).map((d) => d.id as string)
 
   // 6. Get extraction items
-  let extractionItems: ExtractionItem[] = []
+  const extractionItems: ExtractionItem[] = []
   if (docIds.length > 0) {
     for (let i = 0; i < docIds.length; i += batchSize) {
       const batch = docIds.slice(i, i + batchSize)
@@ -143,6 +143,23 @@ export async function GET(
       if (data) {
         extractionItems.push(...(data as ExtractionItem[]))
       }
+    }
+  }
+
+  // 6b. Synthesize a product-identity item per document from document-level
+  // extraction fields (product_name / supplier_name are written directly onto
+  // extraction_documents, not into extraction_items -- see process.ts).
+  for (const doc of extractionDocs || []) {
+    const productName = doc.product_name as string | null
+    const manufacturer = doc.supplier_name as string | null
+    if (productName || manufacturer) {
+      extractionItems.push({
+        id: `docmeta-${doc.id}`,
+        document_id: doc.id as string,
+        item_type: 'product_identity',
+        data: { product_name: productName, manufacturer },
+        confidence: 0.9,
+      })
     }
   }
 
