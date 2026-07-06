@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { getAnthropicClient, EXTRACTION_MODEL } from '@/lib/anthropic'
 import { getExtractionConfig } from './prompts'
-import { createClient } from '@/lib/supabase/server'
 
 interface ExtractionResult {
   documentId: string
@@ -19,8 +19,12 @@ export interface ProcessingCallbacks {
   onStore?: () => void
 }
 
-export async function processDocument(documentId: string, callbacks?: ProcessingCallbacks): Promise<ExtractionResult> {
-  const supabase = await createClient()
+export async function processDocument(
+  documentId: string,
+  callbacks?: ProcessingCallbacks,
+  injectedClient?: SupabaseClient
+): Promise<ExtractionResult> {
+  const supabase = injectedClient ?? (await (await import('@/lib/supabase/server')).createClient())
   const startTime = Date.now()
 
   // 1. Fetch the document record
