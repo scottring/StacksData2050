@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
 import {
   Plus,
   ArrowUpRight,
@@ -37,6 +39,7 @@ interface RequestItem {
 interface CommandClientProps {
   requests: RequestItem[]
   companyName: string
+  totals: { total: number; outgoing: number; incoming: number }
 }
 
 type FilterTab = 'all' | 'outgoing' | 'incoming'
@@ -74,10 +77,12 @@ function formatRelativeDate(dateStr: string): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function CommandClient({ requests, companyName }: CommandClientProps) {
+export default function CommandClient({ requests, companyName, totals }: CommandClientProps) {
+  const router = useRouter()
   const [tab, setTab] = useState<FilterTab>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [globeData, setGlobeData] = useState<{ companies: CompanyNode[]; requests: RequestArc[] } | null>(null)
+  const [requestDialogOpen, setRequestDialogOpen] = useState(false)
 
   // Fetch globe data lazily (non-blocking)
   useState(() => {
@@ -101,22 +106,23 @@ export default function CommandClient({ requests, companyName }: CommandClientPr
     return items
   }, [requests, tab, searchQuery])
 
-  // Stats
+  // Stats. Total/Sent/Received come from server-side aggregate counts (totals prop) so they
+  // reflect the full requests table, not just the loaded window. Active and Attention still
+  // derive from the loaded rows because they need sheet status, which the count queries don't carry.
   const stats = useMemo(() => {
-    const outgoing = requests.filter((r) => r.direction === 'outgoing')
-    const incoming = requests.filter((r) => r.direction === 'incoming')
     const active = requests.filter((r) => !['approved', 'rejected'].includes(r.sheetStatus))
     const attention = requests.filter((r) => r.sheetStatus === 'flagged' || r.sheetStatus === 'rejected')
     return {
-      total: requests.length,
-      outgoing: outgoing.length,
-      incoming: incoming.length,
+      total: totals.total,
+      outgoing: totals.outgoing,
+      incoming: totals.incoming,
       active: active.length,
       attention: attention.length,
     }
-  }, [requests])
+  }, [requests, totals])
 
   return (
+    <>
     <div className="h-[calc(100vh-3.5rem)] flex">
       {/* Main dashboard content */}
       <div className="flex-1 overflow-y-auto p-8 space-y-6">
@@ -128,7 +134,10 @@ export default function CommandClient({ requests, companyName }: CommandClientPr
             </h1>
             <p className="text-sm text-zinc-500 mt-1">{companyName}</p>
           </div>
-          <button className="flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2.5 text-sm font-medium shadow-lg shadow-emerald-500/20 transition-all hover:shadow-emerald-400/30 hover:scale-[1.02] active:scale-[0.98]">
+          <button
+            onClick={() => setRequestDialogOpen(true)}
+            className="flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2.5 text-sm font-medium shadow-lg shadow-emerald-500/20 transition-all hover:shadow-emerald-400/30 hover:scale-[1.02] active:scale-[0.98]"
+          >
             <Plus className="h-4 w-4" />
             New Request
           </button>
@@ -222,7 +231,7 @@ export default function CommandClient({ requests, companyName }: CommandClientPr
             filteredRequests.map((req) => (
               <Link
                 key={req.id}
-                href={req.direction === 'incoming' ? `/station/request/${req.id}` : `/sheets/${req.sheetId}`}
+                href={req.direction === 'incoming' ? `/station/request/${req.id}` : `/command/review/${req.id}`}
                 className="grid grid-cols-[1fr_140px_100px_100px_80px_32px] gap-4 items-center px-5 py-3.5 border-b border-white/3 hover:bg-white/2 transition-colors group"
               >
                 {/* Product + Partner */}
@@ -333,5 +342,13 @@ export default function CommandClient({ requests, companyName }: CommandClientPr
         </div>
       </aside>
     </div>
+    <RequestSheetDialog
+      open={requestDialogOpen}
+      onOpenChange={(open) => {
+        setRequestDialogOpen(open)
+        if (!open) router.refresh()
+      }}
+    />
+    </>
   )
 }

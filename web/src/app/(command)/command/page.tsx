@@ -64,6 +64,17 @@ export default async function CommandPage() {
     .eq('id', companyId)
     .single()
 
+  // Server-side aggregate counts (not limited to the 20-row fetch window above)
+  const [{ count: outgoingCount }, { count: incomingCount }] = await Promise.all([
+    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requestor_id', companyId),
+    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requesting_from_id', companyId),
+  ])
+  const totals = {
+    outgoing: outgoingCount ?? 0,
+    incoming: incomingCount ?? 0,
+    total: (outgoingCount ?? 0) + (incomingCount ?? 0),
+  }
+
   // Format for client
   const formatRequest = (r: Record<string, unknown>, direction: 'outgoing' | 'incoming') => {
     const sheet = r.sheet as unknown as Record<string, unknown> | null
@@ -93,6 +104,7 @@ export default async function CommandPage() {
     <CommandClient
       requests={allRequests}
       companyName={company?.name || 'Your Company'}
+      totals={totals}
     />
   )
 }
