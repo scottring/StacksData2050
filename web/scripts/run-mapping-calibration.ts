@@ -20,15 +20,49 @@ async function main() {
   for (let i = 0; i < questionIds.length; i += 100) {
     const { data } = await sb
       .from('questions')
-      .select('id, content, question_type, section_name_sort, subsection_name_sort, section_sort_number, subsection_sort_number, order_number, required, optional_question, clarification')
+      .select('id, content, question_type, section_name_sort, subsection_name_sort, section_sort_number, subsection_sort_number, order_number, required, optional_question, clarification, subsection_id')
       .in('id', questionIds.slice(i, i + 100))
     questions.push(...(data ?? []))
   }
   console.log(`HQ2.1 questions: ${questions.length}`)
 
+  // Resolve section/subsection names via subsections -> sections, matching
+  // the route's backfill (src/app/api/station/request/[id]/mapping/route.ts
+  // ~lines 93-136): questions.section_name_sort / subsection_name_sort are
+  // not populated in this dataset, so SECTION_CONTEXT in the mapper relies
+  // on this backfill to have anything to match against.
+  const subsectionIds = [...new Set(questions.map((q) => q.subsection_id).filter((v): v is string => !!v))]
+  if (subsectionIds.length > 0) {
+    const { data: subsections } = await sb
+      .from('subsections')
+      .select('id, name, section_id')
+      .in('id', subsectionIds)
+
+    const sectionIds = [...new Set((subsections ?? []).map((s) => s.section_id).filter((v): v is string => !!v))]
+    const { data: sections } = sectionIds.length > 0
+      ? await sb.from('sections').select('id, name').in('id', sectionIds)
+      : { data: [] as { id: string; name: string }[] }
+
+    const sectionNameById = new Map((sections ?? []).map((s) => [s.id, s.name]))
+    const subsectionInfoById = new Map(
+      (subsections ?? []).map((s) => [
+        s.id,
+        { subsectionName: s.name, sectionName: s.section_id ? sectionNameById.get(s.section_id) || null : null },
+      ]),
+    )
+
+    for (const question of questions) {
+      const info = question.subsection_id ? subsectionInfoById.get(question.subsection_id) : undefined
+      if (info) {
+        question.section_name_sort = question.section_name_sort || info.sectionName
+        question.subsection_name_sort = question.subsection_name_sort || info.subsectionName
+      }
+    }
+  }
+
   const { data: docs } = await sb
     .from('extraction_documents')
-    .select('id, file_name, document_type')
+    .select('id, file_name, document_type, product_name, supplier_name')
     .like('file_name', 'calib_%')
     .eq('status', 'extracted')
 
@@ -40,7 +74,24 @@ async function main() {
       .from('extraction_items')
       .select('id, document_id, item_type, data, confidence')
       .eq('document_id', doc.id)
-    const result = mapParameters(questions as any, (items ?? []) as any, [])
+    const extractionItems = [...(items ?? [])]
+
+    // Synthesize the product-identity pseudo-item the route builds from
+    // document-level fields (route ~lines 163-178), since product_name /
+    // supplier_name live on extraction_documents, not extraction_items.
+    const productName = doc.product_name as string | null
+    const manufacturer = doc.supplier_name as string | null
+    if (productName || manufacturer) {
+      extractionItems.push({
+        id: `docmeta-${doc.id}`,
+        document_id: doc.id,
+        item_type: 'product_identity',
+        data: { product_name: productName, manufacturer },
+        confidence: 0.9,
+      })
+    }
+
+    const result = mapParameters(questions as any, extractionItems as any, [])
     for (const p of result.parameters) {
       if (p.status === 'mapped' && p.matchReason) {
         reasonCounts[p.matchReason] = (reasonCounts[p.matchReason] ?? 0) + 1

@@ -272,6 +272,15 @@ export async function POST(request: NextRequest) {
 
           if (raw === '') {
             answerData.choice_id = null
+            answerData.text_value = null
+            // Clear a leftover mismatch note the same way the matched branch
+            // does, so an emptied answer doesn't keep a stale flag behind.
+            if (answerData.additional_notes === undefined && existingId) {
+              const prevNote = existingNotes.get(existingId)
+              if (prevNote && prevNote.trim() === CHOICE_MISMATCH_NOTE) {
+                answerData.additional_notes = null
+              }
+            }
           } else if (matched) {
             answerData.choice_id = matched.id
             answerData.text_value = null

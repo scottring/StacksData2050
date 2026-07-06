@@ -1,3 +1,9 @@
+-- DEV-GRADE POLICIES. The table policies here and in
+-- src/lib/pipeline/migration.sql use bare auth.uid() IS NOT NULL checks.
+-- Before any production application, tighten every policy to company
+-- scoping. See cutover checklist in
+-- docs/plans/2026-07-06-station-real-data-plan.md.
+
 -- Pipeline storage RLS policies
 -- Fixes: "new row violates row-level security policy" on upload at
 -- /station/request/[id] (src/app/api/extraction/upload/route.ts).

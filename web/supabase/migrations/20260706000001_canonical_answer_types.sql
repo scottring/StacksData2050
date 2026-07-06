@@ -3,6 +3,7 @@
 -- Schema mirrors the original design in 20260304000001_canonical_parameters.sql
 -- (columns verified against prod row samples via read-only introspection).
 -- canonical_parameters already exists on dev and is untouched here.
+-- DEV-ONLY: running this on prod would enable RLS on live tables (access-affecting).
 
 CREATE TABLE IF NOT EXISTS canonical_answer_types (
   code        text PRIMARY KEY,
