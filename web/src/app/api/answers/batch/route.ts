@@ -1,7 +1,19 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+
+// response_type values (on `questions`) that are backed by rows in the
+// `choices` table, i.e. the answer must be written as choice_id rather than
+// text_value. `question_type` is null for all HQ2.1 data in dev, so
+// response_type is the real discriminator (verified empirically: every
+// sampled question with one of these response_types has choices rows keyed
+// on choices.question_id; PIDSL List and the free-text types do not).
+const CHOICE_RESPONSE_TYPES = new Set([
+  'Select one Radio',
+  'Select one',
+  'Dropdown',
+  'Select multiple',
+])
 
 // Helper to log trial activity (non-blocking)
 async function logTrialActivity(email: string, userId: string | null, sheetId: string, answerCount: number) {
@@ -31,20 +43,6 @@ async function logTrialActivity(email: string, userId: string | null, sheetId: s
   }
 }
 
-// Create a service role client for when auth cookies aren't available (dev workaround)
-function createServiceRoleClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!serviceKey) {
-    return null
-  }
-
-  return createServiceClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
-}
-
 interface AnswerInput {
   question_id: string
   answer_id?: string
@@ -68,38 +66,24 @@ interface AnswerInput {
  */
 export async function POST(request: NextRequest) {
   try {
-    let supabase = await createClient()
-    let userData: { id: string; company_id: string | null } | null = null
+    const supabase = await createClient()
 
-    // Try to get current user from auth
+    // Require an authenticated session; there is no service-role fallback.
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      // Auth failed - try service role client as fallback for local dev
-      const serviceClient = createServiceRoleClient()
-      if (!serviceClient) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        )
-      }
-      // Use service client for the rest of the request
-      supabase = serviceClient as any
-      // For service role, we'll skip user-specific access control
-      // This is only for local development
-      console.warn('[API] Auth session missing, using service role client')
-    } else {
-      // Get user's company
-      const { data } = await supabase
-        .from('users')
-        .select('id, company_id')
-        .eq('id', user.id)
-        .single()
-      userData = data
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
-    // If we have userData, we can do access control
-    // If not (service role fallback), skip access control for local dev
+    // Get user's company
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id, company_id')
+      .eq('id', user.id)
+      .single()
 
     const body = await request.json()
     const { sheet_id, answers } = body as { sheet_id: string; answers: AnswerInput[] }
@@ -126,7 +110,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Only check access if we have user data (skip for service role fallback in dev)
+    // Only check access if we have a matching users row
     if (userData) {
       const hasAccess =
         sheet.company_id === userData.company_id ||
@@ -152,6 +136,58 @@ export async function POST(request: NextRequest) {
       const key = `${a.question_id}|${a.list_table_row_id || ''}|${a.list_table_column_id || ''}`
       existingMap.set(key, a.id)
     })
+
+    // Determine which of the target questions are choice questions, so that
+    // extracted text lands in choice_id (what the classic sheet view and
+    // Excel export read) instead of text_value. Detection is server-side and
+    // independent of the `type` the caller sent: response_type is the real
+    // discriminator since question_type is null for all HQ2.1 data.
+    const distinctQuestionIds = [...new Set(answers.map((a) => a.question_id).filter(Boolean))]
+
+    const choiceQuestionIds = new Set<string>()
+    if (distinctQuestionIds.length > 0) {
+      const batchSize = 100
+      for (let i = 0; i < distinctQuestionIds.length; i += batchSize) {
+        const batch = distinctQuestionIds.slice(i, i + batchSize)
+        const { data: qRows } = await supabase
+          .from('questions')
+          .select('id, response_type')
+          .in('id', batch)
+
+        qRows?.forEach((q) => {
+          if (q.response_type && CHOICE_RESPONSE_TYPES.has(q.response_type)) {
+            choiceQuestionIds.add(q.id)
+          }
+        })
+      }
+      // Also honor an explicit `type: 'choice'` from the caller even if the
+      // question's response_type isn't one we recognize.
+      answers.forEach((a) => {
+        if (a.type === 'choice') choiceQuestionIds.add(a.question_id)
+      })
+    }
+
+    // Preload choices for those questions so each answer can be resolved
+    // without a query per row.
+    const choicesByQuestion = new Map<string, { id: string; content: string | null }[]>()
+    if (choiceQuestionIds.size > 0) {
+      const ids = [...choiceQuestionIds]
+      const batchSize = 100
+      for (let i = 0; i < ids.length; i += batchSize) {
+        const batch = ids.slice(i, i + batchSize)
+        const { data: choiceRows } = await supabase
+          .from('choices')
+          .select('id, content, question_id')
+          .in('question_id', batch)
+
+        choiceRows?.forEach((c) => {
+          if (!c.question_id) return
+          const list = choicesByQuestion.get(c.question_id) || []
+          list.push({ id: c.id, content: c.content })
+          choicesByQuestion.set(c.question_id, list)
+        })
+      }
+    }
 
     const now = new Date().toISOString()
     const results: { success: boolean; question_id: string; error?: string }[] = []
@@ -200,33 +236,58 @@ export async function POST(request: NextRequest) {
           answerData.list_table_column_id = list_table_column_id
         }
 
-        // Set value based on type
-        switch (type) {
-          case 'boolean':
-            answerData.boolean_value = value as boolean
-            break
-          case 'choice':
-            answerData.choice_id = (value as string) || null
-            break
-          case 'number':
-            if (typeof value === 'number') {
-              answerData.number_value = value
-            } else if (typeof value === 'string' && value !== '') {
-              answerData.number_value = parseFloat(value)
-            } else {
-              answerData.number_value = null
-            }
-            break
-          case 'date':
-            answerData.date_value = (value as string) || null
-            break
-          case 'text_area':
-            answerData.text_area_value = (value as string) || null
-            break
-          case 'text':
-          default:
-            answerData.text_value = value !== null ? String(value) : null
-            break
+        // Choice resolution: applies whenever the target question is a
+        // choice question (per response_type) or the caller explicitly said
+        // `type: 'choice'`, regardless of whether the value is already a
+        // choice id (existing UI flows) or raw extracted display text.
+        const isChoiceTarget = type === 'choice' || choiceQuestionIds.has(question_id)
+
+        if (isChoiceTarget) {
+          const raw = value === null || value === undefined ? '' : String(value)
+          const choices = choicesByQuestion.get(question_id) || []
+          const matched =
+            choices.find((c) => c.id === raw) ||
+            choices.find((c) => (c.content || '').trim().toLowerCase() === raw.trim().toLowerCase())
+
+          if (raw === '') {
+            answerData.choice_id = null
+          } else if (matched) {
+            answerData.choice_id = matched.id
+          } else {
+            // No predefined choice matched; keep the extracted text visible
+            // and flag it instead of silently writing an unresolvable choice_id.
+            answerData.text_value = raw
+            const note = 'AI-extracted value did not match a predefined choice'
+            answerData.additional_notes = answerData.additional_notes
+              ? `${answerData.additional_notes}; ${note}`
+              : note
+          }
+        } else {
+          // Set value based on type
+          switch (type) {
+            case 'boolean':
+              answerData.boolean_value = value as boolean
+              break
+            case 'number':
+              if (typeof value === 'number') {
+                answerData.number_value = value
+              } else if (typeof value === 'string' && value !== '') {
+                answerData.number_value = parseFloat(value)
+              } else {
+                answerData.number_value = null
+              }
+              break
+            case 'date':
+              answerData.date_value = (value as string) || null
+              break
+            case 'text_area':
+              answerData.text_area_value = (value as string) || null
+              break
+            case 'text':
+            default:
+              answerData.text_value = value !== null ? String(value) : null
+              break
+          }
         }
 
         // Find existing answer ID

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 import {
   ArrowLeft,
   CheckCircle2,
@@ -33,6 +34,17 @@ interface ReviewClientProps {
 }
 
 type FilterMode = 'all' | 'mapped' | 'gaps' | 'existing'
+
+// questionType values that indicate a choice question. The batch API also
+// resolves this server-side from the question's response_type, so this is a
+// best-effort client-side hint, not the source of truth.
+const CHOICE_QUESTION_TYPES = new Set([
+  'choice',
+  'Select one',
+  'Select one Radio',
+  'Dropdown',
+  'Select multiple',
+])
 
 // ─── Confidence Badge ──────────────────────────────────────
 
@@ -289,6 +301,7 @@ export default function ReviewClient({
   const [filter, setFilter] = useState<FilterMode>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [editedValues, setEditedValues] = useState<Map<string, string>>(new Map())
+  const [customerCompanyId, setCustomerCompanyId] = useState<string | null>(null)
 
   // Fetch mapping data
   useEffect(() => {
@@ -305,6 +318,20 @@ export default function ReviewClient({
       }
     }
     fetchMapping()
+  }, [requestId])
+
+  // Fetch the customer's company id (needed for the submit notification)
+  useEffect(() => {
+    async function fetchRequestor() {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('requests')
+        .select('requestor_id')
+        .eq('id', requestId)
+        .single()
+      if (data?.requestor_id) setCustomerCompanyId(data.requestor_id)
+    }
+    fetchRequestor()
   }, [requestId])
 
   const handleSaveValue = useCallback((questionId: string, value: string) => {
@@ -391,6 +418,14 @@ export default function ReviewClient({
   // Submit handler — saves all edited values + AI-mapped values as answers
   const handleSubmit = async () => {
     if (!mapping) return
+
+    if (liveSummary && liveSummary.requiredGaps > 0) {
+      const proceed = window.confirm(
+        `${liveSummary.requiredGaps} required parameters are still unanswered. Submit anyway?`,
+      )
+      if (!proceed) return
+    }
+
     setSubmitting(true)
 
     try {
@@ -403,20 +438,25 @@ export default function ReviewClient({
 
       for (const param of mapping.parameters) {
         const editedVal = editedValues.get(param.questionId)
+        const type = CHOICE_QUESTION_TYPES.has(param.questionType)
+          ? 'choice'
+          : param.questionType === 'number'
+            ? 'number'
+            : 'text'
 
         if (editedVal !== undefined && editedVal) {
           // Manually entered value
           answers.push({
             question_id: param.questionId,
             value: editedVal,
-            type: param.questionType === 'number' ? 'number' : 'text',
+            type,
           })
         } else if (param.status === 'mapped' && param.extractedValue) {
           // AI-mapped value (auto-accept)
           answers.push({
             question_id: param.questionId,
             value: param.extractedValue,
-            type: param.questionType === 'number' ? 'number' : 'text',
+            type,
           })
         }
       }
@@ -434,11 +474,28 @@ export default function ReviewClient({
       }
 
       // Update sheet status to submitted
-      await fetch(`/api/sheets/${sheetId}/status`, {
+      const statusRes = await fetch(`/api/sheets/${sheetId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'submitted' }),
       })
+
+      if (!statusRes.ok) {
+        throw new Error('Failed to update sheet status')
+      }
+
+      // Notify the customer that a response is ready for review. Mirrors
+      // the legacy sheets/submit/route.ts contract. Non-blocking: a failed
+      // notification must not fail the submit.
+      fetch('/api/requests/notify-submitted', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sheetId,
+          customerCompanyId,
+          productName,
+        }),
+      }).catch((err) => console.error('Failed to send submit notification:', err))
 
       router.push(`/station/request/${requestId}`)
       router.refresh()
