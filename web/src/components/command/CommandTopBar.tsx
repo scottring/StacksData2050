@@ -26,6 +26,11 @@ interface UserProfile {
 export default function CommandTopBar() {
   const router = useRouter()
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     async function fetchUser() {
@@ -123,6 +128,18 @@ export default function CommandTopBar() {
           </button>
 
           {/* User menu */}
+          {!mounted ? (
+            <div
+              className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5"
+              aria-hidden="true"
+            >
+              <Avatar className="h-7 w-7 ring-1 ring-emerald-500/30">
+                <AvatarFallback className="bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold">
+                  &nbsp;
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-white/6 transition-colors">
@@ -190,6 +207,7 @@ export default function CommandTopBar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </div>
       </div>
     </header>

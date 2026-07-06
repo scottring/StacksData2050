@@ -73,17 +73,51 @@ export async function GET(
   }
 
   // 4. Fetch the actual questions (batched if over 100)
-  const questions: Question[] = []
+  // Note: section_name_sort / subsection_name_sort on `questions` are unpopulated
+  // in this dataset, so the real names are resolved below via subsection_id ->
+  // subsections.name -> sections.name.
+  const questions: (Question & { subsection_id: string | null })[] = []
   const batchSize = 100
   for (let i = 0; i < uniqueQuestionIds.length; i += batchSize) {
     const batch = uniqueQuestionIds.slice(i, i + batchSize)
     const { data } = await supabase
       .from('questions')
-      .select('id, content, question_type, section_name_sort, subsection_name_sort, section_sort_number, subsection_sort_number, order_number, required, optional_question, clarification')
+      .select('id, content, question_type, section_name_sort, subsection_name_sort, section_sort_number, subsection_sort_number, order_number, required, optional_question, clarification, subsection_id')
       .in('id', batch)
 
     if (data) {
-      questions.push(...(data as Question[]))
+      questions.push(...(data as (Question & { subsection_id: string | null })[]))
+    }
+  }
+
+  // 4b. Resolve section/subsection names via subsections -> sections,
+  // since questions.section_name_sort / subsection_name_sort are not populated.
+  const subsectionIds = [...new Set(questions.map((q) => q.subsection_id).filter((v): v is string => !!v))]
+  if (subsectionIds.length > 0) {
+    const { data: subsections } = await supabase
+      .from('subsections')
+      .select('id, name, section_id')
+      .in('id', subsectionIds)
+
+    const sectionIds = [...new Set((subsections || []).map((s) => s.section_id).filter((v): v is string => !!v))]
+    const { data: sections } = sectionIds.length > 0
+      ? await supabase.from('sections').select('id, name').in('id', sectionIds)
+      : { data: [] as { id: string; name: string }[] }
+
+    const sectionNameById = new Map((sections || []).map((s) => [s.id, s.name]))
+    const subsectionInfoById = new Map(
+      (subsections || []).map((s) => [
+        s.id,
+        { subsectionName: s.name, sectionName: s.section_id ? sectionNameById.get(s.section_id) || null : null },
+      ]),
+    )
+
+    for (const question of questions) {
+      const info = question.subsection_id ? subsectionInfoById.get(question.subsection_id) : undefined
+      if (info) {
+        question.section_name_sort = question.section_name_sort || info.sectionName
+        question.subsection_name_sort = question.subsection_name_sort || info.subsectionName
+      }
     }
   }
 
