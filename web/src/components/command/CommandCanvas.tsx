@@ -22,7 +22,7 @@ interface CommandCanvasProps {
 
 function WebGLFallback() {
   return (
-    <div className="fixed inset-0 z-0 flex items-center justify-center bg-zinc-950">
+    <div className="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950">
       <div className="text-center space-y-4">
         <div className="relative mx-auto w-32 h-32">
           <div className="absolute inset-0 rounded-full bg-emerald-500/5 animate-pulse" />
@@ -64,9 +64,9 @@ export default function CommandCanvas({
   }
 
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="absolute inset-0 z-0">
       <Canvas
-        camera={{ position: [0, 0, 12], fov: 50 }}
+        camera={{ position: [0, 0, 16], fov: 40 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
         onCreated={({ gl }) => {
@@ -101,8 +101,8 @@ export default function CommandCanvas({
           {/* Controls */}
           <OrbitControls
             enablePan={false}
-            enableZoom={true}
-            minDistance={6}
+            enableZoom={false}
+            minDistance={10}
             maxDistance={20}
             autoRotate={!selectedNodeId}
             autoRotateSpeed={0.3}

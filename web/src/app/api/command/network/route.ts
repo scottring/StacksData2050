@@ -86,7 +86,7 @@ export async function GET() {
   // by getCoordinates() from location_text (or a name hash fallback).
   const { data: companiesRaw } = await supabase
     .from('companies')
-    .select('id, name, location_text, show_as_supplier')
+    .select('id, name, location_text')
     .in('id', Array.from(companyIds))
 
   if (!companiesRaw) {
