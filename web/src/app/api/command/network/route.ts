@@ -26,11 +26,6 @@ const DEFAULT_LOCATIONS: Record<string, { lat: number; lng: number }> = {
 }
 
 function getCoordinates(company: Record<string, unknown>): { lat: number; lng: number } | null {
-  // Use stored coordinates first
-  if (company.latitude && company.longitude) {
-    return { lat: company.latitude as number, lng: company.longitude as number }
-  }
-
   // Try to match location_text to known countries
   const location = (company.location_text as string) || ''
   for (const [country, coords] of Object.entries(DEFAULT_LOCATIONS)) {
@@ -87,9 +82,11 @@ export async function GET() {
   }
 
   // Fetch companies
+  // Note: companies has no latitude/longitude columns. Coordinates are derived
+  // by getCoordinates() from location_text (or a name hash fallback).
   const { data: companiesRaw } = await supabase
     .from('companies')
-    .select('id, name, location_text, latitude, longitude, show_as_supplier')
+    .select('id, name, location_text, show_as_supplier')
     .in('id', Array.from(companyIds))
 
   if (!companiesRaw) {

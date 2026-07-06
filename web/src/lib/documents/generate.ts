@@ -253,10 +253,11 @@ async function getChemicalsForAssessment(assessment: Record<string, unknown>) {
   }
 
   // Try from chemical_inventory via sheet
+  // Note: concentration lives on sheet_chemicals (per-sheet), not on chemical_inventory (the shared registry)
   if (assessment.sheet_id) {
     const { data: sheetChemicals } = await supabase
       .from('sheet_chemicals')
-      .select('chemical_inventory(cas_number, chemical_name, concentration_pct)')
+      .select('concentration, chemical_inventory(cas_number, chemical_name)')
       .eq('sheet_id', assessment.sheet_id as string)
 
     if (sheetChemicals && sheetChemicals.length > 0) {
@@ -267,7 +268,7 @@ async function getChemicalsForAssessment(assessment: Record<string, unknown>) {
           return {
             cas_number: ci.cas_number as string,
             chemical_name: (ci.chemical_name as string) || 'Unknown',
-            concentration_pct: ci.concentration_pct as number | null,
+            concentration_pct: sc.concentration as number | null,
             function_in_product: null as string | null,
           }
         })
