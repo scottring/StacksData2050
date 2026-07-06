@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Inbox, Globe2, FileSpreadsheet } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Inbox, Globe2, FileSpreadsheet, LogOut } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const AmbientParticles = dynamic(
   () => import('@/components/vision/ui/AmbientParticles'),
@@ -18,11 +19,29 @@ interface StationLayoutProps {
 
 export default function StationLayout({ children }: StationLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
     document.body.classList.add('dark')
     return () => document.body.classList.remove('dark')
   }, [])
+
+  useEffect(() => {
+    async function fetchUser() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setEmail(user?.email || null)
+    }
+    fetchUser()
+  }, [])
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   return (
     <div className="dark">
@@ -78,6 +97,29 @@ export default function StationLayout({ children }: StationLayoutProps) {
                 <span>Import External</span>
               </Link>
             </nav>
+
+            {/* User footer */}
+            <div className="border-t border-white/6 p-3 space-y-1">
+              {email && (
+                <p className="truncate px-3 py-1 text-xs text-zinc-500" title={email}>
+                  {email}
+                </p>
+              )}
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-white/4 transition-all"
+              >
+                <Globe2 className="h-4 w-4" />
+                <span>Classic View</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Log out</span>
+              </button>
+            </div>
           </aside>
 
           {/* Main workspace */}
