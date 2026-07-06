@@ -447,8 +447,12 @@ export default function CustomerReviewClient({
       const mappingRes = await fetch(`/api/station/request/${requestId}/mapping`)
       if (mappingRes.ok) {
         setMapping(await mappingRes.json())
+        setEditedValues(new Map())
+      } else {
+        // Keep pending edits visible: clearing them without fresh mapping
+        // state would revert the view to stale values despite a saved POST.
+        console.error('Mapping refetch failed after save:', mappingRes.status)
       }
-      setEditedValues(new Map())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save changes')
     } finally {
