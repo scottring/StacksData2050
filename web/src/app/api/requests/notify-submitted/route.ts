@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 import { createClient } from '@supabase/supabase-js'
+import { createNotificationsForCompany } from '@/lib/notifications'
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -112,6 +113,27 @@ Click here to review and approve: ${reviewUrl}
 
 This email was sent by StacksData.
     `.trim()
+
+    // In-app notification (independent of email delivery, never blocks the response)
+    if (body.customerCompanyId) {
+      try {
+        const supabase = getServiceClient()
+        const { data: requestRow } = await supabase
+          .from('requests')
+          .select('id')
+          .eq('sheet_id', sheetId)
+          .maybeSingle()
+        const requestId = requestRow?.id
+        await createNotificationsForCompany(supabase, body.customerCompanyId, {
+          type: 'submission',
+          title: 'Response submitted',
+          message: `${productName} response is ready for review`,
+          link: requestId ? `/command/review/${requestId}` : '/command',
+        })
+      } catch (notifyError) {
+        console.error('[notify-submitted] notification failed:', notifyError)
+      }
+    }
 
     // Check if emails are disabled
     if (process.env.DISABLE_OUTBOUND_EMAILS === 'true') {

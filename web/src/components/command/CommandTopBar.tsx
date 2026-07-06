@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, Bell, LogOut, Settings, User, Shield, Globe2 } from 'lucide-react'
+import { Search, LogOut, Settings, User, Shield, Globe2 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { createClient } from '@/lib/supabase/client'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 
 interface UserProfile {
   email: string
@@ -122,10 +123,7 @@ export default function CommandTopBar() {
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
           {/* Notification bell */}
-          <button className="relative flex h-9 w-9 items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-white/6 transition-colors">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-zinc-900" />
-          </button>
+          <NotificationBell />
 
           {/* User menu */}
           {!mounted ? (

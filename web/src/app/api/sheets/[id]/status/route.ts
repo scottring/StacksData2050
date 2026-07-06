@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { createNotificationsForCompany } from '@/lib/notifications'
 
 const VALID_STATUSES = ['draft', 'in_progress', 'submitted', 'approved', 'flagged', 'rejected']
 
@@ -38,7 +40,7 @@ export async function PATCH(
 
   const { data: sheet } = await supabase
     .from('sheets')
-    .select('id, company_id, requesting_company_id')
+    .select('id, name, company_id, requesting_company_id')
     .eq('id', sheetId)
     .single()
 
@@ -64,6 +66,27 @@ export async function PATCH(
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Notify the supplier company of the status change. Fire-and-log only: a
+  // notification failure must never fail the status change itself. Uses a
+  // service-role client constructed locally, purely for this insert; all
+  // authorization above stays on the session client.
+  if (status === 'approved' || status === 'flagged' || status === 'rejected') {
+    try {
+      const serviceClient = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+      await createNotificationsForCompany(serviceClient, sheet.company_id, {
+        type: `status_${status}`,
+        title: `Sheet ${status}`,
+        message: `${sheet.name} was ${status} by the customer`,
+        link: '/station',
+      })
+    } catch (notifyError) {
+      console.error('[sheets/status] notification failed:', notifyError)
+    }
   }
 
   return NextResponse.json({ success: true, status })
