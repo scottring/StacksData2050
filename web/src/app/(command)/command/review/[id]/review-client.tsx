@@ -441,6 +441,13 @@ export default function CustomerReviewClient({
       })
 
       if (!res.ok) throw new Error('Failed to save changes')
+
+      // Refetch the mapping so saved edits persist in view (values, badges,
+      // section stats, gap filters) instead of reverting to stale state.
+      const mappingRes = await fetch(`/api/station/request/${requestId}/mapping`)
+      if (mappingRes.ok) {
+        setMapping(await mappingRes.json())
+      }
       setEditedValues(new Map())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save changes')
