@@ -23,8 +23,10 @@ import {
   Pencil,
   Check,
   Save,
+  Workflow,
 } from 'lucide-react'
 import type { MappedParameter, MappingResult } from '@/lib/extraction/parameter-mapper'
+import { StartWorkflowDialog } from '@/components/command/StartWorkflowDialog'
 
 interface CustomerReviewClientProps {
   requestId: string
@@ -312,6 +314,7 @@ export default function CustomerReviewClient({
   const [submitting, setSubmitting] = useState(false)
   const [editedValues, setEditedValues] = useState<Map<string, string>>(new Map())
   const [saving, setSaving] = useState(false)
+  const [workflowDialogOpen, setWorkflowDialogOpen] = useState(false)
 
   useEffect(() => {
     async function fetchMapping() {
@@ -700,9 +703,18 @@ export default function CustomerReviewClient({
 
       {/* Already approved/flagged/rejected state */}
       {sheetStatus === 'approved' && (
-        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-          <p className="text-sm text-emerald-400">This submission has been approved.</p>
+        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <p className="text-sm text-emerald-400">This submission has been approved.</p>
+          </div>
+          <button
+            onClick={() => setWorkflowDialogOpen(true)}
+            className="flex items-center gap-2 rounded-xl border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 px-3 py-1.5 text-xs font-medium transition-colors"
+          >
+            <Workflow className="h-3.5 w-3.5" />
+            Start Introduction Workflow
+          </button>
         </div>
       )}
       {sheetStatus === 'flagged' && (
@@ -717,6 +729,12 @@ export default function CustomerReviewClient({
           <p className="text-sm text-rose-400">This submission has been rejected.</p>
         </div>
       )}
+
+      <StartWorkflowDialog
+        sheetId={sheetId}
+        open={workflowDialogOpen}
+        onOpenChange={setWorkflowDialogOpen}
+      />
     </div>
   )
 }
