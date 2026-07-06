@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Inbox, Globe2, FileSpreadsheet } from 'lucide-react'
@@ -17,6 +18,11 @@ interface StationLayoutProps {
 
 export default function StationLayout({ children }: StationLayoutProps) {
   const pathname = usePathname()
+
+  useEffect(() => {
+    document.body.classList.add('dark')
+    return () => document.body.classList.remove('dark')
+  }, [])
 
   return (
     <div className="dark">

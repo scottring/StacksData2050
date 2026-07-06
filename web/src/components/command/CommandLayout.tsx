@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import CommandTopBar from './CommandTopBar'
 
@@ -13,6 +14,11 @@ interface CommandLayoutProps {
 }
 
 export default function CommandLayout({ children }: CommandLayoutProps) {
+  useEffect(() => {
+    document.body.classList.add('dark')
+    return () => document.body.classList.remove('dark')
+  }, [])
+
   return (
     <div className="dark">
       <div className="relative min-h-screen bg-zinc-950 text-white overflow-hidden">
