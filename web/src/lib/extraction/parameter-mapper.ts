@@ -35,7 +35,7 @@ export interface Question {
 
 export interface ExistingAnswer {
   id: string
-  parent_question_id: string | null
+  question_id: string | null
   text_value: string | null
   number_value: number | null
   boolean_value: boolean | null
@@ -269,8 +269,8 @@ export function mapParameters(
   // Build answer lookup: question_id → answer
   const answerMap = new Map<string, ExistingAnswer>()
   for (const answer of existingAnswers) {
-    if (answer.parent_question_id) {
-      answerMap.set(answer.parent_question_id, answer)
+    if (answer.question_id) {
+      answerMap.set(answer.question_id, answer)
     }
   }
 

@@ -174,7 +174,7 @@ export async function GET(
       const batch = sheetIds.slice(i, i + batchSize)
       const { data: answers } = await supabase
         .from('answers')
-        .select('id, parent_question_id, text_value, number_value, boolean_value, text_area_value, sheet_id, question:questions!parent_question_id(content, section_name_sort, subsection_name_sort)')
+        .select('id, question_id, text_value, number_value, boolean_value, text_area_value, sheet_id, question:questions!answers_question_id_fkey(content, section_name_sort, subsection_name_sort)')
         .in('sheet_id', batch)
         .not('text_value', 'is', null) // Only answers with values
 
@@ -187,7 +187,7 @@ export async function GET(
 
           priorAnswers.push({
             answerId: a.id,
-            questionId: a.parent_question_id || '',
+            questionId: a.question_id || '',
             questionContent: (q.content as string) || '',
             sectionName: (q.section_name_sort as string) || '',
             subsectionName: (q.subsection_name_sort as string) || '',

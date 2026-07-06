@@ -149,7 +149,7 @@ export async function GET(
   // 7. Get existing answers for this sheet
   const { data: existingAnswers } = await supabase
     .from('answers')
-    .select('id, parent_question_id, text_value, number_value, boolean_value, text_area_value, choice_id, date_value, file_url')
+    .select('id, question_id, text_value, number_value, boolean_value, text_area_value, choice_id, date_value, file_url')
     .eq('sheet_id', sheetId)
 
   // 8. Run the mapper
