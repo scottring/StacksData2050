@@ -21,7 +21,7 @@ function parseEnv(path: string): Record<string, string> {
 }
 
 function guessType(name: string): 'sds' | 'other' {
-  return /\b(sds|safety.?data|msds)\b/i.test(name) ? 'sds' : 'other'
+  return /\b(sds|msds|rds)\b|safety.?data|regulatory.?data.?sheet|sicherheitsdatenblatt/i.test(name.replace(/_/g, ' ')) ? 'sds' : 'other'
 }
 
 async function main() {
