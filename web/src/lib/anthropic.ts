@@ -5,7 +5,9 @@ export function getAnthropicClient(): Anthropic {
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY environment variable is not set')
   }
-  console.log('[Anthropic] Using API key:', apiKey.slice(0, 15) + '...')
+  if (!apiKey.startsWith('sk-ant-')) {
+    throw new Error('ANTHROPIC_API_KEY is set but malformed')
+  }
   return new Anthropic({ apiKey })
 }
 

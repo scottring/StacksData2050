@@ -9,11 +9,10 @@
  *
  * Note on stopReason: process.ts persists `raw_extraction` as the parsed tool_use
  * input (the extracted data itself), not the Anthropic API response envelope, so
- * `stop_reason` is not available on that column. process.ts does not persist the
- * Claude response's stop_reason anywhere else either. This script therefore always
- * records stopReason: null. See report for the concern this raises for Task 3
- * (no way to detect truncated/max_tokens responses from stored data alone; the
- * only signal today is a console.warn in process.ts when stop_reason === 'max_tokens').
+ * `stop_reason` is not available on that column. Instead, processDocument() now
+ * returns `stopReason` on its ExtractionResult (Task 3), and this script records
+ * that value directly. Cached (skipped) docs still report stopReason: null since
+ * they were not re-extracted this run.
  */
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, writeFileSync } from 'fs'
@@ -93,15 +92,12 @@ async function main() {
         .select('raw_extraction, extraction_error')
         .eq('id', docId!)
         .single()
-      // raw_extraction stores the parsed tool_use input, not the API response envelope,
-      // so stop_reason is never present here (see file header note).
-      const stopReason = null
       results.push({
         file: entry.localFile,
         docId,
         status: result.status,
         itemsCount: result.itemsCount,
-        stopReason,
+        stopReason: result.stopReason ?? null,
         durationMs: result.durationMs,
         tokenCount: result.tokenCount,
         error: result.error ?? docRow?.extraction_error ?? null,

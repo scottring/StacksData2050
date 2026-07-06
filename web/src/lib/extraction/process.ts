@@ -10,6 +10,7 @@ interface ExtractionResult {
   error?: string
   durationMs: number
   tokenCount: number
+  stopReason?: string | null
 }
 
 export interface ProcessingCallbacks {
@@ -140,7 +141,7 @@ export async function processDocument(
     // Questionnaires need much more output tokens since they extract many questions
     // (16k was not enough — responses were getting truncated)
     const isQuestionnaire = doc.document_type === 'questionnaire' || doc.document_type === 'questionnaire_filled'
-    const maxTokens = isQuestionnaire ? 64000 : 4096
+    const maxTokens = isQuestionnaire ? 64000 : 16000
 
     const client = getAnthropicClient()
 
@@ -315,6 +316,7 @@ export async function processDocument(
       itemsCount: items.length,
       durationMs,
       tokenCount,
+      stopReason: response.stop_reason,
     }
   } catch (error) {
     const durationMs = Date.now() - startTime
