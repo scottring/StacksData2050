@@ -15,6 +15,9 @@ const CHOICE_RESPONSE_TYPES = new Set([
   'Select multiple',
 ])
 
+// Note appended when an extracted value cannot be resolved to a choice.
+const CHOICE_MISMATCH_NOTE = 'AI-extracted value did not match a predefined choice'
+
 // Helper to log trial activity (non-blocking)
 async function logTrialActivity(email: string, userId: string | null, sheetId: string, answerCount: number) {
   try {
@@ -124,17 +127,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get existing answers for this sheet to determine update vs insert
+    // Get existing answers for this sheet to determine update vs insert.
+    // additional_notes is included so choice resolution can clear a stale
+    // mismatch note when a re-submission resolves cleanly.
     const { data: existingAnswers } = await supabase
       .from('answers')
-      .select('id, question_id, list_table_row_id, list_table_column_id')
+      .select('id, question_id, list_table_row_id, list_table_column_id, additional_notes')
       .eq('sheet_id', sheet_id)
 
-    // Build a lookup map for existing answers
+    // Build lookup maps for existing answers
     const existingMap = new Map<string, string>()
+    const existingNotes = new Map<string, string | null>()
     existingAnswers?.forEach(a => {
       const key = `${a.question_id}|${a.list_table_row_id || ''}|${a.list_table_column_id || ''}`
       existingMap.set(key, a.id)
+      existingNotes.set(a.id, a.additional_notes)
     })
 
     // Determine which of the target questions are choice questions, so that
@@ -236,10 +243,19 @@ export async function POST(request: NextRequest) {
           answerData.list_table_column_id = list_table_column_id
         }
 
+        // Find existing answer ID (needed here so choice resolution can
+        // clear stale sibling fields on update)
+        const lookupKey = `${question_id}|${list_table_row_id || ''}|${list_table_column_id || ''}`
+        const existingId = answer_id || existingMap.get(lookupKey)
+
         // Choice resolution: applies whenever the target question is a
         // choice question (per response_type) or the caller explicitly said
         // `type: 'choice'`, regardless of whether the value is already a
         // choice id (existing UI flows) or raw extracted display text.
+        // The matched and unmatched states are mutually exclusive: each
+        // branch explicitly nulls the sibling fields so a re-submission
+        // cannot leave a stale choice_id or text_value behind (the classic
+        // view and export read choice_id preferentially).
         const isChoiceTarget = type === 'choice' || choiceQuestionIds.has(question_id)
 
         if (isChoiceTarget) {
@@ -253,14 +269,24 @@ export async function POST(request: NextRequest) {
             answerData.choice_id = null
           } else if (matched) {
             answerData.choice_id = matched.id
+            answerData.text_value = null
+            // Clear a leftover mismatch note from a previous unmatched save,
+            // but only if that note is the only content (and the caller did
+            // not supply their own additional_notes this time).
+            if (answerData.additional_notes === undefined && existingId) {
+              const prevNote = existingNotes.get(existingId)
+              if (prevNote && prevNote.trim() === CHOICE_MISMATCH_NOTE) {
+                answerData.additional_notes = null
+              }
+            }
           } else {
             // No predefined choice matched; keep the extracted text visible
             // and flag it instead of silently writing an unresolvable choice_id.
+            answerData.choice_id = null
             answerData.text_value = raw
-            const note = 'AI-extracted value did not match a predefined choice'
             answerData.additional_notes = answerData.additional_notes
-              ? `${answerData.additional_notes}; ${note}`
-              : note
+              ? `${answerData.additional_notes}; ${CHOICE_MISMATCH_NOTE}`
+              : CHOICE_MISMATCH_NOTE
           }
         } else {
           // Set value based on type
@@ -289,10 +315,6 @@ export async function POST(request: NextRequest) {
               break
           }
         }
-
-        // Find existing answer ID
-        const lookupKey = `${question_id}|${list_table_row_id || ''}|${list_table_column_id || ''}`
-        const existingId = answer_id || existingMap.get(lookupKey)
 
         if (existingId) {
           // Update existing
