@@ -19,6 +19,10 @@ import {
   Building2,
   X,
   User,
+  XCircle,
+  Pencil,
+  Check,
+  Save,
 } from 'lucide-react'
 import type { MappedParameter, MappingResult } from '@/lib/extraction/parameter-mapper'
 
@@ -34,6 +38,17 @@ interface CustomerReviewClientProps {
 }
 
 type FilterMode = 'all' | 'high' | 'medium' | 'low' | 'gaps'
+
+// questionType values that indicate a choice question. The batch API also
+// resolves this server-side from the question's response_type, so this is a
+// best-effort client-side hint, not the source of truth.
+const CHOICE_QUESTION_TYPES = new Set([
+  'choice',
+  'Select one',
+  'Select one Radio',
+  'Dropdown',
+  'Select multiple',
+])
 
 // ─── Confidence Badge (customer perspective) ───────────────
 
@@ -66,7 +81,8 @@ function ConfidenceBadge({ confidence, size = 'sm' }: { confidence: number; size
 function SourceBadge({ status }: { status: MappedParameter['status'] }) {
   const configs = {
     mapped: { icon: Sparkles, label: 'AI Extracted', cls: 'text-violet-400 bg-violet-500/10' },
-    existing: { icon: User, label: 'Manual Entry', cls: 'text-blue-400 bg-blue-500/10' },
+    // Provenance of supplier-submitted answers (AI vs manual) is not persisted, so this must not claim either.
+    existing: { icon: User, label: 'Answered', cls: 'text-blue-400 bg-blue-500/10' },
     gap: { icon: AlertCircle, label: 'Missing', cls: 'text-rose-400 bg-rose-500/10' },
   }
   const { icon: Icon, label, cls } = configs[status]
@@ -78,6 +94,77 @@ function SourceBadge({ status }: { status: MappedParameter['status'] }) {
   )
 }
 
+// ─── Editable Value Cell (minimal port of the station review's ValueCell) ──
+
+function ValueCell({
+  displayValue,
+  status,
+  onSave,
+}: {
+  displayValue: string | null
+  status: MappedParameter['status']
+  onSave: (value: string) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState('')
+
+  const startEdit = () => {
+    setValue(displayValue || '')
+    setEditing(true)
+  }
+
+  const handleSave = () => {
+    onSave(value)
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <input
+          autoFocus
+          className="flex-1 bg-zinc-800 border border-emerald-500/30 rounded-lg px-2.5 py-1.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSave()
+            if (e.key === 'Escape') setEditing(false)
+          }}
+          placeholder="Enter value..."
+        />
+        <button
+          onClick={handleSave}
+          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-colors"
+        >
+          <Check className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={() => setEditing(false)}
+          className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 transition-colors"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    )
+  }
+
+  if (!displayValue) {
+    return (
+      <button onClick={startEdit} className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-400 transition-colors group">
+        <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="italic">No data</span>
+      </button>
+    )
+  }
+
+  return (
+    <button onClick={startEdit} className="group flex items-center gap-2 text-left">
+      <span className={`text-sm ${status === 'mapped' ? 'text-violet-300' : 'text-zinc-300'}`}>{displayValue}</span>
+      <Pencil className="h-3 w-3 text-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+    </button>
+  )
+}
+
 // ─── Section Group ─────────────────────────────────────────
 
 function ReviewSection({
@@ -86,12 +173,16 @@ function ReviewSection({
   docMap,
   flaggedIds,
   onFlag,
+  editedValues,
+  onEditValue,
 }: {
   sectionName: string
   parameters: MappedParameter[]
   docMap: Record<string, { fileName: string; documentType: string }>
   flaggedIds: Set<string>
   onFlag: (id: string) => void
+  editedValues: Map<string, string>
+  onEditValue: (questionId: string, value: string) => void
 }) {
   const [expanded, setExpanded] = useState(true)
 
@@ -157,15 +248,11 @@ function ReviewSection({
 
               {/* Value */}
               <div className="w-56 shrink-0">
-                {param.extractedValue || param.existingValue ? (
-                  <p className={`text-sm ${
-                    param.status === 'mapped' ? 'text-violet-300' : 'text-zinc-300'
-                  }`}>
-                    {param.existingValue || param.extractedValue}
-                  </p>
-                ) : (
-                  <p className="text-xs text-zinc-600 italic">No data</p>
-                )}
+                <ValueCell
+                  displayValue={editedValues.get(param.questionId) ?? (param.existingValue || param.extractedValue)}
+                  status={param.status}
+                  onSave={(value) => onEditValue(param.questionId, value)}
+                />
               </div>
 
               {/* Source + Confidence */}
@@ -223,6 +310,8 @@ export default function CustomerReviewClient({
   const [searchQuery, setSearchQuery] = useState('')
   const [flaggedIds, setFlaggedIds] = useState<Set<string>>(new Set())
   const [submitting, setSubmitting] = useState(false)
+  const [editedValues, setEditedValues] = useState<Map<string, string>>(new Map())
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     async function fetchMapping() {
@@ -239,6 +328,14 @@ export default function CustomerReviewClient({
     }
     fetchMapping()
   }, [requestId])
+
+  const handleEditValue = (questionId: string, value: string) => {
+    setEditedValues((prev) => {
+      const next = new Map(prev)
+      next.set(questionId, value)
+      return next
+    })
+  }
 
   const toggleFlag = (questionId: string) => {
     setFlaggedIds((prev) => {
@@ -312,6 +409,43 @@ export default function CustomerReviewClient({
       setError('Failed to flag')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleReject = async () => {
+    if (!window.confirm('Reject this submission? The supplier will need to revise and resubmit.')) return
+    setSubmitting(true)
+    const res = await fetch(`/api/sheets/${sheetId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'rejected' }),
+    })
+    if (res.ok) window.location.href = '/command'
+    else setSubmitting(false)
+  }
+
+  const handleSaveChanges = async () => {
+    if (!mapping || editedValues.size === 0) return
+    setSaving(true)
+    try {
+      const answers = Array.from(editedValues.entries()).map(([questionId, value]) => {
+        const param = mapping.parameters.find((p) => p.questionId === questionId)
+        const type = param && CHOICE_QUESTION_TYPES.has(param.questionType) ? 'choice' : 'text'
+        return { question_id: questionId, value, type }
+      })
+
+      const res = await fetch('/api/answers/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheet_id: sheetId, answers }),
+      })
+
+      if (!res.ok) throw new Error('Failed to save changes')
+      setEditedValues(new Map())
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save changes')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -472,6 +606,8 @@ export default function CustomerReviewClient({
             docMap={docMap}
             flaggedIds={flaggedIds}
             onFlag={toggleFlag}
+            editedValues={editedValues}
+            onEditValue={handleEditValue}
           />
         ))}
 
@@ -502,9 +638,31 @@ export default function CustomerReviewClient({
             {flaggedIds.size > 0 && (
               <span className="text-amber-400">{flaggedIds.size} parameter{flaggedIds.size !== 1 ? 's' : ''} flagged</span>
             )}
+            {flaggedIds.size > 0 && editedValues.size > 0 && ' · '}
+            {editedValues.size > 0 && (
+              <span className="text-emerald-400">{editedValues.size} edit{editedValues.size !== 1 ? 's' : ''} pending</span>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
+            {editedValues.size > 0 && (
+              <button
+                onClick={handleSaveChanges}
+                disabled={saving}
+                className="flex items-center gap-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 disabled:opacity-50 text-blue-400 px-4 py-2 text-sm font-medium transition-colors"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save changes
+              </button>
+            )}
+            <button
+              onClick={handleReject}
+              disabled={submitting}
+              className="flex items-center gap-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 disabled:opacity-50 text-rose-400 px-4 py-2 text-sm font-medium transition-colors"
+            >
+              <XCircle className="h-4 w-4" />
+              Reject
+            </button>
             <button
               onClick={handleFlagRequest}
               disabled={submitting}
@@ -529,7 +687,7 @@ export default function CustomerReviewClient({
         </div>
       )}
 
-      {/* Already approved/flagged state */}
+      {/* Already approved/flagged/rejected state */}
       {sheetStatus === 'approved' && (
         <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 text-emerald-400" />
@@ -540,6 +698,12 @@ export default function CustomerReviewClient({
         <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 px-4 py-3 flex items-center gap-2">
           <Flag className="h-4 w-4 text-amber-400" />
           <p className="text-sm text-amber-400">This submission has been flagged for clarification.</p>
+        </div>
+      )}
+      {sheetStatus === 'rejected' && (
+        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 flex items-center gap-2">
+          <XCircle className="h-4 w-4 text-rose-400" />
+          <p className="text-sm text-rose-400">This submission has been rejected.</p>
         </div>
       )}
     </div>

@@ -183,11 +183,23 @@ export async function GET(
     .select('id, question_id, text_value, number_value, boolean_value, text_area_value, choice_id, date_value, file_url')
     .eq('sheet_id', sheetId)
 
+  // 7b. Resolve choice_id answers to their display content so the mapper
+  // never has to fall back to its `[choice:<uuid>]` placeholder.
+  const choiceIds = [...new Set((existingAnswers ?? []).map((a) => a.choice_id).filter(Boolean))] as string[]
+  const choiceMap = new Map<string, string>()
+  if (choiceIds.length > 0) {
+    const { data: choiceRows } = await supabase.from('choices').select('id, content').in('id', choiceIds)
+    for (const c of choiceRows ?? []) choiceMap.set(c.id, c.content)
+  }
+  const displayAnswers = (existingAnswers ?? []).map((a) =>
+    a.choice_id ? { ...a, text_value: choiceMap.get(a.choice_id) ?? a.text_value } : a,
+  )
+
   // 8. Run the mapper
   const result = mapParameters(
     questions,
     extractionItems,
-    (existingAnswers || []) as ExistingAnswer[],
+    displayAnswers as ExistingAnswer[],
   )
 
   return NextResponse.json(result)
