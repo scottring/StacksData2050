@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useMemo, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
@@ -79,8 +79,13 @@ function formatRelativeDate(dateStr: string): string {
 
 export default function CommandClient({ requests, companyName, totals }: CommandClientProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [tab, setTab] = useState<FilterTab>('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '')
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get('q') ?? '')
+  }, [searchParams])
   const [globeData, setGlobeData] = useState<{ companies: CompanyNode[]; requests: RequestArc[] } | null>(null)
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
 
