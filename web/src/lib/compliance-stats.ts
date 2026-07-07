@@ -160,11 +160,11 @@ async function generateRecentAlerts(supabase: any, sheets: any[]): Promise<Compl
 
     const { data: biocidalAnswers } = await supabase
       .from('answers')
-      .select('parent_sheet_id, question_id')
+      .select('sheet_id, question_id')
       .in('question_id', questionIds)
       .or('text_value.is.null,choice_id.is.null')
 
-    const affectedSheets = new Set(biocidalAnswers?.map((a: any) => a.parent_sheet_id) || []).size
+    const affectedSheets = new Set(biocidalAnswers?.map((a: any) => a.sheet_id) || []).size
 
     if (affectedSheets > 0) {
       alerts.push({
@@ -228,12 +228,12 @@ async function generateRegulatoryGaps(supabase: any, sheets: any[]): Promise<Reg
 
     const { data: incompleteAnswers } = await supabase
       .from('answers')
-      .select('parent_sheet_id')
+      .select('sheet_id')
       .in('question_id', questionIds)
       .is('text_value', null)
       .is('choice_id', null)
 
-    const affectedSheetCount = new Set(incompleteAnswers?.map((a: any) => a.parent_sheet_id) || []).size
+    const affectedSheetCount = new Set(incompleteAnswers?.map((a: any) => a.sheet_id) || []).size
 
     if (affectedSheetCount > 0) {
       gaps.push({
