@@ -41,17 +41,6 @@ interface CustomerReviewClientProps {
 
 type FilterMode = 'all' | 'high' | 'medium' | 'low' | 'gaps'
 
-// questionType values that indicate a choice question. The batch API also
-// resolves this server-side from the question's response_type, so this is a
-// best-effort client-side hint, not the source of truth.
-const CHOICE_QUESTION_TYPES = new Set([
-  'choice',
-  'Select one',
-  'Select one Radio',
-  'Dropdown',
-  'Select multiple',
-])
-
 // ─── Confidence Badge (customer perspective) ───────────────
 
 function ConfidenceBadge({ confidence, size = 'sm' }: { confidence: number; size?: 'sm' | 'lg' }) {
@@ -383,7 +372,20 @@ export default function CustomerReviewClient({
     return groups
   }, [filteredParams])
 
+  // Guards Approve/Request Clarification/Reject against silently discarding
+  // pending inline edits. Returns false (and aborts the caller) if the user
+  // cancels, or if a requested save fails.
+  const confirmUnsavedEdits = async (): Promise<boolean> => {
+    if (editedValues.size === 0) return true
+    const proceed = window.confirm(
+      `You have ${editedValues.size} unsaved edit(s). Save them before continuing?`,
+    )
+    if (!proceed) return false
+    return handleSaveChanges()
+  }
+
   const handleApprove = async () => {
+    if (!(await confirmUnsavedEdits())) return
     setSubmitting(true)
     try {
       await fetch(`/api/sheets/${sheetId}/status`, {
@@ -400,6 +402,7 @@ export default function CustomerReviewClient({
   }
 
   const handleFlagRequest = async () => {
+    if (!(await confirmUnsavedEdits())) return
     setSubmitting(true)
     try {
       await fetch(`/api/sheets/${sheetId}/status`, {
@@ -416,26 +419,38 @@ export default function CustomerReviewClient({
   }
 
   const handleReject = async () => {
+    if (!(await confirmUnsavedEdits())) return
     if (!window.confirm('Reject this submission? The supplier will need to revise and resubmit.')) return
     setSubmitting(true)
-    const res = await fetch(`/api/sheets/${sheetId}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'rejected' }),
-    })
-    if (res.ok) window.location.href = '/command'
-    else setSubmitting(false)
+    try {
+      const res = await fetch(`/api/sheets/${sheetId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected' }),
+      })
+      if (!res.ok) throw new Error('Failed to reject')
+      window.location.href = '/command'
+    } catch {
+      setError('Failed to reject')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  const handleSaveChanges = async () => {
-    if (!mapping || editedValues.size === 0) return
+  // Returns true on success (including the no-op "nothing to save" case) and
+  // false on failure, so callers can gate a follow-on action (approve, flag,
+  // reject) on the save actually completing.
+  const handleSaveChanges = async (): Promise<boolean> => {
+    if (!mapping || editedValues.size === 0) return true
     setSaving(true)
     try {
-      const answers = Array.from(editedValues.entries()).map(([questionId, value]) => {
-        const param = mapping.parameters.find((p) => p.questionId === questionId)
-        const type = param && CHOICE_QUESTION_TYPES.has(param.questionType) ? 'choice' : 'text'
-        return { question_id: questionId, value, type }
-      })
+      // Type is always 'text' here: the batch route derives choice handling
+      // from the question's response_type server-side, not from a client hint.
+      const answers = Array.from(editedValues.entries()).map(([questionId, value]) => ({
+        question_id: questionId,
+        value,
+        type: 'text',
+      }))
 
       const res = await fetch('/api/answers/batch', {
         method: 'POST',
@@ -443,7 +458,10 @@ export default function CustomerReviewClient({
         body: JSON.stringify({ sheet_id: sheetId, answers }),
       })
 
-      if (!res.ok) throw new Error('Failed to save changes')
+      if (!res.ok) {
+        setError('Failed to save changes')
+        return false
+      }
 
       // Refetch the mapping so saved edits persist in view (values, badges,
       // section stats, gap filters) instead of reverting to stale state.
@@ -456,8 +474,10 @@ export default function CustomerReviewClient({
         // state would revert the view to stale values despite a saved POST.
         console.error('Mapping refetch failed after save:', mappingRes.status)
       }
+      return true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save changes')
+      return false
     } finally {
       setSaving(false)
     }

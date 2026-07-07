@@ -22,6 +22,10 @@ export default function StationLayout({ children }: StationLayoutProps) {
   const router = useRouter()
   const [email, setEmail] = useState<string | null>(null)
 
+  // Shared with CommandLayout's identical effect: both toggle the same
+  // global `body.dark` class with no refcounting, so these two dark layouts
+  // must never be mounted nested inside one another (the unmount of either
+  // would strip `dark` out from under the other).
   useEffect(() => {
     document.body.classList.add('dark')
     return () => document.body.classList.remove('dark')

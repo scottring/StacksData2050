@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
 import { createNotificationsForCompany } from '@/lib/notifications'
 
 // Initialize SendGrid
@@ -9,7 +10,7 @@ if (process.env.SENDGRID_API_KEY) {
 }
 
 function getServiceClient() {
-  return createClient(
+  return createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
@@ -17,15 +18,46 @@ function getServiceClient() {
 
 export async function POST(request: Request) {
   try {
+    // Session auth: this route has no other gate, and it triggers a
+    // cross-company notification insert, so it must not be callable
+    // unauthenticated.
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const { sheetId, productName } = body
     let customerEmail = body.customerEmail
     let customerName = body.customerName
 
+    if (!sheetId) {
+      return NextResponse.json({ error: 'sheetId required' }, { status: 400 })
+    }
+
+    // Only the supplier who owns the sheet (the side that submits it and
+    // calls this route) may trigger a notification to the customer.
+    const { data: callerRow } = await supabase
+      .from('users')
+      .select('company_id')
+      .eq('id', user.id)
+      .single()
+
+    const { data: sheet } = await supabase
+      .from('sheets')
+      .select('id, company_id')
+      .eq('id', sheetId)
+      .single()
+
+    if (!sheet || !callerRow?.company_id || callerRow.company_id !== sheet.company_id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // Server-side lookup if email not provided but company ID is
     if (!customerEmail && body.customerCompanyId) {
-      const supabase = getServiceClient()
-      const { data: customerUsers } = await supabase
+      const serviceClient = getServiceClient()
+      const { data: customerUsers } = await serviceClient
         .from('users')
         .select('email, full_name')
         .eq('company_id', body.customerCompanyId)
@@ -41,8 +73,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Customer email required' }, { status: 400 })
     }
 
-    // Generate review URL
-    const reviewUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/sheets/${sheetId}/review`
+    // Look up the request so the email link and the in-app notification
+    // below point at the same customer review URL.
+    let requestId: string | undefined
+    if (body.customerCompanyId) {
+      const serviceClient = getServiceClient()
+      const { data: requestRow } = await serviceClient
+        .from('requests')
+        .select('id')
+        .eq('sheet_id', sheetId)
+        .maybeSingle()
+      requestId = requestRow?.id
+    }
+
+    // Generate review URL (same destination as the in-app notification link)
+    const reviewUrl = requestId
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/command/review/${requestId}`
+      : `${process.env.NEXT_PUBLIC_SITE_URL}/command`
 
     // Email content
     const emailHtml = `
@@ -117,15 +164,9 @@ This email was sent by StacksData.
     // In-app notification (independent of email delivery, never blocks the response)
     if (body.customerCompanyId) {
       try {
-        const supabase = getServiceClient()
-        const { data: requestRow } = await supabase
-          .from('requests')
-          .select('id')
-          .eq('sheet_id', sheetId)
-          .maybeSingle()
-        const requestId = requestRow?.id
-        await createNotificationsForCompany(supabase, body.customerCompanyId, {
-          type: 'submission',
+        const serviceClient = getServiceClient()
+        await createNotificationsForCompany(serviceClient, body.customerCompanyId, {
+          type: 'sheet_submitted',
           title: 'Response submitted',
           message: `${productName} response is ready for review`,
           link: requestId ? `/command/review/${requestId}` : '/command',

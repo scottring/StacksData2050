@@ -79,7 +79,7 @@ export async function PATCH(
         process.env.SUPABASE_SERVICE_ROLE_KEY!
       )
       await createNotificationsForCompany(serviceClient, sheet.company_id, {
-        type: `status_${status}`,
+        type: `sheet_${status}`,
         title: `Sheet ${status}`,
         message: `${sheet.name} was ${status} by the customer`,
         link: '/station',

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, LogOut, Settings, User, Shield, Globe2 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -26,9 +26,10 @@ interface UserProfile {
 
 export default function CommandTopBar() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [user, setUser] = useState<UserProfile | null>(null)
   const [mounted, setMounted] = useState(false)
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(() => searchParams.get('q') || '')
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -131,7 +132,8 @@ export default function CommandTopBar() {
               onChange={(e) => setQ(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  router.push(`/command?q=${encodeURIComponent(q)}`)
+                  const trimmed = q.trim()
+                  router.push(trimmed ? `/command?q=${encodeURIComponent(trimmed)}` : '/command')
                 }
               }}
               placeholder="Search suppliers, products, requests..."

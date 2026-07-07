@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import CommandTopBar from './CommandTopBar'
 
@@ -14,6 +14,10 @@ interface CommandLayoutProps {
 }
 
 export default function CommandLayout({ children }: CommandLayoutProps) {
+  // Shared with StationLayout's identical effect: both toggle the same
+  // global `body.dark` class with no refcounting, so these two dark layouts
+  // must never be mounted nested inside one another (the unmount of either
+  // would strip `dark` out from under the other).
   useEffect(() => {
     document.body.classList.add('dark')
     return () => document.body.classList.remove('dark')
@@ -29,7 +33,9 @@ export default function CommandLayout({ children }: CommandLayoutProps) {
         <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.03)_0%,transparent_70%)]" />
 
         {/* Top bar */}
-        <CommandTopBar />
+        <Suspense fallback={null}>
+          <CommandTopBar />
+        </Suspense>
 
         {/* Main content */}
         <main className="relative z-10 pt-14">
