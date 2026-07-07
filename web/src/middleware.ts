@@ -69,7 +69,8 @@ export async function middleware(request: NextRequest) {
   // Public routes (login, home, etc.)
   const publicPaths = ['/', '/login', '/auth']
   const isPublicPath = publicPaths.some(path =>
-    request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path)
+    request.nextUrl.pathname === path ||
+    (path !== '/' && request.nextUrl.pathname.startsWith(path + '/'))
   )
 
   if (isPublicPath) {
