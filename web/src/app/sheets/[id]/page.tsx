@@ -107,7 +107,7 @@ export default async function SheetViewPage({
           content,
           response_type,
           order_number,
-          subsections(
+          subsections!questions_subsection_id_fkey(
             id,
             name,
             order_number,

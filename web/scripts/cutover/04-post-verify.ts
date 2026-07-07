@@ -13,6 +13,12 @@
  * end -- this script only verifies the database and storage layer, not the
  * running application.
  *
+ * Runs TWICE in the runbook: at Step 5 (expect only the core-table
+ * reconciliation column section to FAIL, since 05 is deliberately held
+ * until Step 5b) and again at Step 5b right after applying
+ * 05-core-schema-reconciliation.sql (expect all PASS, then deploy
+ * immediately; see README.md Step 5b for why).
+ *
  * Run from stacks/web:
  *   CUTOVER_CONFIRM=yes npx tsx --env-file=../.env.production scripts/cutover/04-post-verify.ts
  */
@@ -25,11 +31,14 @@ if (process.env.CUTOVER_CONFIRM !== 'yes') {
   process.exit(1)
 }
 
-console.log('==================================================')
+console.log('====================================================')
 console.log(' POST-CUTOVER VERIFICATION -- read-only, but gated')
-console.log(' (assumes 01-schema.sql, 05-core-schema-reconciliation.sql,')
-console.log('  02-buckets, and 03-seed-plants have already been applied)')
-console.log('==================================================\n')
+console.log(' At Step 5 (after 01-schema.sql, 02-buckets,')
+console.log(' 03-seed-plants): expect ONLY the core-table')
+console.log(' reconciliation column section to FAIL.')
+console.log(' At the Step 5b re-run (after')
+console.log(' 05-core-schema-reconciliation.sql): expect ALL PASS.')
+console.log('====================================================\n')
 
 const EXPECTED_SAPPI_ID = '9567b9ac-1c12-457f-8e49-321519c267b3'
 

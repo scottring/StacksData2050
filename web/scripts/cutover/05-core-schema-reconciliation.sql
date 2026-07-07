@@ -74,8 +74,22 @@
 -- Relationship embeds probed on prod: questions->subsections OK,
 -- answers->choices OK, answers->questions (answers_question_id_fkey) OK,
 -- requests->sheets OK, requests->companies (both hints) OK, sheets->companies
--- (both named FKs) OK. The ONLY broken embed was questions->sections
+-- (both named FKs) OK. The one broken embed was questions->sections
 -- (PGRST200: no relationship), fixed below by the parent_section_id FK.
+--
+-- KNOWN SIDE EFFECT of the parent_subsection_id FK: once questions has TWO
+-- FKs to subsections (the pre-existing questions_subsection_id_fkey plus the
+-- new questions_parent_subsection_id_fkey), any UNHINTED
+-- `subsections( ... )` embed on questions becomes ambiguous and fails with
+-- PGRST201. Verified live in dev, which already carries both FKs: the
+-- unhinted embed errors there today. Mitigation shipped with this file's
+-- commit: the two consumers of the unhinted embed
+-- (src/app/sheets/[id]/page.tsx and src/app/sheets/[id]/edit/page.tsx) now
+-- hint it as `subsections!questions_subsection_id_fkey( ... )`, which was
+-- probed working on BOTH prod (single-FK, pre-05) and dev (dual-FK). The
+-- runbook (README.md Step 2b) sequences this file immediately before the
+-- code deploy to keep the window between FK creation and hinted-code deploy
+-- to minutes, and documents the rollback interaction.
 --
 -- Data-population note (honest scope limit): in DEV these question metadata
 -- columns are structurally present but almost entirely NULL (question_type,
@@ -117,7 +131,9 @@ ALTER TABLE questions ADD COLUMN IF NOT EXISTS parent_subsection_id uuid;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'questions_parent_section_id_fkey'
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'questions_parent_section_id_fkey'
+      AND conrelid = 'questions'::regclass
   ) THEN
     ALTER TABLE questions
       ADD CONSTRAINT questions_parent_section_id_fkey
@@ -128,7 +144,9 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'questions_parent_subsection_id_fkey'
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'questions_parent_subsection_id_fkey'
+      AND conrelid = 'questions'::regclass
   ) THEN
     ALTER TABLE questions
       ADD CONSTRAINT questions_parent_subsection_id_fkey

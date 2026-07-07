@@ -24,7 +24,7 @@ run at any time without ceremony.
 |---|---|
 | `00-preflight.ts` | Read-only. Verifies prod's pre-cutover state. Writes `PREFLIGHT.md`. |
 | `01-schema.sql` | The DB migration: pipeline tables (company-scoped RLS), workflow tables, notifications columns. |
-| `05-core-schema-reconciliation.sql` | Additive column reconciliation for the seven core tables (19 columns the code uses but prod lacks). Step 2b; hard-gates Step 6. |
+| `05-core-schema-reconciliation.sql` | Additive column reconciliation for the seven core tables (19 columns the code uses but prod lacks). Step 5b, run immediately before the deploy; hard-gates Step 6. |
 | `02-buckets-and-storage-policies.ts` | Guarded. Creates the two storage buckets; prints storage.objects policy SQL for manual application. |
 | `03-seed-plants.md` | Instructions for running the existing `stacks/seed-sappi-workflow.ts` against prod. |
 | `04-post-verify.ts` | Guarded. Same checks as 00, with post-cutover expectations. Prints a manual app smoke checklist. |
@@ -183,7 +183,7 @@ route) would error outright. All of this was re-verified column by column
 with direct read-only probes while authoring
 `05-core-schema-reconciliation.sql`.
 
-**Resolution: `05-core-schema-reconciliation.sql` (Step 2b).** The
+**Resolution: `05-core-schema-reconciliation.sql` (Step 5b).** The
 code-driven investigation this finding called for has been done: every
 column the `rebuild/v2` code selects/inserts/updates on the seven core
 tables was inventoried from src/, probed against prod read-only, and the
@@ -207,8 +207,10 @@ separate task/turn -- this runbook is written and reviewed, not executed, as
 part of this task).
 
 **HARD GATE before Step 6: DO NOT run Step 6 until
-`05-core-schema-reconciliation.sql` (Step 2b) has been applied to prod and
-verified (its columns show PASS in the Step 5 `04-post-verify.ts` run).**
+`05-core-schema-reconciliation.sql` (Step 5b) has been applied to prod and
+verified (its columns show PASS in the Step 5b `04-post-verify.ts` re-run).
+And conversely, once 5b HAS run, proceed to Step 6 immediately (see the
+residual-window note in Step 5b).**
 This is a blocking precondition, not a recommendation. Deploying
 `rebuild/v2` code to production while prod's `answers` / `questions` /
 `companies` / `requests` / `users` tables are missing columns that code
@@ -258,20 +260,6 @@ or paste the file's contents into the SQL editor and run it. Record the
 start time (for the rollback narrative and for correlating with any error
 logs).
 
-### Step 2b: Core-table schema reconciliation (REQUIRED before Step 6)
-
-Apply `05-core-schema-reconciliation.sql` to prod the same way (CLI or SQL
-editor). It adds the 19 columns the rebuild/v2 code reads/writes on the core
-tables but prod lacks (strictly additive: ADD COLUMN IF NOT EXISTS, two
-guarded FK constraints for the questions->sections/subsections embeds, and
-one backfill of `companies.location_text` from prod's existing `location`
-column). Idempotent, rerun-safe. Evidence and method are in the file's
-header. **Step 6 is hard-gated on this step having been applied and
-verified** (see the gate note above the runbook steps): without it, the
-station mapping route, answers writes with clarifications, the Excel export,
-the command/station request tables (product_name), the network globe, and
-the contacts API all hit missing-column errors on prod.
-
 ### Step 3: Storage buckets and policies
 
 ```bash
@@ -295,8 +283,42 @@ cd /Users/scottkaufman/Developer/StacksData2050/stacks/web
 CUTOVER_CONFIRM=yes npx tsx --env-file=../.env.production scripts/cutover/04-post-verify.ts
 ```
 
-All automated checks must show PASS before continuing. If anything FAILs,
-stop and diagnose -- do not proceed to Step 6 with an unverified database.
+At this point in the sequence, expect exactly ONE failing section: the
+"Core-table reconciliation columns" block (those 19 columns arrive in
+Step 5b, deliberately held until just before the deploy). Every other check
+must show PASS. If anything ELSE FAILs, stop and diagnose -- do not proceed
+with an unverified database.
+
+### Step 5b: Core-table schema reconciliation (immediately before Step 6)
+
+Apply `05-core-schema-reconciliation.sql` to prod (CLI or SQL editor), then
+immediately re-run the Step 5 verify command and confirm ALL checks now
+PASS, then proceed straight to Step 6 without pausing.
+
+What it does: adds the 19 columns the rebuild/v2 code reads/writes on the
+core tables but prod lacks (strictly additive: ADD COLUMN IF NOT EXISTS, two
+guarded FK constraints for the questions->sections/subsections embeds, and
+one backfill of `companies.location_text` from prod's existing `location`
+column). Idempotent, rerun-safe. Evidence and method are in the file's
+header. **Step 6 is hard-gated on this step** (see the gate note above the
+runbook steps): without it, the station mapping route, answers writes with
+clarifications, the Excel export, the command/station request tables
+(product_name), the network globe, and the contacts API all hit
+missing-column errors on prod.
+
+**Why this step runs LAST before the deploy, and the residual window:** the
+new `questions_parent_subsection_id_fkey` gives `questions` a second FK to
+`subsections`, which makes the OLD code's unhinted `subsections( ... )`
+embed (classic sheet detail/edit pages as deployed on `production` today)
+ambiguous (PGRST201) the moment the constraint exists. The rebuild/v2 code
+being deployed in Step 6 hints that embed
+(`subsections!questions_subsection_id_fkey`), which works with either one
+or two FKs present (probed on both prod and dev). Running 5b immediately
+before Step 6 shrinks the exposure to the minutes between the constraint
+landing and the Vercel deploy going live; during that window, the classic
+sheet detail and sheet edit pages on the OLD deploy lose their section
+grouping (the embed errors and the pages fall back to ungrouped questions).
+Accepted and disclosed; do not schedule a pause between 5b and 6.
 
 ### Step 6: Code
 
@@ -352,11 +374,23 @@ hotfix (or anything else) has landed on `production` between now and the
 actual cutover run, update this rollback target to whatever `production`'s
 tip is right before Step 6 runs, and record it here.
 
-Database changes from Steps 2, 2b, 3, and 4 are additive (new tables, new
-nullable columns, new buckets) and safe to leave in place after a code
-rollback -- nothing in `01-schema.sql` or
+Database changes from Steps 2, 3, 4, and 5b are additive (new tables, new
+nullable columns, new buckets) and nothing in `01-schema.sql` or
 `05-core-schema-reconciliation.sql` drops or renames anything that predates
-it, and the old code paths do not read the new tables/columns.
+it. ONE exception to "safe to leave in place after a code rollback": the
+`questions_parent_subsection_id_fkey` constraint from Step 5b makes the OLD
+code's unhinted `subsections( ... )` embed ambiguous, so rolling the code
+back to `805973d` re-exposes the classic sheet detail/edit pages to that
+PGRST201 failure (they render without section grouping) until either the
+embed-hint code fix ships to `production` or the constraint is dropped.
+DB-side rollback for that specific regression, if the code rollback needs
+to hold for more than a few minutes:
+
+```sql
+ALTER TABLE questions DROP CONSTRAINT questions_parent_subsection_id_fkey;
+```
+
+(Everything else 05 added is inert under the old code and stays.)
 
 ### Step 9: Post-cutover tickets
 

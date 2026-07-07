@@ -118,7 +118,7 @@ export default async function SheetEditPage({
           order_number,
           dependent_no_show,
           subsection_id,
-          subsections(
+          subsections!questions_subsection_id_fkey(
             id,
             name,
             order_number,
