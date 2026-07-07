@@ -27,8 +27,8 @@ if (process.env.CUTOVER_CONFIRM !== 'yes') {
 
 console.log('==================================================')
 console.log(' POST-CUTOVER VERIFICATION -- read-only, but gated')
-console.log(' (assumes 01-schema.sql, 02-buckets, 03-seed-plants')
-console.log('  have already been applied)')
+console.log(' (assumes 01-schema.sql, 05-core-schema-reconciliation.sql,')
+console.log('  02-buckets, and 03-seed-plants have already been applied)')
 console.log('==================================================\n')
 
 const EXPECTED_SAPPI_ID = '9567b9ac-1c12-457f-8e49-321519c267b3'
@@ -52,6 +52,15 @@ const WORKFLOW_TABLES = [
 const NOTIFICATION_COLUMNS = ['type', 'title', 'message', 'link', 'read']
 const CANONICAL_TABLES = ['canonical_answer_types', 'canonical_reference_substances']
 const BUCKETS = ['extraction-documents', 'generated-documents']
+// Columns added by 05-core-schema-reconciliation.sql (expected PRESENT after
+// it has been applied; see that file's header for the evidence trail).
+const CORE_RECONCILIATION_COLUMNS: Record<string, string[]> = {
+  answers: ['clarification', 'text_area_value', 'file_url', 'parent_question_id', 'originating_question_id'],
+  questions: ['question_type', 'section_name_sort', 'subsection_name_sort', 'optional_question', 'clarification', 'list_table_id', 'parent_section_id', 'parent_subsection_id'],
+  companies: ['location_text'],
+  requests: ['product_name', 'comment_requestor'],
+  users: ['first_name', 'last_name', 'phone_text'],
+}
 
 interface Row {
   verdict: 'PASS' | 'FAIL' | 'INFO'
@@ -71,10 +80,14 @@ function parseEnv(path: string): Record<string, string> {
 }
 
 async function tableExists(sb: SupabaseClient, table: string): Promise<{ exists: boolean; detail: string }> {
-  const { count, error } = await sb.from(table).select('*', { head: true, count: 'exact' })
+  // Must be a GET probe: a HEAD + count request against a MISSING table
+  // comes back 204 with no error on this stack. PostgREST only surfaces the
+  // missing-relation error (PGRST205 from the schema cache, or 42P01 from
+  // Postgres) on a GET.
+  const { count, error } = await sb.from(table).select('*', { count: 'exact' }).limit(1)
   if (!error) return { exists: true, detail: `${count ?? 0} rows` }
-  if (error.code === '42P01') return { exists: false, detail: 'relation does not exist' }
-  return { exists: false, detail: `unexpected error: ${error.message}` }
+  if (error.code === 'PGRST205' || error.code === '42P01') return { exists: false, detail: 'relation does not exist' }
+  return { exists: false, detail: `unexpected error (${error.code}): ${error.message}` }
 }
 
 async function columnExists(sb: SupabaseClient, table: string, column: string): Promise<{ exists: boolean; detail: string }> {
@@ -115,6 +128,14 @@ async function main() {
   for (const column of NOTIFICATION_COLUMNS) {
     const r = await columnExists(sb, 'notifications', column)
     add(r.exists ? 'PASS' : 'FAIL', `notifications.${column} present`, r.detail)
+  }
+
+  console.log('\n--- Core-table reconciliation columns (expected PRESENT after 05-core-schema-reconciliation.sql) ---')
+  for (const [table, cols] of Object.entries(CORE_RECONCILIATION_COLUMNS)) {
+    for (const column of cols) {
+      const r = await columnExists(sb, table, column)
+      add(r.exists ? 'PASS' : 'FAIL', `${table}.${column} present`, r.detail)
+    }
   }
 
   console.log('\n--- Canonical reference tables (still expected PRESENT with rows) ---')

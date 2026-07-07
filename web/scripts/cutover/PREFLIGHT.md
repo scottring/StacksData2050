@@ -1,12 +1,17 @@
 # PREFLIGHT.md
 
-Generated 2026-07-07T01:39:00.381Z by `scripts/cutover/00-preflight.ts` against prod (read-only).
+Generated 2026-07-07T02:09:52.843Z by `scripts/cutover/00-preflight.ts` against prod (read-only).
 
-**Summary: 15 PASS, 14 FAIL, 2 INFO**
+**Summary: 22 PASS, 7 FAIL, 2 INFO**
 
 All checks reflect the PRE-cutover expected state. FAIL here before
 cutover execution means the prod database does not match what the
 runbook assumes -- stop and investigate before applying 01-schema.sql.
+Known exception: the core-table drift FAILs are real, investigated,
+and addressed by 05-core-schema-reconciliation.sql for every column
+the code actually uses (see README.md); the drift rows will still
+FAIL after 05 runs because the parity diff also counts legacy
+columns no code reads.
 
 | Verdict | Check | Detail |
 |---|---|---|
@@ -17,11 +22,11 @@ runbook assumes -- stop and investigate before applying 01-schema.sql.
 | PASS | pipeline table present: compliance_assessments | 3 rows |
 | PASS | pipeline table present: compliance_results | 30 rows |
 | PASS | pipeline table present: generated_documents | 0 rows |
-| FAIL | workflow table absent: plants | 0 rows |
-| FAIL | workflow table absent: plant_role_assignments | 0 rows |
-| FAIL | workflow table absent: product_introduction_workflows | 0 rows |
-| FAIL | workflow table absent: workflow_steps | 0 rows |
-| FAIL | workflow table absent: workflow_conditions | 0 rows |
+| PASS | workflow table absent: plants | relation does not exist |
+| PASS | workflow table absent: plant_role_assignments | relation does not exist |
+| PASS | workflow table absent: product_introduction_workflows | relation does not exist |
+| PASS | workflow table absent: workflow_steps | relation does not exist |
+| PASS | workflow table absent: workflow_conditions | relation does not exist |
 | PASS | notifications.type absent | column does not exist |
 | PASS | notifications.title absent | column does not exist |
 | PASS | notifications.message absent | column does not exist |
@@ -29,8 +34,8 @@ runbook assumes -- stop and investigate before applying 01-schema.sql.
 | PASS | notifications.read absent | column does not exist |
 | PASS | canonical table present with rows: canonical_answer_types | 18 rows |
 | PASS | canonical table present with rows: canonical_reference_substances | 337 rows |
-| FAIL | bucket absent: extraction-documents | bucket exists |
-| FAIL | bucket absent: generated-documents | bucket exists |
+| PASS | bucket present: extraction-documents | bucket exists |
+| PASS | bucket present: generated-documents | bucket exists |
 | INFO | notifications row count | 0 rows |
 | PASS | Sappi company id matches known value | found 9567b9ac-1c12-457f-8e49-321519c267b3 (Sappi), expected 9567b9ac-1c12-457f-8e49-321519c267b3 |
 | FAIL | core table drift: requests | dev-only [bubble_id, product_name, owner_company_id, reader_company_id, manufacturer_marked_as_provided, show_as_removed, comment_requestor, comment_supplier, creator_email, status, notes, first_shared_date, last_share_date, days_to_first_share, days_to_last_share, first_shared_date_2, last_share_date_2, days_to_first_share_2, days_to_last_share_2, slug, updated_at] prod-only [] |

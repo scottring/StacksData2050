@@ -24,6 +24,7 @@ run at any time without ceremony.
 |---|---|
 | `00-preflight.ts` | Read-only. Verifies prod's pre-cutover state. Writes `PREFLIGHT.md`. |
 | `01-schema.sql` | The DB migration: pipeline tables (company-scoped RLS), workflow tables, notifications columns. |
+| `05-core-schema-reconciliation.sql` | Additive column reconciliation for the seven core tables (19 columns the code uses but prod lacks). Step 2b; hard-gates Step 6. |
 | `02-buckets-and-storage-policies.ts` | Guarded. Creates the two storage buckets; prints storage.objects policy SQL for manual application. |
 | `03-seed-plants.md` | Instructions for running the existing `stacks/seed-sappi-workflow.ts` against prod. |
 | `04-post-verify.ts` | Guarded. Same checks as 00, with post-cutover expectations. Prints a manual app smoke checklist. |
@@ -88,8 +89,13 @@ Notes:
   merge --ff-only` will simply carry `56ebe06` forward again since it is an
   ancestor of `rebuild/v2`).
 - Rollback for Option A alone: `git revert <hotfix-commit>` and push, or
-  `git reset --hard 805973d --force-with-lease` if nothing else has landed
-  on `production` since.
+  (if nothing else has landed on `production` since, mirroring Step 8):
+
+  ```bash
+  git checkout production
+  git reset --hard 805973d
+  git push --force-with-lease origin production
+  ```
 
 ---
 
@@ -120,12 +126,11 @@ exist in prod, created **2026-02-24** (private, 50MB limit each -- exactly
 matching what `02-buckets-and-storage-policies.ts` would have created). This
 predates the dev/prod split established for this rebuild; the original
 pipeline feature (Jan/Feb 2026) was evidently built directly against what is
-now called "prod." `PREFLIGHT.md` reports this correctly as two FAILs
-against the (now known to be stale) "expected ABSENT" check -- that is the
-preflight doing its job, not a script bug. No action needed: Step 3's bucket
-creation call is a no-op for bucket creation (it already skips existing
-buckets) and still needs to run for the storage.objects policy SQL it
-prints.
+now called "prod." `00-preflight.ts` now expects the buckets PRESENT (so a
+FAIL keeps signal) and `PREFLIGHT.md` reflects that. No action needed:
+Step 3's bucket creation call is a no-op for bucket creation (it already
+skips existing buckets) and still needs to run for the storage.objects
+policy SQL it prints.
 
 ### CRITICAL: core-table schema drift goes well beyond the pipeline tables
 
@@ -170,24 +175,27 @@ Center globe data source), `src/app/customers/[id]/page.tsx`,
 `src/components/suppliers/suppliers-list.tsx` all select/read
 `location_text`. Notably, `git show 805973d` (production's CURRENT deployed
 tip, unrelated to this cutover) already contains `company.location_text` in
-`customers/[id]/page.tsx` -- meaning either this specific page is already
-broken in live production today, or prod's actual column set differs from
-what a single `select *` sample suggests in some way not caught here. Either
-way, it was not independently re-verified further; that is exactly the kind
-of follow-up this finding calls for.
+`customers/[id]/page.tsx`. Since that page fetches with `select('*')`, the
+missing column does not error there; the field silently reads as undefined
+and the location line simply never renders in live production today. Paths
+that NAME the column in a select string (the network route, the mapping
+route) would error outright. All of this was re-verified column by column
+with direct read-only probes while authoring
+`05-core-schema-reconciliation.sql`.
 
-**This is not something Task 5 fixes.** Reconciling ~150 columns' worth of
-drift across 7 core tables (some renames, some dev-only additions, some
-prod-only survivors) is a dedicated investigation, not a runbook or a
-schema-tightening pass on tables that were explicitly out of scope for this
-task (`01-schema.sql` deliberately does not touch `sheets` / `requests` /
-`answers` / `questions` / `choices` / `users` / `companies` RLS or columns,
-per the SP2/SP3 plans' own scoping). **Recommendation: before Step 6 (code
-merge and deploy) of this runbook runs, a focused task should determine,
-column by column, which of the drifted names are actually exercised by
-`rebuild/v2` code paths that will run against prod, and either add the
-missing prod columns (additive, safe) or confirm the paths are dead code.**
-Full detail (all 7 tables, every column) is in `PREFLIGHT.md`.
+**Resolution: `05-core-schema-reconciliation.sql` (Step 2b).** The
+code-driven investigation this finding called for has been done: every
+column the `rebuild/v2` code selects/inserts/updates on the seven core
+tables was inventoried from src/, probed against prod read-only, and the
+19 that are missing-and-used are added (strictly additively, with one
+backfill: `location_text` from prod's `location`) by
+`05-core-schema-reconciliation.sql`. Columns that are drifted but unused by
+any code path are deliberately NOT added; see that file's header for the
+full MISSING/PRESENT/not-added evidence, plus two app-code bugs it surfaced
+(columns referenced by code that exist in NEITHER environment:
+`answers.parent_sheet_id` in compliance-stats, `users.name` in
+seed-sappi-workflow). Full raw drift detail (all 7 tables, every column) is
+in `PREFLIGHT.md`.
 
 ---
 
@@ -198,15 +206,17 @@ prod; run them only after Scott has said go (see the go/no-go gate, a
 separate task/turn -- this runbook is written and reviewed, not executed, as
 part of this task).
 
-**Before Step 6 specifically:** re-read "CRITICAL: core-table schema drift"
-above. Deploying `rebuild/v2` code to production while prod's `answers` /
-`questions` / `companies` tables are missing columns that code directly
-selects (confirmed for at least `clarification`, `question_type`,
-`section_name_sort`, `location_text`) risks breaking those code paths
-outright in production, independent of anything Steps 1-5 do. Steps 1-5
-(env, schema, buckets, seed, verify) are safe to run regardless since they
-only touch the pipeline/workflow tables and storage; Step 6 is where an
-unresolved core-table mismatch would actually bite.
+**HARD GATE before Step 6: DO NOT run Step 6 until
+`05-core-schema-reconciliation.sql` (Step 2b) has been applied to prod and
+verified (its columns show PASS in the Step 5 `04-post-verify.ts` run).**
+This is a blocking precondition, not a recommendation. Deploying
+`rebuild/v2` code to production while prod's `answers` / `questions` /
+`companies` / `requests` / `users` tables are missing columns that code
+directly selects (confirmed for `clarification`, `text_area_value`,
+`file_url`, `question_type`, `section_name_sort`, `location_text`,
+`product_name`, `first_name`, and more; see "CRITICAL: core-table schema
+drift" above) breaks those code paths outright in production, independent
+of anything Steps 1-5 do.
 
 ### Step 0: Freeze
 
@@ -247,6 +257,20 @@ Then either `supabase db push` with `01-schema.sql` staged as a migration,
 or paste the file's contents into the SQL editor and run it. Record the
 start time (for the rollback narrative and for correlating with any error
 logs).
+
+### Step 2b: Core-table schema reconciliation (REQUIRED before Step 6)
+
+Apply `05-core-schema-reconciliation.sql` to prod the same way (CLI or SQL
+editor). It adds the 19 columns the rebuild/v2 code reads/writes on the core
+tables but prod lacks (strictly additive: ADD COLUMN IF NOT EXISTS, two
+guarded FK constraints for the questions->sections/subsections embeds, and
+one backfill of `companies.location_text` from prod's existing `location`
+column). Idempotent, rerun-safe. Evidence and method are in the file's
+header. **Step 6 is hard-gated on this step having been applied and
+verified** (see the gate note above the runbook steps): without it, the
+station mapping route, answers writes with clarifications, the Excel export,
+the command/station request tables (product_name), the network globe, and
+the contacts API all hit missing-column errors on prod.
 
 ### Step 3: Storage buckets and policies
 
@@ -328,10 +352,11 @@ hotfix (or anything else) has landed on `production` between now and the
 actual cutover run, update this rollback target to whatever `production`'s
 tip is right before Step 6 runs, and record it here.
 
-Database changes from Step 2-4 are additive (new tables, new nullable
-columns, new buckets) and safe to leave in place after a code rollback --
-nothing in `01-schema.sql` drops or renames anything that predates it, and
-the old code paths do not read the new tables/columns.
+Database changes from Steps 2, 2b, 3, and 4 are additive (new tables, new
+nullable columns, new buckets) and safe to leave in place after a code
+rollback -- nothing in `01-schema.sql` or
+`05-core-schema-reconciliation.sql` drops or renames anything that predates
+it, and the old code paths do not read the new tables/columns.
 
 ### Step 9: Post-cutover tickets
 
@@ -349,10 +374,12 @@ Tracked, not done in this runbook:
 5. Seed plants + `plant_role_assignments` for tenants other than Sappi
    (UPM, etc.) -- `seed-sappi-workflow.ts` is Sappi-specific.
 6. Add a plant/role admin UI (today: seed script only, no UI).
-7. The `compliance_results` UPDATE-policy gap noted in `01-schema.sql`
-   Section 5 (the override endpoint has run with 0 effective rows under RLS
-   in both dev and prod since the pipeline tables were introduced; needs its
-   own reviewed fix, not bundled into a production schema file blind).
+7. Fix the two code paths that reference columns existing in NEITHER
+   environment (found by the 05 reconciliation probes):
+   `src/lib/compliance-stats.ts` selects `answers.parent_sheet_id`, and
+   `stacks/seed-sappi-workflow.ts` selects/filters `users.name` (should be
+   `full_name`; until fixed the seed assigns zero roles, see
+   `03-seed-plants.md` item 6).
 
 ---
 

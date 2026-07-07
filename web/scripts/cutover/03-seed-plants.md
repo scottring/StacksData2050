@@ -38,6 +38,17 @@ against prod, based on reading the script (not modifying it).
    named person in the Formblatt this script encodes; if the workflow needs
    them assigned, that is a manual follow-up via the `plant_role_assignments`
    table (no admin UI exists yet -- tracked as a post-cutover ticket).
+6. KNOWN DEFECT (found 2026-07-07 via the read-only column probes for
+   05-core-schema-reconciliation.sql): the user lookup in step 4 selects
+   `id, email, name` from `users` and filters on `name.ilike...`, but the
+   `users` table has NO `name` column in prod OR dev (probed; the real
+   column is `full_name`). Every per-role user query therefore errors, the
+   script logs `[skip] ... no matching user` for all 8 roles, and the run
+   ends with `Assigned: 0`. The plant upsert (steps 2-3) still works. Until
+   the script is fixed to select/filter `full_name` (a code change, out of
+   scope for this task per the brief: do not modify the seed script), running
+   it seeds the Alfeld plant only; role assignments must be inserted manually
+   or after that fix lands.
 
 ## Guard convention: this script does NOT check CUTOVER_CONFIRM
 
@@ -63,9 +74,11 @@ CUTOVER_CONFIRM=yes npx tsx --env-file=.env.production seed-sappi-workflow.ts
 Expected output: `Sappi company: 9567b9ac-1c12-457f-8e49-321519c267b3  Sappi`
 (or the exact company name on file), then either `Plant already exists: ...`
 or `Plant created: ...`, then one `[ok]` / `[skip]` line per role, then a
-`Done. Assigned: N   Skipped: M` summary. A nonzero `Skipped` count is
-expected and fine -- it just means some of the named Sappi contacts do not
-yet have user accounts in prod; create those accounts and re-run to backfill.
+`Done. Assigned: N   Skipped: M` summary. Because of the known defect in
+item 6 above (the lookup reads a nonexistent `users.name` column), expect
+`Assigned: 0  Skipped: 13` on the current script: the plant seeds, the role
+assignments all skip. That is the honest current behavior, not a transient
+condition fixed by creating user accounts.
 
 ## Other tenants
 

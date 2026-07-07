@@ -365,11 +365,9 @@ CREATE POLICY "Users can update compliance assessments"
   USING (company_id = (SELECT company_id FROM users WHERE id = auth.uid()));
 
 -- compliance_results: scoped via the parent assessment's company ------------
--- NOTE: the original dev migration has no UPDATE policy on this table at
--- all (SELECT + INSERT only). api/compliance/results/[id]/override/route.ts
--- runs an UPDATE through the user-session client, which means overrides
--- silently affect 0 rows under RLS in BOTH dev and prod today. This file
--- ports the schema as reviewed, not fixes app bugs; see Section 5.
+-- The original migration.sql defines SELECT, INSERT, and UPDATE policies on
+-- this table (the UPDATE backs api/compliance/results/[id]/override); all
+-- three are tightened to company scoping here.
 DROP POLICY IF EXISTS "Users can view compliance results" ON compliance_results;
 CREATE POLICY "Users can view compliance results"
   ON compliance_results FOR SELECT
@@ -385,6 +383,17 @@ DROP POLICY IF EXISTS "Users can insert compliance results" ON compliance_result
 CREATE POLICY "Users can insert compliance results"
   ON compliance_results FOR INSERT
   WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM compliance_assessments a
+      WHERE a.id = compliance_results.assessment_id
+        AND a.company_id = (SELECT company_id FROM users WHERE id = auth.uid())
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can update compliance results" ON compliance_results;
+CREATE POLICY "Users can update compliance results"
+  ON compliance_results FOR UPDATE
+  USING (
     EXISTS (
       SELECT 1 FROM compliance_assessments a
       WHERE a.id = compliance_results.assessment_id
@@ -922,12 +931,6 @@ END $$;
 -- - Does not create storage buckets or storage.objects policies. See
 --   02-buckets-and-storage-policies.ts for extraction-documents /
 --   generated-documents bucket creation and the storage.objects SQL it prints.
--- - Does not add an UPDATE policy to compliance_results. None exists in the
---   reviewed dev migration either, so api/compliance/results/[id]/override
---   silently affects 0 rows under RLS in both environments today. This is a
---   pre-existing app-level gap, not something introduced or fixed by this
---   cutover; flagged here and in README.md as a post-cutover follow-up
---   rather than patched blind in a production schema file.
 -- - Does not touch RLS on sheets / requests / answers / questions / choices.
 --   Those tables predate the pipeline rebuild; SP2's cutover checklist item 4
 --   calls for verifying prod RLS permits the specific reads the new UI paths

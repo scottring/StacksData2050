@@ -72,10 +72,15 @@ function parseEnv(path: string): Record<string, string> {
 }
 
 async function tableExists(sb: SupabaseClient, table: string): Promise<{ exists: boolean; detail: string }> {
-  const { count, error } = await sb.from(table).select('*', { head: true, count: 'exact' })
+  // Must be a GET probe: a HEAD + count request against a MISSING table
+  // comes back 204 with no error on this stack, which made an earlier
+  // version of this check report every absent table as present with
+  // "0 rows". PostgREST only surfaces the missing-relation error (PGRST205
+  // from the schema cache, or 42P01 from Postgres) on a GET.
+  const { count, error } = await sb.from(table).select('*', { count: 'exact' }).limit(1)
   if (!error) return { exists: true, detail: `${count ?? 0} rows` }
-  if (error.code === '42P01') return { exists: false, detail: 'relation does not exist' }
-  return { exists: false, detail: `unexpected error: ${error.message}` }
+  if (error.code === 'PGRST205' || error.code === '42P01') return { exists: false, detail: 'relation does not exist' }
+  return { exists: false, detail: `unexpected error (${error.code}): ${error.message}` }
 }
 
 async function columnExists(sb: SupabaseClient, table: string, column: string): Promise<{ exists: boolean; detail: string }> {
@@ -135,14 +140,19 @@ async function main() {
     add(hasRows ? 'PASS' : 'FAIL', `canonical table present with rows: ${table}`, r.detail)
   }
 
-  console.log('\n--- Pipeline storage buckets (expected ABSENT, pre-cutover) ---')
+  // Both buckets have existed in prod since 2026-02-24 (private, 50MB;
+  // verified 2026-07-06). The pipeline feature was originally built directly
+  // against what is now prod, predating the dev/prod split, so the
+  // "dev-only" assumption in the source plans was stale. Expect PRESENT so
+  // a FAIL keeps signal.
+  console.log('\n--- Pipeline storage buckets (expected PRESENT since 2026-02-24) ---')
   const { data: buckets, error: bucketErr } = await sb.storage.listBuckets()
   if (bucketErr) {
     add('FAIL', 'bucket list', `error: ${bucketErr.message}`)
   } else {
     for (const bucket of BUCKETS) {
       const present = buckets?.some((b) => b.name === bucket) ?? false
-      add(!present ? 'PASS' : 'FAIL', `bucket absent: ${bucket}`, present ? 'bucket exists' : 'not found')
+      add(present ? 'PASS' : 'FAIL', `bucket present: ${bucket}`, present ? 'bucket exists' : 'not found')
     }
   }
 
@@ -213,6 +223,11 @@ async function main() {
   lines.push('All checks reflect the PRE-cutover expected state. FAIL here before')
   lines.push('cutover execution means the prod database does not match what the')
   lines.push('runbook assumes -- stop and investigate before applying 01-schema.sql.')
+  lines.push('Known exception: the core-table drift FAILs are real, investigated,')
+  lines.push('and addressed by 05-core-schema-reconciliation.sql for every column')
+  lines.push('the code actually uses (see README.md); the drift rows will still')
+  lines.push('FAIL after 05 runs because the parity diff also counts legacy')
+  lines.push('columns no code reads.')
   lines.push('')
   lines.push('| Verdict | Check | Detail |')
   lines.push('|---|---|---|')
