@@ -38,17 +38,22 @@ against prod, based on reading the script (not modifying it).
    named person in the Formblatt this script encodes; if the workflow needs
    them assigned, that is a manual follow-up via the `plant_role_assignments`
    table (no admin UI exists yet -- tracked as a post-cutover ticket).
-6. KNOWN DEFECT (found 2026-07-07 via the read-only column probes for
-   05-core-schema-reconciliation.sql): the user lookup in step 4 selects
-   `id, email, name` from `users` and filters on `name.ilike...`, but the
+6. FIXED 2026-07-07: the user lookup in step 4 previously selected
+   `id, email, name` from `users` and filtered on `name.ilike...`, but the
    `users` table has NO `name` column in prod OR dev (probed; the real
-   column is `full_name`). Every per-role user query therefore errors, the
-   script logs `[skip] ... no matching user` for all 8 roles, and the run
-   ends with `Assigned: 0`. The plant upsert (steps 2-3) still works. Until
-   the script is fixed to select/filter `full_name` (a code change, out of
-   scope for this task per the brief: do not modify the seed script), running
-   it seeds the Alfeld plant only; role assignments must be inserted manually
-   or after that fix lands.
+   column is `full_name`), so every per-role user query errored and the run
+   ended with `Assigned: 0`. The script now selects `id, email, full_name`
+   and matches on the surname only (`hint.split(/\s+/).pop()` against
+   `full_name.ilike.%surname%`), OR'd with the existing email match built
+   from the full hint. Matching on the surname alone (rather than the whole
+   hint) is required because Formblatt hints mix "Initial. Surname" forms
+   ("B. Neumann") with full names ("Richard Huster", "Philipp Holzberger" in
+   the DB) -- requiring the whole hint inside `full_name` could never match
+   the full-name case. If a surname matches more than one user in the
+   company, the script logs `[ambiguous]` with the candidate emails and
+   skips that role rather than guessing. People without accounts yet still
+   skip as before -- this fix only corrects the query, it does not create
+   users.
 
 ## Guard convention: this script does NOT check CUTOVER_CONFIRM
 

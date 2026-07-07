@@ -140,17 +140,30 @@ async function main() {
 
   for (const { role, nameHints } of ALFELD_ROLE_ASSIGNMENTS) {
     for (const hint of nameHints) {
-      // Search by partial name match. Production setup should resolve by
-      // email, but this handles the initial seed where we don't yet know
-      // which email format Sappi uses for each person.
+      // Formblatt hints are "Initial. Surname" (e.g. "B. Neumann") or a full
+      // name (e.g. "Richard Huster"). Matching the whole hint against
+      // full_name never works for the full-name case ("Philipp Holzberger"
+      // has no "P." token), so match on the surname only. Email match is
+      // still built from the full hint with punctuation/spaces stripped.
+      const surname = hint.split(/\s+/).pop()
       const { data: users } = await supabase
         .from('users')
-        .select('id, email, name')
+        .select('id, email, full_name')
         .eq('company_id', sappi.id)
-        .or(`name.ilike.%${hint}%,email.ilike.%${hint.replace(/\.\s*/g, '').replace(/\s+/g, '')}%`)
+        .or(`full_name.ilike.%${surname}%,email.ilike.%${hint.replace(/\.\s*/g, '').replace(/\s+/g, '')}%`)
 
       if (!users || users.length === 0) {
         console.log(`  [skip] ${role} ${hint}: no matching user`)
+        skipped++
+        continue
+      }
+
+      if (users.length > 1) {
+        console.log(
+          `  [ambiguous] ${role} ${hint}: multiple matches (${users
+            .map((u) => u.email)
+            .join(', ')}) - skipping, resolve manually`,
+        )
         skipped++
         continue
       }
@@ -171,7 +184,7 @@ async function main() {
         console.log(`  [fail] ${role} ${hint}: ${assignError.message}`)
         skipped++
       } else {
-        console.log(`  [ok]   ${role} -> ${user.name ?? user.email} (${user.id})`)
+        console.log(`  [ok]   ${role} -> ${user.full_name ?? user.email} (${user.id})`)
         assigned++
       }
     }
