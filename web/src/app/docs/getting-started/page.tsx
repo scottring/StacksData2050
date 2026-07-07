@@ -27,9 +27,9 @@ export default function GettingStartedPage() {
 
       {/* Back to Trial */}
       <div className="max-w-4xl mx-auto px-4 pt-6">
-        <Link href="/trial" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/auth/signup" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to Trial Welcome
+          Back to Sign Up
         </Link>
       </div>
 
@@ -319,7 +319,7 @@ export default function GettingStartedPage() {
             </p>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
               <li>Email us: <a href="mailto:support@stacksdata.com" className="text-primary hover:underline">support@stacksdata.com</a></li>
-              <li>Report issues directly from the <Link href="/trial" className="text-primary hover:underline">trial page</Link></li>
+              <li>Report issues directly from the <Link href="/auth/signup" className="text-primary hover:underline">sign up page</Link></li>
             </ul>
             <p className="text-muted-foreground mt-3">
               We typically respond within a few hours during the trial period.
