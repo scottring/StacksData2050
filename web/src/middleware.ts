@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest) {
     // Redirect authenticated users away from login page
     if (request.nextUrl.pathname === '/login' && user) {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
+      url.pathname = '/'
       return NextResponse.redirect(url)
     }
     return supabaseResponse
