@@ -682,7 +682,7 @@ export default function CustomerReviewClient({
             {editedValues.size > 0 && (
               <button
                 onClick={handleSaveChanges}
-                disabled={saving}
+                disabled={saving || submitting}
                 className="flex items-center gap-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 disabled:opacity-50 text-blue-400 px-4 py-2 text-sm font-medium transition-colors"
               >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -691,7 +691,7 @@ export default function CustomerReviewClient({
             )}
             <button
               onClick={handleReject}
-              disabled={submitting}
+              disabled={submitting || saving}
               className="flex items-center gap-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 disabled:opacity-50 text-rose-400 px-4 py-2 text-sm font-medium transition-colors"
             >
               <XCircle className="h-4 w-4" />
@@ -699,7 +699,7 @@ export default function CustomerReviewClient({
             </button>
             <button
               onClick={handleFlagRequest}
-              disabled={submitting}
+              disabled={submitting || saving}
               className="flex items-center gap-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 disabled:opacity-50 text-amber-400 px-4 py-2 text-sm font-medium transition-colors"
             >
               <ThumbsDown className="h-4 w-4" />
@@ -707,7 +707,7 @@ export default function CustomerReviewClient({
             </button>
             <button
               onClick={handleApprove}
-              disabled={submitting}
+              disabled={submitting || saving}
               className="flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-white px-5 py-2 text-sm font-medium shadow-lg shadow-emerald-500/20 transition-all hover:shadow-emerald-400/30"
             >
               {submitting ? (
