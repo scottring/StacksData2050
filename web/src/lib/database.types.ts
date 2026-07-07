@@ -580,6 +580,27 @@ export type Database = {
           },
         ]
       }
+      canonical_answer_types: {
+        Row: {
+          code: string
+          created_at: string | null
+          label: string
+          options: Json
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          label: string
+          options: Json
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          label?: string
+          options?: Json
+        }
+        Relationships: []
+      }
       canonical_parameter_tags: {
         Row: {
           canonical_parameter_id: string
@@ -671,6 +692,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      canonical_reference_substances: {
+        Row: {
+          application: string | null
+          cas_number: string | null
+          chemical_name: string
+          created_at: string | null
+          declaration_level_ppm: string | null
+          ec_number: string | null
+          id: string
+          is_active: boolean | null
+          reason: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          application?: string | null
+          cas_number?: string | null
+          chemical_name: string
+          created_at?: string | null
+          declaration_level_ppm?: string | null
+          ec_number?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          application?: string | null
+          cas_number?: string | null
+          chemical_name?: string
+          created_at?: string | null
+          declaration_level_ppm?: string | null
+          ec_number?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
       }
       chemical_inventory: {
         Row: {
@@ -990,6 +1050,315 @@ export type Database = {
           },
         ]
       }
+      compliance_assessments: {
+        Row: {
+          assessed_at: string | null
+          assessed_by: string | null
+          assessment_type: string
+          company_id: string | null
+          created_at: string | null
+          id: string
+          modified_at: string | null
+          notes: string | null
+          overall_status: string
+          product_name: string | null
+          rules_failed: number | null
+          rules_passed: number | null
+          rules_warning: number | null
+          sheet_id: string | null
+          total_rules_evaluated: number | null
+        }
+        Insert: {
+          assessed_at?: string | null
+          assessed_by?: string | null
+          assessment_type?: string
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          modified_at?: string | null
+          notes?: string | null
+          overall_status?: string
+          product_name?: string | null
+          rules_failed?: number | null
+          rules_passed?: number | null
+          rules_warning?: number | null
+          sheet_id?: string | null
+          total_rules_evaluated?: number | null
+        }
+        Update: {
+          assessed_at?: string | null
+          assessed_by?: string | null
+          assessment_type?: string
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          modified_at?: string | null
+          notes?: string | null
+          overall_status?: string
+          product_name?: string | null
+          rules_failed?: number | null
+          rules_passed?: number | null
+          rules_warning?: number | null
+          sheet_id?: string | null
+          total_rules_evaluated?: number | null
+        }
+        Relationships: []
+      }
+      compliance_results: {
+        Row: {
+          assessment_id: string
+          created_at: string | null
+          framework_code: string | null
+          framework_id: string | null
+          id: string
+          message: string | null
+          overridden: boolean | null
+          overridden_at: string | null
+          overridden_by: string | null
+          override_reason: string | null
+          rule_code: string | null
+          rule_id: string | null
+          status: string
+          triggered_by: Json | null
+        }
+        Insert: {
+          assessment_id: string
+          created_at?: string | null
+          framework_code?: string | null
+          framework_id?: string | null
+          id?: string
+          message?: string | null
+          overridden?: boolean | null
+          overridden_at?: string | null
+          overridden_by?: string | null
+          override_reason?: string | null
+          rule_code?: string | null
+          rule_id?: string | null
+          status: string
+          triggered_by?: Json | null
+        }
+        Update: {
+          assessment_id?: string
+          created_at?: string | null
+          framework_code?: string | null
+          framework_id?: string | null
+          id?: string
+          message?: string | null
+          overridden?: boolean | null
+          overridden_at?: string | null
+          overridden_by?: string | null
+          override_reason?: string | null
+          rule_code?: string | null
+          rule_id?: string | null
+          status?: string
+          triggered_by?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_results_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      extraction_documents: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          document_type: string
+          extraction_completed_at: string | null
+          extraction_duration_ms: number | null
+          extraction_error: string | null
+          extraction_model: string | null
+          extraction_prompt_version: string | null
+          extraction_started_at: string | null
+          extraction_token_count: number | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          modified_at: string | null
+          product_name: string | null
+          raw_extraction: Json | null
+          sheet_id: string | null
+          status: string
+          supplier_name: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          document_type: string
+          extraction_completed_at?: string | null
+          extraction_duration_ms?: number | null
+          extraction_error?: string | null
+          extraction_model?: string | null
+          extraction_prompt_version?: string | null
+          extraction_started_at?: string | null
+          extraction_token_count?: number | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          modified_at?: string | null
+          product_name?: string | null
+          raw_extraction?: Json | null
+          sheet_id?: string | null
+          status?: string
+          supplier_name?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          document_type?: string
+          extraction_completed_at?: string | null
+          extraction_duration_ms?: number | null
+          extraction_error?: string | null
+          extraction_model?: string | null
+          extraction_prompt_version?: string | null
+          extraction_started_at?: string | null
+          extraction_token_count?: number | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          modified_at?: string | null
+          product_name?: string | null
+          raw_extraction?: Json | null
+          sheet_id?: string | null
+          status?: string
+          supplier_name?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      extraction_items: {
+        Row: {
+          chemical_id: string | null
+          confidence: number | null
+          created_at: string | null
+          data: Json
+          document_id: string
+          id: string
+          item_type: string
+          original_data: Json | null
+          review_status: string | null
+          reviewed: boolean | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          chemical_id?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          data: Json
+          document_id: string
+          id?: string
+          item_type: string
+          original_data?: Json | null
+          review_status?: string | null
+          reviewed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          chemical_id?: string | null
+          confidence?: number | null
+          created_at?: string | null
+          data?: Json
+          document_id?: string
+          id?: string
+          item_type?: string
+          original_data?: Json | null
+          review_status?: string | null
+          reviewed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generated_documents: {
+        Row: {
+          assessment_id: string | null
+          company_id: string | null
+          created_at: string | null
+          document_type: string
+          dpp_credential: Json | null
+          expires_at: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          language: string | null
+          mime_type: string | null
+          sheet_id: string | null
+          status: string
+          template_version: string | null
+        }
+        Insert: {
+          assessment_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          document_type: string
+          dpp_credential?: Json | null
+          expires_at?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          language?: string | null
+          mime_type?: string | null
+          sheet_id?: string | null
+          status?: string
+          template_version?: string | null
+        }
+        Update: {
+          assessment_id?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          document_type?: string
+          dpp_credential?: Json | null
+          expires_at?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          language?: string | null
+          mime_type?: string | null
+          sheet_id?: string | null
+          status?: string
+          template_version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_documents_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -1267,31 +1636,46 @@ export type Database = {
         Row: {
           company_id: string | null
           created_at: string | null
-          event_type: string
+          event_type: string | null
           id: string
+          link: string | null
+          message: string | null
+          read: boolean
           read_at: string | null
           sent_at: string | null
           sheet_id: string | null
+          title: string | null
+          type: string | null
           user_id: string | null
         }
         Insert: {
           company_id?: string | null
           created_at?: string | null
-          event_type: string
+          event_type?: string | null
           id?: string
+          link?: string | null
+          message?: string | null
+          read?: boolean
           read_at?: string | null
           sent_at?: string | null
           sheet_id?: string | null
+          title?: string | null
+          type?: string | null
           user_id?: string | null
         }
         Update: {
           company_id?: string | null
           created_at?: string | null
-          event_type?: string
+          event_type?: string | null
           id?: string
+          link?: string | null
+          message?: string | null
+          read?: boolean
           read_at?: string | null
           sent_at?: string | null
           sheet_id?: string | null
+          title?: string | null
+          type?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -1349,6 +1733,154 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plant_role_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          plant_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plant_id: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plant_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plant_role_assignments_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "plants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plant_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plants: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          company_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plants_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_introduction_workflows: {
+        Row: {
+          approved_at: string | null
+          company_id: string
+          created_at: string
+          id: string
+          plant_id: string
+          requestor_user_id: string
+          sheet_id: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          zone_a_data: Json
+          zone_b_data: Json
+        }
+        Insert: {
+          approved_at?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          plant_id: string
+          requestor_user_id: string
+          sheet_id: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          zone_a_data?: Json
+          zone_b_data?: Json
+        }
+        Update: {
+          approved_at?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          plant_id?: string
+          requestor_user_id?: string
+          sheet_id?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          zone_a_data?: Json
+          zone_b_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_introduction_workflows_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_introduction_workflows_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "plants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_introduction_workflows_requestor_user_id_fkey"
+            columns: ["requestor_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_introduction_workflows_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "sheets"
             referencedColumns: ["id"]
           },
         ]
@@ -1654,6 +2186,116 @@ export type Database = {
             columns: ["subsection_id"]
             isOneToOne: false
             referencedRelation: "subsections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      regulatory_frameworks: {
+        Row: {
+          active: boolean | null
+          code: string
+          color: string | null
+          created_at: string | null
+          description: string | null
+          effective_date: string | null
+          flag_emoji: string | null
+          id: string
+          jurisdiction: string
+          modified_at: string | null
+          name: string
+          url: string | null
+          version: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          code: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          effective_date?: string | null
+          flag_emoji?: string | null
+          id?: string
+          jurisdiction: string
+          modified_at?: string | null
+          name: string
+          url?: string | null
+          version?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          code?: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          effective_date?: string | null
+          flag_emoji?: string | null
+          id?: string
+          jurisdiction?: string
+          modified_at?: string | null
+          name?: string
+          url?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
+      regulatory_rules: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          code: string
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          framework_id: string
+          id: string
+          message_template: string | null
+          modified_at: string | null
+          name: string
+          remediation_text: string | null
+          rule_config: Json
+          rule_type: string
+          severity: string
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          framework_id: string
+          id?: string
+          message_template?: string | null
+          modified_at?: string | null
+          name: string
+          remediation_text?: string | null
+          rule_config: Json
+          rule_type: string
+          severity?: string
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          framework_id?: string
+          id?: string
+          message_template?: string | null
+          modified_at?: string | null
+          name?: string
+          remediation_text?: string | null
+          rule_config?: Json
+          rule_type?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regulatory_rules_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "regulatory_frameworks"
             referencedColumns: ["id"]
           },
         ]
@@ -3050,6 +3692,118 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_conditions: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          role: string | null
+          step_id: string | null
+          user_id: string
+          workflow_id: string
+        }
+        Insert: {
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          role?: string | null
+          step_id?: string | null
+          user_id: string
+          workflow_id: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          role?: string | null
+          step_id?: string | null
+          user_id?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_conditions_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_conditions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_conditions_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "product_introduction_workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_steps: {
+        Row: {
+          created_at: string
+          decision: string
+          id: string
+          owned_fields: string[]
+          return_reason: string | null
+          role: string
+          signed_at: string | null
+          signed_by_user_id: string | null
+          step_order: number
+          updated_at: string
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision?: string
+          id?: string
+          owned_fields?: string[]
+          return_reason?: string | null
+          role: string
+          signed_at?: string | null
+          signed_by_user_id?: string | null
+          step_order: number
+          updated_at?: string
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          decision?: string
+          id?: string
+          owned_fields?: string[]
+          return_reason?: string | null
+          role?: string
+          signed_at?: string | null
+          signed_by_user_id?: string | null
+          step_order?: number
+          updated_at?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_steps_signed_by_user_id_fkey"
+            columns: ["signed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workflow_steps_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "product_introduction_workflows"
             referencedColumns: ["id"]
           },
         ]
