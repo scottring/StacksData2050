@@ -28,7 +28,7 @@ export default async function StationIngestPage() {
     .select('id, file_name, document_type, status, created_at, product_name, supplier_name')
     .eq('company_id', profile.company_id)
     .in('document_type', ['questionnaire', 'questionnaire_filled'])
-    .neq('status', 'superseded')
+    .in('status', ['extracted', 'confirmed'])
     .order('created_at', { ascending: false })
     .limit(10)
 

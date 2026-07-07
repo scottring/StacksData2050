@@ -249,6 +249,7 @@ export default function IngestClient({ recentDocs }: IngestClientProps) {
   const [phase, setPhase] = useState<Phase>('upload')
   const [uploadMode, setUploadMode] = useState<UploadMode>('blank')
   const [docId, setDocId] = useState<string | null>(null)
+  const [docFileName, setDocFileName] = useState<string | null>(null)
   const [matchResult, setMatchResult] = useState<ReverseMatchResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -258,13 +259,17 @@ export default function IngestClient({ recentDocs }: IngestClientProps) {
 
   const handleUploadComplete = useCallback(async (uploadedDocId: string) => {
     setDocId(uploadedDocId)
+    setDocFileName(null)
     setPhase('matching')
     setLoading(true)
     setError(null)
 
     try {
       const res = await fetch(`/api/station/ingest/${uploadedDocId}/match`)
-      if (!res.ok) throw new Error('Failed to match')
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.error ?? 'Failed to match')
+      }
       const data = await res.json()
       setMatchResult(data)
       setPhase('review')
@@ -279,12 +284,16 @@ export default function IngestClient({ recentDocs }: IngestClientProps) {
   // Load a previously processed questionnaire
   const handleLoadRecent = async (recentDocId: string) => {
     setDocId(recentDocId)
+    setDocFileName(recentDocs.find((d) => d.id === recentDocId)?.fileName ?? null)
     setPhase('matching')
     setLoading(true)
 
     try {
       const res = await fetch(`/api/station/ingest/${recentDocId}/match`)
-      if (!res.ok) throw new Error('Failed to load')
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        throw new Error(body?.error ?? 'Failed to load')
+      }
       const data = await res.json()
       setMatchResult(data)
       setPhase('review')
@@ -365,13 +374,14 @@ export default function IngestClient({ recentDocs }: IngestClientProps) {
   const handleExport = () => {
     if (!matchResult) return
     const rows = matchResult.questions.map((q) => {
+      const isManualEdit = editedValues.has(q.extractedQuestionId)
       const val = editedValues.get(q.extractedQuestionId) ?? q.matchedValue ?? ''
       return [
         q.questionNumber || '',
         q.sectionName || '',
         q.questionText,
         val,
-        q.matchSource || 'manual',
+        isManualEdit ? 'manual' : (q.matchSource || 'manual'),
         String(Math.round(q.confidence * 100)),
       ].map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')
     })
@@ -381,7 +391,15 @@ export default function IngestClient({ recentDocs }: IngestClientProps) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `questionnaire-response-${new Date().toISOString().slice(0, 10)}.csv`
+
+    const titleSource = matchResult.metadata.documentTitle ?? docFileName ?? 'export'
+    const slug = titleSource
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-+|-+$)/g, '')
+      .slice(0, 40)
+    const date = new Date().toISOString().slice(0, 10)
+    a.download = `questionnaire-response-${slug}-${date}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }

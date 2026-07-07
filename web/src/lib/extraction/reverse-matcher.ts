@@ -287,7 +287,7 @@ export function reverseMatch(
     // If no good answer match, try extraction data
     if (!result.matchedValue || result.confidence < 0.6) {
       const extractionMatch = matchFromExtractionData(extQ, extractionItems)
-      if (extractionMatch && extractionMatch.confidence > result.confidence) {
+      if (extractionMatch && extractionMatch.confidence >= 0.4 && extractionMatch.confidence > result.confidence) {
         result.status = extractionMatch.confidence >= 0.7 ? 'answered' : 'partial'
         result.matchedValue = extractionMatch.value
         result.matchSource = 'extraction'
