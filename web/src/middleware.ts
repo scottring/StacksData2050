@@ -67,7 +67,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Public routes (login, home, etc.)
-  const publicPaths = ['/', '/login', '/auth']
+  // /api/auth/* are pre-login flows (password reset, signup) called from unauthenticated pages
+  const publicPaths = ['/', '/login', '/auth', '/api/auth']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname === path ||
     (path !== '/' && request.nextUrl.pathname.startsWith(path + '/'))
