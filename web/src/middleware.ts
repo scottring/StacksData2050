@@ -67,8 +67,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Public routes (login, home, etc.)
-  // /api/auth/* are pre-login flows (password reset, signup) called from unauthenticated pages
-  const publicPaths = ['/', '/login', '/auth', '/api/auth']
+  // /api/auth/* are pre-login flows (password reset, signup) called from unauthenticated pages.
+  // /reset-password receives recovery tokens in the URL fragment, so the visitor has no
+  // session cookie yet and the page itself must be reachable without one.
+  const publicPaths = ['/', '/login', '/auth', '/api/auth', '/reset-password']
   const isPublicPath = publicPaths.some(path =>
     request.nextUrl.pathname === path ||
     (path !== '/' && request.nextUrl.pathname.startsWith(path + '/'))
