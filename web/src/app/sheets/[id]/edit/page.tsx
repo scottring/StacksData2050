@@ -267,6 +267,18 @@ export default async function SheetEditPage({
 
   const companyName = (sheet as any).companies?.name || "Unknown"
 
+  // === PIDSL reference list (only when the sheet has a "PIDSL List" question) ===
+  let pidslSubstances: { id: string; chemical_name: string; cas_number: string | null; ec_number: string | null; application: string | null; declaration_level_ppm: string | null }[] = []
+  const hasPidslQuestion = allAnswers.some(a => a.response_type?.toLowerCase() === 'pidsl list')
+  if (hasPidslQuestion) {
+    const { data: substances } = await supabase
+      .from("canonical_reference_substances")
+      .select("id, chemical_name, cas_number, ec_number, application, declaration_level_ppm")
+      .eq("is_active", true)
+      .order("sort_order")
+    pidslSubstances = substances || []
+  }
+
   // === Fetch custom questions for this sheet ===
   // First, find the request associated with this sheet
   const { data: request } = await supabase
@@ -343,6 +355,7 @@ export default async function SheetEditPage({
       choices={choices || []}
       questionSectionMap={questionSectionMap}
       listTableColumns={listTableColumns || []}
+      pidslSubstances={pidslSubstances}
       branchingData={branchingData}
       rejections={rejections}
       customQuestions={customQuestions}

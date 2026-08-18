@@ -15,7 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet, ListChecks, Search } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +76,15 @@ interface ListTableColumn {
   choice_options: string[] | null
 }
 
+interface PidslSubstance {
+  id: string
+  chemical_name: string
+  cas_number: string | null
+  ec_number: string | null
+  application: string | null
+  declaration_level_ppm: string | null
+}
+
 interface BranchingData {
   dependentNoShow: boolean
   
@@ -114,6 +130,7 @@ interface SimpleSheetEditorProps {
   choices: Choice[]
   questionSectionMap: Record<string, { sectionName: string; subsectionName: string }>
   listTableColumns: ListTableColumn[]
+  pidslSubstances?: PidslSubstance[]
   branchingData?: Record<string, BranchingData>
   rejections?: Rejection[]
   customQuestions?: CustomQuestion[]
@@ -147,6 +164,7 @@ export function SimpleSheetEditor({
   choices,
   questionSectionMap,
   listTableColumns,
+  pidslSubstances = [],
   branchingData = {},
   rejections = [],
   customQuestions = [],
@@ -180,6 +198,10 @@ export function SimpleSheetEditor({
 
   // Track added rows for list tables (questionId -> array of temp row IDs)
   const [addedRows, setAddedRows] = useState<Map<string, string[]>>(new Map())
+
+  // PIDSL List dialog (questionId currently open) and its search filter
+  const [pidslOpenFor, setPidslOpenFor] = useState<string | null>(null)
+  const [pidslSearch, setPidslSearch] = useState('')
 
   const [saving, setSaving] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -222,6 +244,11 @@ export function SimpleSheetEditor({
   const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null)
   const lastSavedValuesRef = useRef<string>('')
   const isAutosavingRef = useRef(false)
+  // Set when a change arrives while an autosave is in flight, so the latest
+  // values get saved once the current request finishes instead of being
+  // dropped until the next edit.
+  const autosavePendingRef = useRef(false)
+  const performAutosaveRef = useRef<() => Promise<void>>(async () => {})
 
   // Check if editing is allowed based on status
   // Locked when: submitted (waiting for review), approved, or completed
@@ -439,7 +466,7 @@ export function SimpleSheetEditor({
   // Silent autosave function
   const performAutosave = useCallback(async () => {
     // Don't autosave if nothing has changed or if we're already saving
-    if ((localValues.size === 0 && additionalNotes.size === 0 && customValues.size === 0) || isAutosavingRef.current || saving) return
+    if ((localValues.size === 0 && additionalNotes.size === 0 && customValues.size === 0) || saving) return
 
     // Create a snapshot of current values to check for changes
     const currentSnapshot = JSON.stringify({
@@ -449,6 +476,10 @@ export function SimpleSheetEditor({
     })
     if (currentSnapshot === lastSavedValuesRef.current) return
 
+    if (isAutosavingRef.current) {
+      autosavePendingRef.current = true
+      return
+    }
     isAutosavingRef.current = true
 
     try {
@@ -531,8 +562,17 @@ export function SimpleSheetEditor({
       console.error('Autosave error:', error)
     } finally {
       isAutosavingRef.current = false
+      if (autosavePendingRef.current) {
+        autosavePendingRef.current = false
+        // Use the ref so the follow-up save sees the latest values, not this closure's
+        void performAutosaveRef.current()
+      }
     }
   }, [localValues, additionalNotes, customValues, saving, sheetId])
+
+  useEffect(() => {
+    performAutosaveRef.current = performAutosave
+  }, [performAutosave])
 
   // Debounced autosave effect - triggers 2 seconds after last change
   useEffect(() => {
@@ -1254,6 +1294,217 @@ export function SimpleSheetEditor({
     )
   }
 
+  // PIDSL List (question 5.1.18): the supplier opens the reference list of
+  // declarable substances and comments on the rows relevant to the product.
+  // Each commented substance is stored as a regular list-table row keyed by
+  // canonical_reference_substances.id, with Chemical name / CAS / EC copied
+  // in so the row is self-describing for the customer view and exports.
+  function pidslColumns(questionId: string) {
+    const cols = columnsByQuestionId.get(questionId) || []
+    const byName = (name: string) => cols.find(c => c.name?.trim().toLowerCase() === name)
+    const nameCol = byName('chemical name')
+    const casCol = byName('cas number')
+    const ecCol = byName('ec number')
+    const commentCol = byName('comment')
+    if (!nameCol || !casCol || !ecCol || !commentCol) return null
+    return { nameCol, casCol, ecCol, commentCol }
+  }
+
+  function pidslComment(questionId: string, substanceId: string, commentColId: string): string {
+    return localValues.get(`${questionId}|${substanceId}|${commentColId}`)?.value ?? ''
+  }
+
+  function setPidslComment(questionId: string, sub: PidslSubstance, value: string) {
+    const cols = pidslColumns(questionId)
+    if (!cols) return
+    const cells: [string, string][] = [
+      [cols.nameCol.id, sub.chemical_name],
+      [cols.casCol.id, sub.cas_number ?? ''],
+      [cols.ecCol.id, sub.ec_number ?? ''],
+      [cols.commentCol.id, value],
+    ]
+    setLocalValues(prev => {
+      const next = new Map(prev)
+      cells.forEach(([colId, v]) => {
+        const key = `${questionId}|${sub.id}|${colId}`
+        next.set(key, { value: v, answerId: prev.get(key)?.answerId, type: 'text' })
+      })
+      return next
+    })
+    setSaveStatus('idle')
+  }
+
+  async function removePidslRow(questionId: string, substanceId: string) {
+    // Drop local cells first so the UI responds immediately
+    setLocalValues(prev => {
+      const next = new Map(prev)
+      Array.from(next.keys()).forEach(key => {
+        if (key.startsWith(`${questionId}|${substanceId}|`)) next.delete(key)
+      })
+      return next
+    })
+    setSaveStatus('idle')
+    try {
+      const params = new URLSearchParams({ sheet_id: sheetId, question_id: questionId, list_table_row_id: substanceId })
+      const res = await fetch(`/api/answers?${params.toString()}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to remove row')
+    } catch (error) {
+      console.error('PIDSL row delete error:', error)
+      toast.error('Failed to remove the PIDSL row. Please try again.')
+    }
+  }
+
+  function renderPidslList(questionId: string) {
+    const cols = pidslColumns(questionId)
+    if (!cols) {
+      return <p className="text-sm text-muted-foreground italic">The PIDSL list is not configured for this question.</p>
+    }
+    if (pidslSubstances.length === 0) {
+      return <p className="text-sm text-muted-foreground italic">The PIDSL reference list is not available.</p>
+    }
+
+    const commented = pidslSubstances.filter(sub => pidslComment(questionId, sub.id, cols.commentCol.id).trim() !== '')
+    const isOpen = pidslOpenFor === questionId
+    const search = pidslSearch.trim().toLowerCase()
+    const filtered = search
+      ? pidslSubstances.filter(sub =>
+          sub.chemical_name.toLowerCase().includes(search) ||
+          (sub.cas_number || '').toLowerCase().includes(search) ||
+          (sub.ec_number || '').toLowerCase().includes(search) ||
+          (sub.application || '').toLowerCase().includes(search))
+      : pidslSubstances
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => { setPidslSearch(''); setPidslOpenFor(questionId) }}
+          >
+            <ListChecks className="h-4 w-4 mr-2" />
+            Open PIDSL List
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {pidslSubstances.length} substances{commented.length > 0 ? `, ${commented.length} commented` : ''}
+          </span>
+        </div>
+
+        {commented.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full border text-sm">
+              <thead className="bg-muted">
+                <tr>
+                  <th className="border px-3 py-2 text-left font-medium">Chemical name</th>
+                  <th className="border px-3 py-2 text-left font-medium">CAS Number</th>
+                  <th className="border px-3 py-2 text-left font-medium">EC Number</th>
+                  <th className="border px-3 py-2 text-left font-medium">Comment</th>
+                  {canEdit && <th className="border px-3 py-2 w-12"></th>}
+                </tr>
+              </thead>
+              <tbody>
+                {commented.map(sub => (
+                  <tr key={sub.id} className="hover:bg-muted/50">
+                    <td className="border px-3 py-1">{sub.chemical_name}</td>
+                    <td className="border px-3 py-1 whitespace-nowrap">{sub.cas_number || ''}</td>
+                    <td className="border px-3 py-1 whitespace-nowrap">{sub.ec_number || ''}</td>
+                    <td className="border px-2 py-1">
+                      <Input
+                        value={pidslComment(questionId, sub.id, cols.commentCol.id)}
+                        onChange={(e) => setPidslComment(questionId, sub, e.target.value)}
+                        className="h-8 text-sm"
+                        disabled={!canEdit}
+                      />
+                    </td>
+                    {canEdit && (
+                      <td className="border px-2 py-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removePidslRow(questionId, sub.id)}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          title="Remove"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <Dialog open={isOpen} onOpenChange={(open) => { if (!open) setPidslOpenFor(null) }}>
+          <DialogContent className="sm:max-w-6xl w-[95vw] max-h-[90vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle>PIDSL: Paper Industry Declarable Substances List</DialogTitle>
+              <DialogDescription>
+                Add a comment on the rows relevant to this product. If you have no changes to make, type &quot;no changes&quot; in any comment box.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={pidslSearch}
+                onChange={(e) => setPidslSearch(e.target.value)}
+                placeholder="Search by name, CAS, EC or application..."
+                className="pl-8"
+              />
+            </div>
+            <div className="overflow-auto flex-1 min-h-0 border rounded-md">
+              <table className="w-full text-sm table-fixed">
+                <thead className="bg-muted sticky top-0 z-10">
+                  <tr>
+                    <th className="px-3 py-2 text-left font-medium w-[26%]">Chemical name</th>
+                    <th className="px-3 py-2 text-left font-medium w-[10%]">CAS Number</th>
+                    <th className="px-3 py-2 text-left font-medium w-[10%]">EC Number</th>
+                    <th className="px-3 py-2 text-left font-medium w-[9%]">Decl. level [ppm]</th>
+                    <th className="px-3 py-2 text-left font-medium w-[25%]">Application / Occurrence</th>
+                    <th className="px-3 py-2 text-left font-medium w-[20%]">Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(sub => {
+                    const comment = pidslComment(questionId, sub.id, cols.commentCol.id)
+                    return (
+                      <tr key={sub.id} className={`border-t ${comment ? 'bg-primary/5' : 'hover:bg-muted/40'}`}>
+                        <td className="px-3 py-1.5 align-top break-words">{sub.chemical_name}</td>
+                        <td className="px-3 py-1.5 align-top break-words">{sub.cas_number || ''}</td>
+                        <td className="px-3 py-1.5 align-top break-words">{sub.ec_number || ''}</td>
+                        <td className="px-3 py-1.5 align-top">{sub.declaration_level_ppm || ''}</td>
+                        <td className="px-3 py-1.5 align-top text-muted-foreground">{sub.application || ''}</td>
+                        <td className="px-2 py-1 align-top">
+                          <Input
+                            value={comment}
+                            onChange={(e) => setPidslComment(questionId, sub, e.target.value)}
+                            placeholder="Add a comment..."
+                            className="h-8 text-sm"
+                            disabled={!canEdit}
+                          />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground italic">No substances match your search.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>{filtered.length} of {pidslSubstances.length} substances shown{commented.length > 0 ? `, ${commented.length} commented` : ''}</span>
+              <Button type="button" onClick={() => setPidslOpenFor(null)}>Done</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    )
+  }
+
   return (
     <AppLayout title={`Edit: ${sheetName}`}>
       <div className="space-y-6">
@@ -1380,6 +1631,7 @@ export function SimpleSheetEditor({
             const isDependent = branching?.dependentNoShow && branching?.parentQuestionId
 
             const isListTable = q.response_type?.toLowerCase() === 'list table'
+            const isPidslList = q.response_type?.toLowerCase() === 'pidsl list'
             const questionChoices = choicesByQuestion.get(questionId) || []
             const localData = localValues.get(questionId)
             const singleAnswer = q.answers[0]
@@ -1464,6 +1716,8 @@ export function SimpleSheetEditor({
                 <CardContent>
                   {isListTable ? (
                     renderListTable(questionId, q.answers)
+                  ) : isPidslList ? (
+                    renderPidslList(questionId)
                   ) : (
                     renderInput(
                       questionId,

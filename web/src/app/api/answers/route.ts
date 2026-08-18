@@ -230,10 +230,12 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * DELETE /api/answers - Delete an answer
+ * DELETE /api/answers - Delete an answer, or a whole list-table row
  *
- * Query params:
+ * Query params (one form or the other):
  * - id: string (answer ID to delete)
+ * - sheet_id + question_id + list_table_row_id: delete every cell answer of
+ *   that list-table row (used by the PIDSL List to remove a substance row)
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -251,22 +253,34 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const answerId = searchParams.get('id')
+    const rowSheetId = searchParams.get('sheet_id')
+    const rowQuestionId = searchParams.get('question_id')
+    const rowId = searchParams.get('list_table_row_id')
+    const isRowDelete = !answerId && !!(rowSheetId && rowQuestionId && rowId)
 
-    if (!answerId) {
+    if (!answerId && !isRowDelete) {
       return NextResponse.json(
-        { error: 'Answer ID is required' },
+        { error: 'Answer ID, or sheet_id + question_id + list_table_row_id, is required' },
         { status: 400 }
       )
     }
 
-    // Get the answer to verify ownership
-    const { data: answer } = await supabase
+    // Get the answer (or the row's first cell) to verify ownership
+    const answerQuery = supabase
       .from('answers')
       .select('id, sheet_id, sheets!inner(company_id, requesting_company_id)')
-      .eq('id', answerId)
-      .single()
+    const { data: answer } = answerId
+      ? await answerQuery.eq('id', answerId).single()
+      : await answerQuery
+          .eq('sheet_id', rowSheetId!)
+          .eq('question_id', rowQuestionId!)
+          .eq('list_table_row_id', rowId!)
+          .limit(1)
+          .maybeSingle()
 
     if (!answer) {
+      // Nothing to delete for a row is not an error: the row was never saved
+      if (isRowDelete) return NextResponse.json({ success: true, deleted: 0 })
       return NextResponse.json(
         { error: 'Answer not found' },
         { status: 404 }
@@ -300,11 +314,14 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Delete the answer
-    const { error: deleteError } = await supabase
-      .from('answers')
-      .delete()
-      .eq('id', answerId)
+    // Delete the answer (or every cell of the row)
+    const deleteQuery = supabase.from('answers').delete()
+    const { error: deleteError } = answerId
+      ? await deleteQuery.eq('id', answerId)
+      : await deleteQuery
+          .eq('sheet_id', rowSheetId!)
+          .eq('question_id', rowQuestionId!)
+          .eq('list_table_row_id', rowId!)
 
     if (deleteError) {
       console.error('Error deleting answer:', deleteError)

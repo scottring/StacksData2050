@@ -479,7 +479,8 @@ const questionNumber = (() => {
                           if (o) return String(o)
                           return null
                         })()
-                        const isListTable = q.response_type?.toLowerCase() === 'list table'
+                        const rt = q.response_type?.toLowerCase()
+                        const isListTable = rt === 'list table' || rt === 'pidsl list'
                         const singleAnswer = q.answers[0]
 
                         return (

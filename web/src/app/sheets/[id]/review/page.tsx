@@ -526,6 +526,7 @@ export default function ReviewPage() {
         return 'Not answered'
       case 'list table':
       case 'list_table':
+      case 'pidsl list':
         // List tables rendered separately - return placeholder
         return '__LIST_TABLE__'
       case 'single text line':
@@ -605,7 +606,7 @@ export default function ReviewPage() {
   // Check if question is a list table
   const isListTable = (question: Question) => {
     const rt = (question.response_type || question.question_type || '').toLowerCase()
-    return rt === 'list table' || rt === 'list_table'
+    return rt === 'list table' || rt === 'list_table' || rt === 'pidsl list'
   }
 
   if (loading) {
