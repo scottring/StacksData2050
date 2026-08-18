@@ -19,6 +19,10 @@ export default function ResetPasswordPage() {
   const [mounted, setMounted] = useState(false)
   const [sessionReady, setSessionReady] = useState(false)
   const [checkingSession, setCheckingSession] = useState(true)
+  // Token hash from our own emailed link. Redeemed only when the user clicks
+  // Continue, so email link scanners cannot burn the one-time token.
+  const [pendingTokenHash, setPendingTokenHash] = useState<string | null>(null)
+  const [verifying, setVerifying] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -32,6 +36,14 @@ export default function ResetPasswordPage() {
       if (existingSession) {
         console.log('Existing session found')
         setSessionReady(true)
+        setCheckingSession(false)
+        return
+      }
+
+      // Token hash in query string (our own reset link): wait for a user click
+      const tokenHash = new URLSearchParams(window.location.search).get('token_hash')
+      if (tokenHash) {
+        setPendingTokenHash(tokenHash)
         setCheckingSession(false)
         return
       }
@@ -80,6 +92,30 @@ export default function ResetPasswordPage() {
 
     initSession()
   }, [])
+
+  const handleVerifyToken = async () => {
+    if (!pendingTokenHash) return
+    setVerifying(true)
+    setError(null)
+
+    const supabase = createClient()
+    const { data, error } = await supabase.auth.verifyOtp({
+      token_hash: pendingTokenHash,
+      type: 'recovery',
+    })
+
+    if (error || !data.session) {
+      console.error('Error verifying recovery token:', error)
+      setPendingTokenHash(null)
+      setVerifying(false)
+      return
+    }
+
+    window.history.replaceState(null, '', window.location.pathname)
+    setPendingTokenHash(null)
+    setSessionReady(true)
+    setVerifying(false)
+  }
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -173,6 +209,30 @@ export default function ResetPasswordPage() {
                 <div className="flex flex-col items-center justify-center py-8">
                   <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mb-4" />
                   <p className="text-gray-500">Verifying your session...</p>
+                </div>
+              ) : pendingTokenHash ? (
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600 text-center">
+                    Click below to verify your link and choose a password.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={handleVerifyToken}
+                    disabled={verifying}
+                    className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all duration-300 text-base group"
+                  >
+                    {verifying ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        Continue
+                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </Button>
                 </div>
               ) : !sessionReady ? (
                 <div className="p-4 text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-xl">

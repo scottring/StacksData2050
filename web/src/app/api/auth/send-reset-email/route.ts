@@ -35,7 +35,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to generate reset link' }, { status: 500 })
     }
 
-    const resetUrl = data.properties.action_link
+    // Link to our own page with the token hash rather than Supabase's action_link.
+    // action_link redeems the one-time token on a plain GET, so corporate email
+    // scanners (Safe Links, Proofpoint) consume it before the user clicks. Our page
+    // only redeems the token when the user presses Continue.
+    const base = redirectTo || `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`
+    const resetUrl = `${base}?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=recovery`
 
     // Send branded email via SendGrid
     const emailHtml = `
