@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { MessageCircle, Send, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
+import { MessageCircle, Send, Loader2, ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { createClient } from '@/lib/supabase/client'
 
 interface Comment {
   id: string
@@ -35,6 +36,14 @@ export function QuestionComments({ sheetId, questionId, compact = true }: Questi
   const [loading, setLoading] = useState(false)
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  // Current user, so authors can delete their own comments
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null))
+  }, [])
 
   // Fetch comments when opened
   useEffect(() => {
@@ -85,6 +94,21 @@ export function QuestionComments({ sheetId, questionId, compact = true }: Questi
       console.error('Failed to post comment:', error)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (commentId: string) => {
+    if (deletingId) return
+    setDeletingId(commentId)
+    try {
+      const response = await fetch(`/api/comments?id=${commentId}`, { method: 'DELETE' })
+      if (response.ok) {
+        setComments(prev => prev.filter(c => c.id !== commentId))
+      }
+    } catch (error) {
+      console.error('Failed to delete comment:', error)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -151,6 +175,21 @@ export function QuestionComments({ sheetId, questionId, compact = true }: Questi
                     <span className="text-xs text-muted-foreground ml-auto">
                       {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                     </span>
+                    {currentUserId && comment.user_id === currentUserId && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(comment.id)}
+                        disabled={deletingId === comment.id}
+                        className="text-muted-foreground hover:text-destructive disabled:opacity-50"
+                        title="Delete comment"
+                      >
+                        {deletingId === comment.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    )}
                   </div>
                   <p className="text-muted-foreground mt-0.5 whitespace-pre-wrap">
                     {comment.content}

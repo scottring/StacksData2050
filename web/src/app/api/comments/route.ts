@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(data)
 }
 
-// DELETE - Delete a comment
+// DELETE - Delete a comment (authors can delete their own comments)
 export async function DELETE(request: NextRequest) {
   const supabase = await createClient()
   const searchParams = request.nextUrl.searchParams
@@ -92,6 +92,24 @@ export async function DELETE(request: NextRequest) {
 
   if (!commentId) {
     return NextResponse.json({ error: 'id is required' }, { status: 400 })
+  }
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { data: comment } = await supabase
+    .from('question_comments')
+    .select('id, user_id')
+    .eq('id', commentId)
+    .maybeSingle()
+
+  if (!comment) {
+    return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
+  }
+  if (comment.user_id !== user.id) {
+    return NextResponse.json({ error: 'You can only delete your own comments' }, { status: 403 })
   }
 
   const { error } = await supabase
