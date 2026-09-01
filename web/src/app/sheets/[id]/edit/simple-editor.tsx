@@ -36,6 +36,7 @@ import {
 import { InlineCASLookup, InlineChemicalSearch } from '@/components/sheets/cas-lookup'
 import { InlineCommentButton } from '@/components/sheets/question-comments'
 import { InlineAttachmentButton } from '@/components/sheets/question-attachments'
+import { SheetDocuments } from '@/components/sheets/sheet-documents'
 
 interface ViewAnswer {
   id: string
@@ -1576,6 +1577,9 @@ export function SimpleSheetEditor({
             </div>
           </div>
         )}
+
+        {/* Supplier documents (RDS / SDS) attached to the product as a whole */}
+        <SheetDocuments sheetId={sheetId} />
 
         {/* Questions grouped by Section/Subsection */}
         <div className="space-y-6">

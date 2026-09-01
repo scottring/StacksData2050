@@ -46,12 +46,24 @@ interface Sheet {
   company_name?: string
   requesting_company_name?: string
   answer_count?: number
+  requestor_id?: string | null
+  requestor_name?: string
 }
 
 interface Company {
   id: string
   name: string
 }
+
+interface Requestor {
+  id: string
+  name: string
+}
+
+// Sheets migrated from the previous platform have no request record, so no
+// person raised them in this system. They are grouped under this sentinel
+// rather than shown with a misleading name.
+const LEGACY_REQUESTOR = '__legacy__'
 
 export default function SheetsPage() {
   return (
@@ -72,10 +84,12 @@ function SheetsContent() {
   const searchParams = useSearchParams()
   const [sheets, setSheets] = useState<Sheet[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
+  const [requestors, setRequestors] = useState<Requestor[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>(searchParams.get('status') || 'all')
   const [filterCompany, setFilterCompany] = useState<string>('all')
+  const [filterRequestor, setFilterRequestor] = useState<string>('all')
 
   useEffect(() => {
     async function fetchData() {
@@ -147,15 +161,49 @@ function SheetsContent() {
         countMap.set(a.sheet_id, (countMap.get(a.sheet_id) || 0) + 1)
       })
 
-      const enrichedSheets = (sheetsData || []).map(sheet => ({
-        ...sheet,
-        company_name: sheet.company_id ? companyMap.get(sheet.company_id) : undefined,
-        requesting_company_name: sheet.requesting_company_id ? companyMap.get(sheet.requesting_company_id) : undefined,
-        answer_count: countMap.get(sheet.id) || 0
-      }))
+      // Who raised each sheet. The person lives on requests.created_by --
+      // requests.requestor_id is the requesting *company*, not a user. Sheets
+      // imported from the previous platform have no request row at all.
+      const { data: requestRows } = await supabase
+        .from('requests')
+        .select('sheet_id, created_by')
+        .in('sheet_id', sheetIds)
+
+      const requestorIdBySheet = new Map<string, string>()
+      requestRows?.forEach(r => {
+        if (r.sheet_id && r.created_by) requestorIdBySheet.set(r.sheet_id, r.created_by)
+      })
+
+      const requestorIds = [...new Set(requestorIdBySheet.values())]
+      const { data: requestorUsers } = requestorIds.length
+        ? await supabase.from('users').select('id, full_name, email').in('id', requestorIds)
+        : { data: [] as { id: string; full_name: string | null; email: string | null }[] }
+
+      const requestorNameById = new Map(
+        (requestorUsers || []).map(u => [u.id, u.full_name || u.email || 'Unknown'])
+      )
+
+      const enrichedSheets = (sheetsData || []).map(sheet => {
+        const requestorId = requestorIdBySheet.get(sheet.id) || null
+        return {
+          ...sheet,
+          company_name: sheet.company_id ? companyMap.get(sheet.company_id) : undefined,
+          requesting_company_name: sheet.requesting_company_id ? companyMap.get(sheet.requesting_company_id) : undefined,
+          answer_count: countMap.get(sheet.id) || 0,
+          requestor_id: requestorId,
+          requestor_name: requestorId ? requestorNameById.get(requestorId) : undefined,
+        }
+      })
+
+      // Only offer requestors that actually appear in the visible sheets.
+      const presentRequestors = [...new Set(
+        enrichedSheets.map(s => s.requestor_id).filter((id): id is string => Boolean(id))
+      )].map(id => ({ id, name: requestorNameById.get(id) || 'Unknown' }))
+        .sort((a, b) => a.name.localeCompare(b.name))
 
       setSheets(enrichedSheets)
       setCompanies(companiesData || [])
+      setRequestors(presentRequestors)
       setLoading(false)
     }
 
@@ -178,8 +226,15 @@ function SheetsContent() {
       sheet.company_id === filterCompany ||
       sheet.requesting_company_id === filterCompany
 
-    return matchesSearch && matchesStatus && matchesCompany
+    const matchesRequestor = filterRequestor === 'all' ||
+      (filterRequestor === LEGACY_REQUESTOR
+        ? !sheet.requestor_id
+        : sheet.requestor_id === filterRequestor)
+
+    return matchesSearch && matchesStatus && matchesCompany && matchesRequestor
   })
+
+  const hasLegacySheets = sheets.some(s => !s.requestor_id)
 
   const getStatusBadge = (status: string | null) => {
     switch (status) {
@@ -300,6 +355,24 @@ function SheetsContent() {
             </SelectContent>
           </Select>
 
+          <Select value={filterRequestor} onValueChange={setFilterRequestor}>
+            <SelectTrigger className="w-[200px]">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Requestor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Requestors</SelectItem>
+              {requestors.map(requestor => (
+                <SelectItem key={requestor.id} value={requestor.id}>
+                  {requestor.name}
+                </SelectItem>
+              ))}
+              {hasLegacySheets && (
+                <SelectItem value={LEGACY_REQUESTOR}>Legacy import</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+
           <Badge variant="secondary" className="text-sm">
             {filteredSheets.length} sheets
           </Badge>
@@ -314,6 +387,7 @@ function SheetsContent() {
                 <TableHead className="w-[150px]">Status</TableHead>
                 <TableHead className="w-[180px]">Company</TableHead>
                 <TableHead className="w-[180px]">Assigned To</TableHead>
+                <TableHead className="w-[160px]">Requestor</TableHead>
                 <TableHead className="w-[100px]">Answers</TableHead>
                 <TableHead className="w-[120px]">Last Updated</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
@@ -322,7 +396,7 @@ function SheetsContent() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
+                  <TableCell colSpan={8} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Loader2 className="h-8 w-8 animate-spin" />
                       <span>Loading sheets...</span>
@@ -331,7 +405,7 @@ function SheetsContent() {
                 </TableRow>
               ) : filteredSheets.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
+                  <TableCell colSpan={8} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <FileText className="h-12 w-12 opacity-30" />
                       <span>No sheets found</span>
@@ -359,6 +433,11 @@ function SheetsContent() {
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {sheet.requesting_company_name || '-'}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {sheet.requestor_name || (
+                        <span className="italic opacity-60">Legacy import</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{sheet.answer_count}</Badge>

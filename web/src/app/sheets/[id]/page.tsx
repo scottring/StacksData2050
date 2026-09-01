@@ -7,6 +7,7 @@ import { Pencil, ClipboardCheck } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
+import { SheetDocuments } from '@/components/sheets/sheet-documents'
 
 interface ViewAnswer {
   id: string
@@ -441,6 +442,9 @@ export default async function SheetViewPage({
           <span>{sortedQuestions.length} questions</span>
           {tagIds.length > 0 && <span>• {tagIds.length} tag(s) selected</span>}
         </div>
+
+        {/* Supplier documents (RDS / SDS) attached to the product as a whole */}
+        <SheetDocuments sheetId={sheetId} />
 
         {/* Questions grouped by Section/Subsection */}
         <div className="space-y-6">

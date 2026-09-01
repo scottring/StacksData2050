@@ -19,6 +19,10 @@ const ALLOWED_MIME_TYPES = [
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
+// Labels for sheet-level documents. RDS = Regulatory Data Sheet,
+// SDS = Safety Data Sheet -- the two suppliers send most often.
+const SHEET_DOCUMENT_TYPES = ['RDS', 'SDS', 'Other']
+
 // GET - Fetch attachments for a sheet/question
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
@@ -35,6 +39,7 @@ export async function GET(request: NextRequest) {
     .select(`
       id,
       question_id,
+      document_type,
       file_name,
       file_path,
       file_size,
@@ -45,7 +50,11 @@ export async function GET(request: NextRequest) {
     .eq('sheet_id', sheetId)
     .order('created_at', { ascending: false })
 
-  if (questionId) {
+  // scope=sheet returns only the sheet-level documents (supplier RDS/SDS and
+  // similar), which are the rows with no question_id.
+  if (searchParams.get('scope') === 'sheet') {
+    query = query.is('question_id', null)
+  } else if (questionId) {
     query = query.eq('question_id', questionId)
   }
 
@@ -87,10 +96,21 @@ export async function POST(request: NextRequest) {
   const file = formData.get('file') as File | null
   const sheetId = formData.get('sheet_id') as string | null
   const questionId = formData.get('question_id') as string | null
+  const documentType = formData.get('document_type') as string | null
 
-  if (!file || !sheetId || !questionId) {
+  // question_id is optional: without it the file attaches to the sheet as a
+  // whole, which is how supplier RDS/SDS documents are stored -- they describe
+  // the product rather than answering one question.
+  if (!file || !sheetId) {
     return NextResponse.json(
-      { error: 'file, sheet_id, and question_id are required' },
+      { error: 'file and sheet_id are required' },
+      { status: 400 }
+    )
+  }
+
+  if (documentType && !SHEET_DOCUMENT_TYPES.includes(documentType)) {
+    return NextResponse.json(
+      { error: `document_type must be one of: ${SHEET_DOCUMENT_TYPES.join(', ')}` },
       { status: 400 }
     )
   }
@@ -111,10 +131,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Generate unique file path: user_id/sheet_id/question_id/timestamp_filename
+  // Path: user_id/sheet_id/<question_id|_sheet>/timestamp_filename
+  // Segment 2 is always the sheet id, which is what the storage RLS policies
+  // read to scope access to the companies party to that sheet.
   const timestamp = Date.now()
   const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-  const filePath = `${user.id}/${sheetId}/${questionId}/${timestamp}_${sanitizedFileName}`
+  const scopeSegment = questionId ?? '_sheet'
+  const filePath = `${user.id}/${sheetId}/${scopeSegment}/${timestamp}_${sanitizedFileName}`
 
   // Upload file to storage
   const { error: uploadError } = await supabase.storage
@@ -135,6 +158,7 @@ export async function POST(request: NextRequest) {
     .insert({
       sheet_id: sheetId,
       question_id: questionId,
+      document_type: questionId ? null : documentType ?? 'Other',
       user_id: user.id,
       file_name: file.name,
       file_path: filePath,
@@ -144,6 +168,7 @@ export async function POST(request: NextRequest) {
     .select(`
       id,
       question_id,
+      document_type,
       file_name,
       file_path,
       file_size,
