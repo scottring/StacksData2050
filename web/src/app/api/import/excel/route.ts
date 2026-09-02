@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import * as XLSX from 'xlsx'
+import {
+  extractListTables,
+  matchColumns,
+  type DbQuestion,
+  type DbListTableColumn,
+  type CellLookupEntry,
+} from '@/lib/import/list-tables'
 
 // Import bundled data files (no fs needed in production)
 import formulaMapData from '@/data/excel-formula-map.json'
@@ -48,6 +56,25 @@ interface MappedAnswer {
   issueDetails?: string
 }
 
+/**
+ * A list-table question as it will be imported: the workbook's columns, each
+ * resolved to an existing list_table_columns row or marked for creation, and
+ * the data rows keyed by workbook column letter.
+ */
+export interface ListTablePreview {
+  questionId: string
+  questionText: string
+  sheetName: string
+  headerRow: number
+  columns: Array<{
+    excelCol: string
+    headerText: string
+    columnId: string | null
+    columnName: string | null
+  }>
+  rows: Array<Record<string, string>>
+}
+
 interface ImportPreview {
   success: boolean
   fileName: string
@@ -56,6 +83,7 @@ interface ImportPreview {
   answeredQuestions: number
   issueCount: number
   answers: MappedAnswer[]
+  listTables: ListTablePreview[]
   issues: Array<{
     type: string
     question: string
@@ -251,13 +279,24 @@ export async function POST(request: NextRequest) {
     // Load Supabase data for mapping
     const supabase = await createClient()
     
+    // Section names and display order are needed to anchor list tables.
     const { data: questions } = await supabase
       .from('questions')
-      .select('id, bubble_id, content, response_type, required')
-    
+      .select('id, bubble_id, content, response_type, required, section_sort_number, subsection_sort_number, order_number, subsections!questions_subsection_id_fkey(sections(name))')
+      .order('section_sort_number')
+      .order('subsection_sort_number')
+      .order('order_number')
+
     const { data: choices } = await supabase
       .from('choices')
       .select('id, question_id, content')
+
+    // list_table_columns has RLS enabled with no policies, so it is only
+    // readable with the service role. Reading it as the user would return
+    // nothing and make every workbook column look new.
+    const { data: listTableColumns } = await createAdminClient()
+      .from('list_table_columns')
+      .select('id, question_id, name, order_number')
     
     // Build lookup maps
     const questionByBubbleId = new Map<string, any>()
@@ -299,7 +338,10 @@ export async function POST(request: NextRequest) {
       matchedCount++
       const qChoices = choicesByQuestionId.get(question.id) || []
       const responseType = question.response_type?.toLowerCase() || ''
-      
+
+      // List tables are multi-cell regions, handled by the extractor below.
+      if (responseType === 'list table') continue
+
       const mapped: MappedAnswer = {
         bubbleId: answer.bubbleId,
         questionId: question.id,
@@ -369,20 +411,72 @@ export async function POST(request: NextRequest) {
       mappedAnswers.push(mapped)
     }
     
-    const answeredCount = mappedAnswers.filter(a => 
+    const answeredCount = mappedAnswers.filter(a =>
       a.mappedValue !== null && !isPlaceholder(a.excelValue)
     ).length
-    
+
+    // List tables: located from the workbook layout rather than the cell map.
+    const orderedQuestions: DbQuestion[] = (questions || []).map((q: any) => ({
+      id: q.id,
+      bubble_id: q.bubble_id,
+      response_type: q.response_type,
+      content: q.content,
+      section: q.subsections?.sections?.name ?? null,
+      section_sort_number: q.section_sort_number,
+      subsection_sort_number: q.subsection_sort_number,
+      order_number: q.order_number,
+    }))
+    const columnsByQuestion = new Map<string, DbListTableColumn[]>()
+    for (const c of (listTableColumns || []) as DbListTableColumn[]) {
+      if (!c.question_id) continue
+      columnsByQuestion.set(c.question_id, [...(columnsByQuestion.get(c.question_id) ?? []), c])
+    }
+
+    const extraction = extractListTables(workbook, orderedQuestions, cellLookup as Record<string, CellLookupEntry>)
+    const listTables: ListTablePreview[] = extraction.resolved
+      .filter(t => t.rows.length > 0)
+      .map(t => ({
+        questionId: t.questionId,
+        questionText: t.questionContent,
+        sheetName: t.sheetName,
+        headerRow: t.headerRow,
+        columns: matchColumns(t.headers, columnsByQuestion.get(t.questionId) ?? []),
+        rows: t.rows,
+      }))
+
+    for (const t of listTables) {
+      const newColumns = t.columns.filter(c => !c.columnId)
+      if (newColumns.length) {
+        issues.push({
+          type: 'list_table_new_columns',
+          question: t.questionText,
+          excelValue: null,
+          details: `Table columns not yet defined for this question will be created: ${newColumns.map(c => c.headerText.replace(/\s+/g, ' ')).join(', ')}`,
+        })
+      }
+    }
+    for (const u of extraction.unresolved) {
+      issues.push({
+        type: 'list_table_not_found',
+        question: u.questionContent,
+        excelValue: null,
+        details: `${u.sheetName}: ${u.reason}`,
+      })
+    }
+
+    const listTableCells = listTables.reduce((n, t) => n + t.rows.reduce((m, r) => m + Object.keys(r).length, 0), 0)
+
     const preview = {
       success: true,
       fileName: file.name,
       totalQuestions: parsedAnswers.length,
       matchedQuestions: matchedCount,
-      answeredQuestions: answeredCount,
+      answeredQuestions: answeredCount + listTables.length,
       issueCount: issues.length,
       answers: mappedAnswers,
+      listTables,
       issues,
-      debug
+      debug: { ...debug, listTablesFound: listTables.length, listTableCells },
     }
 
     return NextResponse.json(preview)

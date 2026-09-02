@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import * as XLSX from 'xlsx'
+import { extractListTables, matchColumns, type DbQuestion, type DbListTableColumn, type CellLookupEntry } from '@/lib/import/list-tables'
 
 // Import bundled data files (no fs needed in production)
 import formulaMapData from '@/data/excel-formula-map.json'
 import cellLookupData from '@/data/excel-cell-lookup.json'
-import listTableMappingData from '@/data/excel-list-table-mapping.json'
 
 // Extract metadata from "Supplier Product Contact" sheet
 function extractMetadata(workbook: XLSX.WorkBook) {
@@ -56,30 +56,8 @@ interface ParsedAnswer {
   additionalValues: string[]
 }
 
-// List table mapping types
-interface ListTableColumnMapping {
-  excelCol: string
-  columnId: string
-  name: string
-}
-
-interface ListTableMapping {
-  questionBubbleId: string
-  questionNumber: string
-  description: string
-  excelSheet: string
-  dataStartRow: number
-  maxRows: number
-  columns: ListTableColumnMapping[]
-}
-
-interface ListTableConfig {
-  description: string
-  tables: ListTableMapping[]
-}
-
 interface ParsedListTableRow {
-  questionBubbleId: string
+  questionId: string
   rowIndex: number
   cells: Array<{
     columnId: string
@@ -113,90 +91,6 @@ function matchChoice(excelValue: string, choices: any[]): { choiceId: string; ch
     }
   }
   return null
-}
-
-// Parse list tables from Excel
-function parseListTables(
-  workbook: XLSX.WorkBook,
-  listTableConfig: ListTableConfig
-): ParsedListTableRow[] {
-  const rows: ParsedListTableRow[] = []
-
-  console.log('DEBUG: List table config has', listTableConfig.tables.length, 'tables')
-
-  for (const table of listTableConfig.tables) {
-    console.log(`DEBUG: Processing table ${table.questionNumber} - ${table.description}`)
-    console.log(`DEBUG:   Sheet: ${table.excelSheet}, StartRow: ${table.dataStartRow}, Columns: ${table.columns.length}`)
-
-    if (table.columns.length === 0) {
-      console.log('DEBUG:   Skipping - no columns defined')
-      continue
-    }
-
-    const ws = workbook.Sheets[table.excelSheet]
-    if (!ws) {
-      console.log(`DEBUG:   Sheet not found: ${table.excelSheet}`)
-      console.log('DEBUG:   Available sheets:', workbook.SheetNames)
-      continue
-    }
-
-    // Debug: show what's in the first few cells of the expected range
-    console.log('DEBUG:   Sampling cells from expected range:')
-    for (let i = 0; i < 3; i++) {
-      const sampleRow = table.dataStartRow + i
-      const samples: string[] = []
-      for (const col of table.columns.slice(0, 3)) {
-        const cellRef = `${col.excelCol}${sampleRow}`
-        const cell = ws[cellRef]
-        const val = cell?.w || cell?.v || '(empty)'
-        samples.push(`${cellRef}=${val}`)
-      }
-      console.log(`DEBUG:     Row ${sampleRow}: ${samples.join(', ')}`)
-    }
-
-    // Parse each row in the table
-    let rowsFoundForTable = 0
-    for (let rowOffset = 0; rowOffset < table.maxRows; rowOffset++) {
-      const excelRow = table.dataStartRow + rowOffset
-      const cells: Array<{ columnId: string; value: string }> = []
-      let hasAnyValue = false
-
-      // Read each column for this row
-      for (const col of table.columns) {
-        const cellRef = `${col.excelCol}${excelRow}`
-        const cell = ws[cellRef]
-
-        // Get value - try formatted (w) first, then raw (v)
-        let value: string | null = null
-        if (cell) {
-          if (cell.w !== undefined) value = String(cell.w).trim()
-          else if (cell.v !== undefined) value = String(cell.v).trim()
-        }
-
-        if (value && value !== '' && value !== '0' && value.toLowerCase() !== 'n/a') {
-          hasAnyValue = true
-          cells.push({
-            columnId: col.columnId,
-            value
-          })
-        }
-      }
-
-      // Only include rows that have at least one value
-      if (hasAnyValue && cells.length > 0) {
-        rowsFoundForTable++
-        rows.push({
-          questionBubbleId: table.questionBubbleId,
-          rowIndex: rowOffset,
-          cells
-        })
-      }
-    }
-    console.log(`DEBUG:   Found ${rowsFoundForTable} rows with data for this table`)
-  }
-
-  console.log(`DEBUG: Total parsed ${rows.length} list table rows`)
-  return rows
 }
 
 function parseExcelWithMap(
@@ -283,20 +177,56 @@ export async function POST(request: NextRequest) {
     // Use bundled data files
     const formulaMap: QuestionMapping[] = formulaMapData as QuestionMapping[]
     const cellLookup: Record<string, CellLookup> = cellLookupData as Record<string, CellLookup>
-    const listTableConfig: ListTableConfig = listTableMappingData as ListTableConfig
-
     // Parse Excel - regular answers
     const parsedAnswers = parseExcelWithMap(workbook, cellLookup, formulaMap)
 
-    // Parse list tables
-    const listTableRows = parseListTables(workbook, listTableConfig)
-    
     // Load Supabase data
     const supabase = createAdminClient()
-    
+
+    // Section names and display order are needed to anchor list tables.
     const { data: questions } = await supabase
       .from('questions')
-      .select('id, bubble_id, content, response_type, required')
+      .select('id, bubble_id, content, response_type, required, section_sort_number, subsection_sort_number, order_number, subsections!questions_subsection_id_fkey(sections(name))')
+      .order('section_sort_number')
+      .order('subsection_sort_number')
+      .order('order_number')
+
+    // List tables are located from the workbook layout, not the cell map.
+    // Columns the workbook has but the question lacks are created on import
+    // so no supplier data is dropped.
+    const { data: listTableColumns } = await supabase
+      .from('list_table_columns')
+      .select('id, question_id, name, order_number')
+    const columnsByQuestion = new Map<string, DbListTableColumn[]>()
+    for (const c of (listTableColumns || []) as DbListTableColumn[]) {
+      if (!c.question_id) continue
+      columnsByQuestion.set(c.question_id, [...(columnsByQuestion.get(c.question_id) ?? []), c])
+    }
+    const orderedQuestions: DbQuestion[] = (questions || []).map((q: any) => ({
+      id: q.id,
+      bubble_id: q.bubble_id,
+      response_type: q.response_type,
+      content: q.content,
+      section: q.subsections?.sections?.name ?? null,
+      section_sort_number: q.section_sort_number,
+      subsection_sort_number: q.subsection_sort_number,
+      order_number: q.order_number,
+    }))
+    const extraction = extractListTables(workbook, orderedQuestions, cellLookup as unknown as Record<string, CellLookupEntry>)
+    const resolvedTables = extraction.resolved
+      .filter(t => t.rows.length > 0)
+      .map(t => ({ ...t, columns: matchColumns(t.headers, columnsByQuestion.get(t.questionId) ?? []) }))
+    const listTableRows: ParsedListTableRow[] = []
+    for (const t of resolvedTables) {
+      t.rows.forEach((row, rowIndex) => {
+        const cells = t.columns
+          .filter(c => row[c.excelCol])
+          // columnId is resolved at import time once missing columns exist;
+          // carry the workbook column letter until then.
+          .map(c => ({ columnId: c.columnId ?? `excel:${c.excelCol}`, value: row[c.excelCol] }))
+        if (cells.length) listTableRows.push({ questionId: t.questionId, rowIndex, cells })
+      })
+    }
     
     const { data: choices } = await supabase
       .from('choices')
@@ -408,11 +338,15 @@ export async function POST(request: NextRequest) {
         listTables: {
           rowCount: listTableRows.length,
           cellCount: listTableCellCount,
-          tables: listTableConfig.tables.map(t => ({
-            questionNumber: t.questionNumber,
-            description: t.description,
-            rowsFound: listTableRows.filter(r => r.questionBubbleId === t.questionBubbleId).length
-          }))
+          tables: resolvedTables.map(t => ({
+            questionId: t.questionId,
+            description: t.questionContent,
+            sheet: t.sheetName,
+            headerRow: t.headerRow,
+            rowsFound: t.rows.length,
+            newColumns: t.columns.filter(c => !c.columnId).map(c => c.headerText.replace(/\s+/g, ' ')),
+          })),
+          unresolved: extraction.unresolved.map(u => ({ description: u.questionContent, sheet: u.sheetName, reason: u.reason })),
         }
       })
     }
@@ -552,44 +486,61 @@ export async function POST(request: NextRequest) {
     if (listTableRows.length > 0) {
       const listTableAnswers: any[] = []
 
-      // Group rows by question and assign unique row IDs
+      // Create any columns the workbook has that the question lacks, then
+      // resolve the placeholder "excel:<col>" ids to real column ids.
+      const createdColumnId = new Map<string, string>() // `${questionId}:${excelCol}` -> id
+      for (const t of resolvedTables) {
+        const existing = columnsByQuestion.get(t.questionId) ?? []
+        let nextOrder = existing.reduce((m, c) => Math.max(m, c.order_number ?? 0), 0) + 1
+        for (const col of t.columns) {
+          if (col.columnId) continue
+          const { data: created, error: colError } = await supabase
+            .from('list_table_columns')
+            .insert({
+              question_id: t.questionId,
+              name: col.headerText.replace(/\s+/g, ' ').trim(),
+              order_number: nextOrder++,
+              response_type: 'Single text line',
+            })
+            .select('id')
+            .single()
+          if (colError || !created) {
+            insertErrors.push(`Could not create table column "${col.headerText}": ${colError?.message ?? 'unknown'}`)
+            continue
+          }
+          createdColumnId.set(`${t.questionId}:${col.excelCol}`, created.id)
+        }
+      }
+
+      // Rows are tied together by list_table_row_id, one per workbook row.
       const rowIdsByQuestion = new Map<string, Map<number, string>>()
 
       for (const row of listTableRows) {
-        // Get or create row ID map for this question
-        if (!rowIdsByQuestion.has(row.questionBubbleId)) {
-          rowIdsByQuestion.set(row.questionBubbleId, new Map())
+        if (!rowIdsByQuestion.has(row.questionId)) {
+          rowIdsByQuestion.set(row.questionId, new Map())
         }
-        const rowIds = rowIdsByQuestion.get(row.questionBubbleId)!
-
-        // Generate a unique row ID for this row index
+        const rowIds = rowIdsByQuestion.get(row.questionId)!
         if (!rowIds.has(row.rowIndex)) {
           rowIds.set(row.rowIndex, crypto.randomUUID())
         }
         const listTableRowId = rowIds.get(row.rowIndex)!
 
-        // Get question ID from bubble ID
-        const question = questionByBubbleId.get(row.questionBubbleId)
-        if (!question) {
-          console.log(`Question not found for bubble ID: ${row.questionBubbleId}`)
-          continue
-        }
-
-        // Create answer records for each cell
         for (const cell of row.cells) {
+          const columnId = cell.columnId.startsWith('excel:')
+            ? createdColumnId.get(`${row.questionId}:${cell.columnId.slice(6)}`)
+            : cell.columnId
+          if (!columnId) continue
           listTableAnswers.push({
             sheet_id: newSheet.id,
-            question_id: question.id,
+            question_id: row.questionId,
             company_id: supplierCompanyId,
             list_table_row_id: listTableRowId,
-            list_table_column_id: cell.columnId,
+            list_table_column_id: columnId,
             text_value: cell.value,
             created_at: new Date().toISOString()
           })
         }
       }
-
-      console.log('DEBUG List table answers to insert:', listTableAnswers.length)
 
       // Batch insert list table answers
       for (let i = 0; i < listTableAnswers.length; i += batchSize) {

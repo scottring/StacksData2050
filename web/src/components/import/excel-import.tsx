@@ -24,6 +24,20 @@ interface MappedAnswer {
   issueDetails?: string
 }
 
+interface ListTablePreview {
+  questionId: string
+  questionText: string
+  sheetName: string
+  headerRow: number
+  columns: Array<{
+    excelCol: string
+    headerText: string
+    columnId: string | null
+    columnName: string | null
+  }>
+  rows: Array<Record<string, string>>
+}
+
 interface ImportPreview {
   success: boolean
   fileName: string
@@ -32,6 +46,7 @@ interface ImportPreview {
   answeredQuestions: number
   issueCount: number
   answers: MappedAnswer[]
+  listTables: ListTablePreview[]
   issues: Array<{
     type: string
     question: string
@@ -116,7 +131,8 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
           sheetId,
           companyId,
           // Include all answers with values (issues will be imported as text)
-          answers: preview.answers.filter(a => a.mappedValue !== null)
+          answers: preview.answers.filter(a => a.mappedValue !== null),
+          listTables: preview.listTables ?? []
         })
       })
       
@@ -303,10 +319,57 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
               </div>
             </div>
 
+            {/* List tables, shown with their structure so the supplier can
+                see the substance lists arrived intact before confirming. */}
+            {preview.listTables && preview.listTables.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="font-medium">
+                  Tables ({preview.listTables.length}, {preview.listTables.reduce((n, t) => n + t.rows.length, 0)} rows)
+                </h4>
+                <div className="max-h-96 overflow-y-auto space-y-4">
+                  {preview.listTables.map(table => (
+                    <div key={table.questionId} className="rounded-lg border">
+                      <div className="px-3 py-2 border-b bg-muted/40 text-sm">
+                        <span className="font-medium">{table.questionText}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">{table.sheetName} row {table.headerRow}</span>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="bg-muted/20">
+                              {table.columns.map(col => (
+                                <th key={col.excelCol} className="px-2 py-1.5 text-left font-medium whitespace-nowrap">
+                                  {col.headerText.replace(/\s+/g, ' ')}
+                                  {!col.columnId && (
+                                    <Badge variant="outline" className="ml-1 text-[10px] py-0 px-1">new</Badge>
+                                  )}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {table.rows.map((row, i) => (
+                              <tr key={i} className="border-t">
+                                {table.columns.map(col => (
+                                  <td key={col.excelCol} className="px-2 py-1.5 align-top max-w-[220px]">
+                                    {row[col.excelCol] ?? <span className="text-muted-foreground">-</span>}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex gap-2 pt-4 border-t">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setPreview(null)
                   setFile(null)
@@ -316,7 +379,7 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
               </Button>
               <Button 
                 onClick={handleImport} 
-                disabled={importing || readyToImport.length === 0}
+                disabled={importing || (readyToImport.length === 0 && !(preview.listTables?.length))}
                 className="flex-1"
               >
                 {importing ? (
@@ -327,6 +390,7 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
                 ) : (
                   <>
                     Import {readyToImport.length} Answers
+                    {preview.listTables?.length ? ` + ${preview.listTables.length} Tables` : ''}
                   </>
                 )}
               </Button>
@@ -340,7 +404,8 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                Successfully imported {importResult.answersInserted} answers to "{importResult.sheetName}"
+                Successfully imported {importResult.answersInserted} answers
+                {importResult.listTablesImported ? ` and ${importResult.listTablesImported} tables (${importResult.listTableCellsInserted} cells)` : ''} to "{importResult.sheetName}"
               </AlertDescription>
             </Alert>
             
