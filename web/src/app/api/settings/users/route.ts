@@ -124,7 +124,6 @@ export async function POST(request: Request) {
       full_name: fullName,
       company_id: profile.company_id,
       role: userRole,
-      profile_done: true,
     }, { onConflict: 'id' })
 
     if (profileError) {
