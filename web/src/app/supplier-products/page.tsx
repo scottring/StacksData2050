@@ -55,7 +55,18 @@ interface SheetProduct {
   created_at: string | null
   modified_at: string | null
   supplier: Company | null
+  requestor_id?: string | null
+  requestor_name?: string
 }
+
+interface Requestor {
+  id: string
+  name: string
+}
+
+// Sheets migrated from the previous platform have no request row, so nobody
+// raised them in this system. They get their own bucket in the filter.
+const LEGACY_REQUESTOR = '__legacy__'
 
 export default function ProductsPage() {
   const router = useRouter()
@@ -65,6 +76,8 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterSupplier, setFilterSupplier] = useState<string>('all')
+  const [filterRequestor, setFilterRequestor] = useState<string>('all')
+  const [requestors, setRequestors] = useState<Requestor[]>([])
   const [userCompanyId, setUserCompanyId] = useState<string | null>(null)
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
 
@@ -109,13 +122,50 @@ export default function ProductsPage() {
         console.error('Error fetching sheets:', sheetsError)
       }
 
-      const sheetProducts: SheetProduct[] = (sheetsData || []).map(sheet => ({
-        ...sheet,
-        supplier: sheet.company_id ? companyMap.get(sheet.company_id) || null : null
-      }))
+      // Who raised each sheet. The person lives on requests.created_by --
+      // requests.requestor_id is the requesting *company*, not a user. Sheets
+      // imported from the previous platform have no request row at all.
+      // Scoped by requestor_id (the requesting *company*) rather than by sheet id:
+      // an .in() over every visible sheet builds a multi-kilobyte URL once a
+      // customer has a few hundred sheets.
+      const { data: requestRows } = await supabase
+        .from('requests')
+        .select('sheet_id, created_by')
+        .eq('requestor_id', companyId)
+
+      const requestorIdBySheet = new Map<string, string>()
+      requestRows?.forEach(r => {
+        if (r.sheet_id && r.created_by) requestorIdBySheet.set(r.sheet_id, r.created_by)
+      })
+
+      const requestorIds = [...new Set(requestorIdBySheet.values())]
+      const { data: requestorUsers } = requestorIds.length
+        ? await supabase.from('users').select('id, full_name, email').in('id', requestorIds)
+        : { data: [] as { id: string; full_name: string | null; email: string | null }[] }
+
+      const requestorNameById = new Map(
+        (requestorUsers || []).map(u => [u.id, u.full_name || u.email || 'Unknown'])
+      )
+
+      const sheetProducts: SheetProduct[] = (sheetsData || []).map(sheet => {
+        const requestorId = requestorIdBySheet.get(sheet.id) || null
+        return {
+          ...sheet,
+          supplier: sheet.company_id ? companyMap.get(sheet.company_id) || null : null,
+          requestor_id: requestorId,
+          requestor_name: requestorId ? requestorNameById.get(requestorId) : undefined,
+        }
+      })
+
+      // Only offer requestors that actually appear in the visible sheets.
+      const presentRequestors = [...new Set(
+        sheetProducts.map(s => s.requestor_id).filter((id): id is string => Boolean(id))
+      )].map(id => ({ id, name: requestorNameById.get(id) || 'Unknown' }))
+        .sort((a, b) => a.name.localeCompare(b.name))
 
       setProducts(sheetProducts)
       setCompanies(companiesData || [])
+      setRequestors(presentRequestors)
       setLoading(false)
     }
 
@@ -145,8 +195,15 @@ export default function ProductsPage() {
     const matchesSupplier = filterSupplier === 'all' ||
       p.company_id === filterSupplier
 
-    return matchesSearch && matchesStatus && matchesSupplier
+    const matchesRequestor = filterRequestor === 'all' ||
+      (filterRequestor === LEGACY_REQUESTOR
+        ? !p.requestor_id
+        : p.requestor_id === filterRequestor)
+
+    return matchesSearch && matchesStatus && matchesSupplier && matchesRequestor
   })
+
+  const hasLegacySheets = products.some(p => !p.requestor_id)
 
   const getProductStatus = (product: SheetProduct) => {
     if (product.status === 'completed' || product.status === 'approved') {
@@ -262,6 +319,24 @@ export default function ProductsPage() {
             </SelectContent>
           </Select>
 
+          <Select value={filterRequestor} onValueChange={setFilterRequestor}>
+            <SelectTrigger className="w-[200px] rounded-xl border-slate-200">
+              <Filter className="h-4 w-4 mr-2 text-slate-400" />
+              <SelectValue placeholder="Requestor" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="all">All Requestors</SelectItem>
+              {requestors.map(requestor => (
+                <SelectItem key={requestor.id} value={requestor.id}>
+                  {requestor.name}
+                </SelectItem>
+              ))}
+              {hasLegacySheets && (
+                <SelectItem value={LEGACY_REQUESTOR}>Legacy import</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+
           <Badge variant="secondary" className="rounded-full px-3 py-1 bg-slate-100 text-slate-600">
             {filteredProducts.length} products
           </Badge>
@@ -274,6 +349,7 @@ export default function ProductsPage() {
               <TableRow className="bg-slate-50/50 border-b border-slate-100">
                 <TableHead className="w-[300px] font-semibold text-slate-700">Product</TableHead>
                 <TableHead className="w-[200px] font-semibold text-slate-700">Supplier</TableHead>
+                <TableHead className="w-[160px] font-semibold text-slate-700">Requestor</TableHead>
                 <TableHead className="w-[120px] font-semibold text-slate-700">Status</TableHead>
                 <TableHead className="w-[120px] font-semibold text-slate-700">Last Updated</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
@@ -282,7 +358,7 @@ export default function ProductsPage() {
             <TableBody>
               {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-16">
+                  <TableCell colSpan={6} className="text-center py-16">
                     <div className="flex flex-col items-center gap-3 text-slate-500">
                       <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
                         <Package className="h-8 w-8 text-slate-400" />
@@ -337,6 +413,11 @@ export default function ProductsPage() {
                           </div>
                         ) : (
                           <span className="text-slate-400">Unknown</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-slate-700">
+                        {product.requestor_name || (
+                          <span className="italic text-slate-400">Legacy import</span>
                         )}
                       </TableCell>
                       <TableCell>
