@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil, ClipboardCheck } from 'lucide-react'
+import { Pencil, ClipboardCheck, FileDown } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
@@ -419,6 +419,12 @@ export default async function SheetViewPage({
           </div>
           <div className="ml-auto flex items-center gap-3">
             <Badge variant="outline">{sheet.status || 'draft'}</Badge>
+            <a href={`/api/export/pdf?sheet_id=${sheetId}`} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" variant="outline">
+                <FileDown className="h-4 w-4 mr-2" />
+                Download PDF
+              </Button>
+            </a>
             {userCompanyId === sheet.requesting_company_id && ['submitted', 'flagged'].includes(sheet.status || '') ? (
               <Link href={`/sheets/${sheetId}/review`}>
                 <Button size="sm" variant="default">
