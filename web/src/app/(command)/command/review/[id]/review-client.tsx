@@ -24,6 +24,7 @@ import {
   Check,
   Save,
   Workflow,
+  FileDown,
 } from 'lucide-react'
 import type { MappedParameter, MappingResult } from '@/lib/extraction/parameter-mapper'
 import { StartWorkflowDialog } from '@/components/command/StartWorkflowDialog'
@@ -541,15 +542,31 @@ export default function CustomerReviewClient({
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 ring-1 ring-emerald-500/20"
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-wrap justify-end gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 ring-1 ring-emerald-500/20"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 text-xs">
+            <Link href={`/sheets/${sheetId}/review`} className="text-zinc-400 hover:text-white transition-colors">
+              Open in classic review (light)
+            </Link>
+            <a
+              href={`/api/export/pdf?sheet_id=${sheetId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 transition-colors"
             >
-              {tag}
-            </span>
-          ))}
+              <FileDown className="h-3.5 w-3.5" />
+              Download PDF
+            </a>
+          </div>
         </div>
       </div>
 

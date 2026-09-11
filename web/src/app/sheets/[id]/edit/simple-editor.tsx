@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet, ListChecks, Search } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet, ListChecks, Search, FileDown } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -1519,6 +1519,12 @@ export function SimpleSheetEditor({
             <p className="text-muted-foreground">{companyName}</p>
           </div>
           <Badge variant="outline">{sheetStatus || 'Draft'}</Badge>
+          <a href={`/api/export/pdf?sheet_id=${sheetId}`} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm" className="text-muted-foreground">
+              <FileDown className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+          </a>
           {canEdit ? (
             <>
               {/* Subtle autosave indicator */}

@@ -18,7 +18,8 @@ import {
   Loader2,
   MessageSquare,
   Flag,
-  ThumbsUp
+  ThumbsUp,
+  FileDown
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -700,6 +701,12 @@ export default function ReviewPage() {
               Review the supplier's responses and approve or request revisions
             </p>
           </div>
+          <a href={`/api/export/pdf?sheet_id=${sheetId}`} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm">
+              <FileDown className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+          </a>
         </div>
 
         {/* Review summary */}

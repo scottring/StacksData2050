@@ -12,6 +12,7 @@ import {
   Building2,
   ChevronRight,
   Trash2,
+  FileDown,
 } from 'lucide-react'
 import UploadDropzone from '@/components/pipeline/upload-dropzone'
 
@@ -115,6 +116,15 @@ export default function StationRequestDetail({ request, extractionDocs }: Statio
               </div>
             )}
           </div>
+          <a
+            href={`/api/export/pdf?sheet_id=${request.sheetId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 text-xs transition-colors"
+          >
+            <FileDown className="h-3.5 w-3.5" />
+            Export PDF
+          </a>
         </div>
 
         {/* Progress bar */}
