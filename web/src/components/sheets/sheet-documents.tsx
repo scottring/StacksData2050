@@ -207,8 +207,9 @@ export function SheetDocuments({ sheetId }: { sheetId: string }) {
                 </div>
                 {doc.download_url && (
                   <a href={doc.download_url} target="_blank" rel="noopener noreferrer">
-                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                      <Download className="h-4 w-4" />
+                    <Button size="sm" variant="outline" className="h-8 shrink-0">
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
                     </Button>
                   </a>
                 )}
