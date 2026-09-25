@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         .select('email, full_name')
         .eq('company_id', body.supplierCompanyId)
         .not('email', 'ilike', '%placeholder%')
+        .order('is_company_main_contact', { ascending: false, nullsFirst: false })
         .limit(1)
 
       if (supplierUsers && supplierUsers.length > 0) {
