@@ -3,6 +3,7 @@ import { SuppliersList } from '@/components/suppliers/suppliers-list'
 import { SuppliersHeaderActions } from '@/components/suppliers/suppliers-header-actions'
 import { PageHeader } from '@/components/layout/page-header'
 import { createClient } from '@/lib/supabase/server'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 import type { Database } from '@/lib/database.types'
 
 type Company = Database['public']['Tables']['companies']['Row']
@@ -42,9 +43,10 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
     .from('requests')
     .select('requesting_from_id')
     .eq('requestor_id', myCompanyId)
-    .neq('show_as_removed', true)
+    .is('withdrawn_at', null)
 
-  const allSheets = sheets ?? []
+  const withdrawnSheetIds = await getWithdrawnSheetIds(supabase, myCompanyId)
+  const allSheets = (sheets ?? []).filter(s => !withdrawnSheetIds.has(s.id))
 
   const supplierIdsFromSheets = allSheets
     .map(s => s.company_id)

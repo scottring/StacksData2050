@@ -137,6 +137,7 @@ interface SimpleSheetEditorProps {
   customQuestions?: CustomQuestion[]
   customAnswers?: CustomAnswer[]
   requestingCompanyName?: string
+  requestWithdrawn?: boolean
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -171,6 +172,7 @@ export function SimpleSheetEditor({
   customQuestions = [],
   customAnswers = [],
   requestingCompanyName = '',
+  requestWithdrawn = false,
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -253,7 +255,7 @@ export function SimpleSheetEditor({
 
   // Check if editing is allowed based on status
   // Locked when: submitted (waiting for review), approved, or completed
-  const canEdit = !['submitted', 'approved', 'completed'].includes(sheetStatus || '')
+  const canEdit = !requestWithdrawn && !['submitted', 'approved', 'completed'].includes(sheetStatus || '')
 
   // Group choices by question
   const choicesByQuestion = useMemo(() => {
@@ -1558,7 +1560,7 @@ export function SimpleSheetEditor({
             </>
           ) : (
             <Badge className="bg-blue-100 text-blue-800">
-              {sheetStatus === 'submitted' ? 'Awaiting Review' : sheetStatus === 'approved' ? 'Approved' : 'Locked'}
+              {requestWithdrawn ? 'Withdrawn' : sheetStatus === 'submitted' ? 'Awaiting Review' : sheetStatus === 'approved' ? 'Approved' : 'Locked'}
             </Badge>
           )}
         </div>
@@ -1567,6 +1569,21 @@ export function SimpleSheetEditor({
         <div className="text-sm text-muted-foreground">
           {visibleQuestions.length} questions
         </div>
+
+        {/* Banner for requests the customer withdrew */}
+        {requestWithdrawn && (
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 dark:bg-slate-900/40 dark:border-slate-700">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-slate-800 dark:text-slate-200">Request Withdrawn</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  {requestingCompanyName || 'The customer'} has withdrawn this request. No response is needed.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Revision banner for flagged sheets */}
         {sheetStatus === 'flagged' && rejections.length > 0 && (

@@ -38,6 +38,7 @@ export default async function CommandPage() {
       supplier:companies!requesting_from_id(id, name, logo_url)
     `)
     .eq('requestor_id', companyId)
+    .is('withdrawn_at', null)
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -54,6 +55,7 @@ export default async function CommandPage() {
       requestor:companies!requestor_id(id, name, logo_url)
     `)
     .eq('requesting_from_id', companyId)
+    .is('withdrawn_at', null)
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -66,8 +68,8 @@ export default async function CommandPage() {
 
   // Server-side aggregate counts (not limited to the 20-row fetch window above)
   const [{ count: outgoingCount }, { count: incomingCount }] = await Promise.all([
-    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requestor_id', companyId),
-    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requesting_from_id', companyId),
+    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requestor_id', companyId).is('withdrawn_at', null),
+    supabase.from('requests').select('*', { count: 'exact', head: true }).eq('requesting_from_id', companyId).is('withdrawn_at', null),
   ])
   const totals = {
     outgoing: outgoingCount ?? 0,

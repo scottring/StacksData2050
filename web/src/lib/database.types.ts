@@ -2383,6 +2383,8 @@ export type Database = {
           slug: string | null
           status: string | null
           updated_at: string | null
+          withdrawn_at: string | null
+          withdrawn_by: string | null
         }
         Insert: {
           bubble_id?: string | null
@@ -2416,6 +2418,8 @@ export type Database = {
           slug?: string | null
           status?: string | null
           updated_at?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
         }
         Update: {
           bubble_id?: string | null
@@ -2449,6 +2453,8 @@ export type Database = {
           slug?: string | null
           status?: string | null
           updated_at?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
         }
         Relationships: [
           {

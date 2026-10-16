@@ -283,7 +283,7 @@ export default async function SheetEditPage({
   // First, find the request associated with this sheet
   const { data: request } = await supabase
     .from("requests")
-    .select("id, requestor_id")
+    .select("id, requestor_id, withdrawn_at")
     .eq("sheet_id", sheetId)
     .single()
 
@@ -361,6 +361,7 @@ export default async function SheetEditPage({
       customQuestions={customQuestions}
       customAnswers={customAnswers}
       requestingCompanyName={requestingCompanyName}
+      requestWithdrawn={!!request?.withdrawn_at}
     />
   )
 }

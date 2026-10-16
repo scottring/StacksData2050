@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 import { AssociationMetricsDashboard, type AssociationMetrics } from '@/components/dashboard/association-metrics-dashboard'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
 import { cn } from '@/lib/utils'
@@ -788,6 +789,11 @@ export default function DashboardPage() {
         }
       }
 
+      // Hide sheets whose request was withdrawn (before name dedup, so a
+      // withdrawn copy never shadows a live sheet of the same name)
+      const withdrawnSheetIds = await getWithdrawnSheetIds(supabase, companyId)
+      allSheets = allSheets.filter(s => !withdrawnSheetIds.has(s.id))
+
       const rawSupplierSheets = allSheets.filter(s => s.company_id === companyId)
 
       const supplierSheetsByName = new Map<string, typeof allSheets[0]>()
@@ -866,11 +872,13 @@ export default function DashboardPage() {
         .from('requests')
         .select('id, processed')
         .eq('requestor_id', companyId)
+        .is('withdrawn_at', null)
 
       const { data: incomingRequests } = await supabase
         .from('requests')
         .select('id, processed')
         .eq('requesting_from_id', companyId)
+        .is('withdrawn_at', null)
 
       const outgoingPending = (outgoingRequests || []).filter(r => !r.processed).length
       const incomingPending = (incomingRequests || []).filter(r => !r.processed).length

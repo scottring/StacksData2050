@@ -46,6 +46,7 @@ export default async function StationPage() {
       )
     `)
     .eq('requesting_from_id', profile.company_id)
+    .is('withdrawn_at', null)
     .order('created_at', { ascending: false })
 
   // Get tags for each sheet
