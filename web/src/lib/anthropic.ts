@@ -12,3 +12,6 @@ export function getAnthropicClient(): Anthropic {
 }
 
 export const EXTRACTION_MODEL = 'claude-sonnet-4-6'
+
+/** Maps non-standard supplier Excel replies onto a sheet's questions. */
+export const EXCEL_RESPONSE_MODEL = 'claude-opus-5-5'
