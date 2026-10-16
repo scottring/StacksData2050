@@ -27,6 +27,8 @@ interface OutgoingRequest {
   processed: boolean
   created_at: string
   sheet_id: string | null
+  recipient_email: string | null
+  recipient_name: string | null
   sheet: {
     id: string
     name: string
@@ -93,6 +95,8 @@ export default function OutgoingRequestsPage() {
         processed,
         created_at,
         sheet_id,
+        recipient_email,
+        recipient_name,
         sheet:sheets(id, name, status),
         reader_company:companies!requesting_from_id(id, name)
       `)
@@ -175,7 +179,8 @@ export default function OutgoingRequestsPage() {
 
   const filteredRequests = requests.filter(r =>
     r.sheet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.reader_company?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    r.reader_company?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.recipient_email?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const pendingCount = requests.filter(r => !r.processed).length
@@ -289,7 +294,15 @@ export default function OutgoingRequestsPage() {
                       onClick={() => router.push(`/sheets/${request.sheet?.id}/review`)}
                     >
                       <TableCell className="font-medium text-slate-900">{request.sheet?.name || 'Untitled'}</TableCell>
-                      <TableCell className="text-slate-600">{request.reader_company?.name || 'Unknown'}</TableCell>
+                      <TableCell className="text-slate-600">
+                        <div>{request.reader_company?.name || 'Unknown'}</div>
+                        <div
+                          className="text-xs text-slate-400"
+                          title={request.recipient_name || undefined}
+                        >
+                          {request.recipient_email || '-'}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-1.5 flex-wrap">
                           {request.request_tags?.map((rt, idx) => (

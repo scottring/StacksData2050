@@ -325,6 +325,18 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           .eq('id', invitationId)
       }
 
+      // New suppliers are reached by the invitation email, so record that
+      // address as the recipient (existing suppliers: /api/requests/notify does it)
+      if (supplierMode === 'new') {
+        const { error: recipientError } = await supabase
+          .from('requests')
+          .update({ recipient_email: formData.newSupplierEmail.trim() })
+          .eq('id', newRequest.id)
+        if (recipientError) {
+          console.error('Error recording request recipient:', recipientError)
+        }
+      }
+
       // Send email notification to supplier (server-side lookup bypasses RLS)
       if (supplierMode === 'existing' && formData.supplierId) {
         try {

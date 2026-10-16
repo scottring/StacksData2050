@@ -2374,6 +2374,8 @@ export type Database = {
           processed: boolean | null
           product_name: string | null
           reader_company_id: string | null
+          recipient_email: string | null
+          recipient_name: string | null
           requesting_from_id: string | null
           requestor_id: string | null
           sheet_id: string | null
@@ -2405,6 +2407,8 @@ export type Database = {
           processed?: boolean | null
           product_name?: string | null
           reader_company_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
@@ -2436,6 +2440,8 @@ export type Database = {
           processed?: boolean | null
           product_name?: string | null
           reader_company_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
