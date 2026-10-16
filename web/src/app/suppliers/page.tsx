@@ -14,6 +14,7 @@ interface SupplierWithStats {
   completedTasks: number
   totalTasks: number
   primaryContact: User | null
+  contactCount: number
 }
 
 async function getSuppliers(): Promise<SupplierWithStats[]> {
@@ -82,6 +83,10 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
     ).length
 
     const companyUsers = (users || []).filter(u => u.company_id === company.id)
+    // Same rule as /api/companies/[id]/contacts: skip placeholder rows
+    const contactCount = companyUsers.filter(
+      u => u.email && !u.email.includes('placeholder') && u.full_name && u.full_name !== 'Unknown'
+    ).length
     const primaryContact =
       companyUsers.find(u => u.is_company_main_contact === true) ||
       companyUsers.find(
@@ -94,7 +99,8 @@ async function getSuppliers(): Promise<SupplierWithStats[]> {
       openTasks,
       completedTasks,
       totalTasks: companySheets.length,
-      primaryContact
+      primaryContact,
+      contactCount
     }
   })
 

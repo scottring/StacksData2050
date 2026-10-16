@@ -20,9 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, CheckCircle2, Settings, User, Plus, X } from 'lucide-react'
+import { Loader2, CheckCircle2, Settings, User, Plus, X, Users } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import Link from 'next/link'
+import { ContactFormSheet } from '@/components/contacts/contact-form-sheet'
+import { ApiError, type ContactInput } from '@/components/contacts/use-contacts'
 import type { Database } from '@/lib/database.types'
 import { TagMultiSelect } from '@/components/ui/tag-multi-select'
 type Company = Database['public']['Tables']['companies']['Row']
@@ -43,6 +45,7 @@ interface SupplierContact {
   id: string
   email: string | null
   full_name: string | null
+  is_company_main_contact: boolean | null
 }
 interface RequestSheetDialogProps {
   open: boolean
@@ -63,6 +66,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
   const [newQuestionType, setNewQuestionType] = useState<'text' | 'yes_no'>('text')
   const [newQuestionRequired, setNewQuestionRequired] = useState(false)
   const [creatingQuestion, setCreatingQuestion] = useState(false)
+  const [addContactOpen, setAddContactOpen] = useState(false)
   const [formData, setFormData] = useState({
     productName: '',
     supplierId: '',
@@ -79,37 +83,56 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     }
   }, [open])
 
-  // Fetch contacts when supplier changes (via API to bypass RLS)
-  useEffect(() => {
-    async function fetchContacts() {
-      if (!formData.supplierId) {
-        setSupplierContacts([])
-        return
-      }
+  // Fetch contacts for a supplier (via API to bypass RLS). Preselects the
+  // given contact, else the primary contact, else the only contact, so the
+  // user always sees who will receive the request.
+  async function loadContacts(supplierId: string, preferContactId?: string) {
+    setLoadingContacts(true)
 
-      setLoadingContacts(true)
+    try {
+      const res = await fetch(`/api/companies/${supplierId}/contacts`, { cache: 'no-store' })
+      const validContacts: SupplierContact[] = res.ok ? await res.json() : []
 
-      try {
-        const res = await fetch(`/api/companies/${formData.supplierId}/contacts`)
-        const validContacts = res.ok ? await res.json() : []
+      setSupplierContacts(validContacts)
 
-        setSupplierContacts(validContacts)
-
-        // Auto-select if only one contact
-        if (validContacts.length === 1) {
-          setFormData(prev => ({ ...prev, selectedContactId: validContacts[0].id }))
-        } else {
-          setFormData(prev => ({ ...prev, selectedContactId: '' }))
-        }
-      } catch {
-        setSupplierContacts([])
-      }
-
-      setLoadingContacts(false)
+      const preselect =
+        validContacts.find(c => c.id === preferContactId) ||
+        validContacts.find(c => c.is_company_main_contact === true) ||
+        (validContacts.length === 1 ? validContacts[0] : undefined)
+      setFormData(prev => ({ ...prev, selectedContactId: preselect?.id ?? '' }))
+    } catch {
+      setSupplierContacts([])
     }
 
-    fetchContacts()
+    setLoadingContacts(false)
+  }
+
+  // Fetch contacts when supplier changes
+  useEffect(() => {
+    if (!formData.supplierId) {
+      setSupplierContacts([])
+      return
+    }
+    loadContacts(formData.supplierId)
   }, [formData.supplierId])
+
+  async function handleAddContact(input: ContactInput) {
+    const res = await fetch(`/api/companies/${formData.supplierId}/contacts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+    })
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new ApiError(
+        res.status === 403
+          ? 'Contacts can only be added for suppliers you already work with'
+          : json.error || 'Failed to add contact',
+        res.status
+      )
+    }
+    await loadContacts(formData.supplierId, json.contact?.id)
+  }
   async function fetchData() {
     setLoading(true)
     const supabase = createClient()
@@ -477,9 +500,37 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                   {/* Contact selector - appears after supplier is selected */}
                   {formData.supplierId && (
                     <div className="space-y-2">
-                      <Label htmlFor="contact" className="text-sm">
-                        Send To
-                      </Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="contact" className="text-sm">
+                          Send To
+                          {supplierContacts.length > 1 && (
+                            <span className="ml-1.5 font-normal text-muted-foreground">
+                              ({supplierContacts.length} contacts)
+                            </span>
+                          )}
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={() => setAddContactOpen(true)}
+                            disabled={submitting || loadingContacts}
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Add Contact
+                          </Button>
+                          <Link
+                            href={`/suppliers/${formData.supplierId}`}
+                            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                            target="_blank"
+                          >
+                            <Users className="h-3 w-3" />
+                            Manage
+                          </Link>
+                        </div>
+                      </div>
                       {loadingContacts ? (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -503,7 +554,12 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
                             {supplierContacts.map((contact) => (
                               <SelectItem key={contact.id} value={contact.id}>
                                 <div className="flex flex-col">
-                                  <span>{contact.full_name}</span>
+                                  <span>
+                                    {contact.full_name}
+                                    {contact.is_company_main_contact && (
+                                      <span className="ml-1.5 text-xs text-muted-foreground">(Primary)</span>
+                                    )}
+                                  </span>
                                   <span className="text-xs text-muted-foreground">{contact.email}</span>
                                 </div>
                               </SelectItem>
@@ -757,6 +813,12 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
             </Button>
           </DialogFooter>
         </form>
+        <ContactFormSheet
+          mode="add"
+          open={addContactOpen}
+          onOpenChange={setAddContactOpen}
+          onSubmit={handleAddContact}
+        />
       </DialogContent>
     </Dialog>
   )

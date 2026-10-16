@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, ChevronRight, Building2 } from 'lucide-react'
+import { Search, ChevronRight, Building2, Users } from 'lucide-react'
 import type { Database } from '@/lib/database.types'
 
 type Company = Database['public']['Tables']['companies']['Row']
@@ -24,6 +24,7 @@ interface SupplierWithStats {
   completedTasks: number
   totalTasks: number
   primaryContact: User | null
+  contactCount: number
 }
 
 interface SuppliersListProps {
@@ -70,7 +71,7 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
             <TableRow>
               <TableHead className="w-[300px]">Supplier</TableHead>
               <TableHead className="w-[200px]">Task Progress</TableHead>
-              <TableHead>Primary Contact</TableHead>
+              <TableHead>Contacts</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -148,6 +149,12 @@ export function SuppliersList({ suppliers }: SuppliersListProps) {
                           <div className="text-sm text-muted-foreground">
                             {supplier.primaryContact.email}
                           </div>
+                          {supplier.contactCount > 1 && (
+                            <div className="text-xs text-primary flex items-center gap-1 mt-0.5">
+                              <Users className="h-3 w-3" />
+                              +{supplier.contactCount - 1} more contact{supplier.contactCount - 1 === 1 ? '' : 's'}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <span className="text-muted-foreground text-sm">No contact assigned</span>
