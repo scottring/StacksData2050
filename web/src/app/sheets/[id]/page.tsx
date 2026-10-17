@@ -8,6 +8,7 @@ import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
 import { SheetDocuments } from '@/components/sheets/sheet-documents'
+import { SheetCustomerActions } from '@/components/sheets/sheet-customer-actions'
 
 interface ViewAnswer {
   id: string
@@ -51,7 +52,7 @@ export default async function SheetViewPage({
   // Fetch sheet info
   const { data: sheet } = await supabase
     .from('sheets')
-    .select('id, name, status, company_id, requesting_company_id, companies!sheets_company_id_fkey(name)')
+    .select('id, name, status, mark_as_archived, company_id, requesting_company_id, companies!sheets_company_id_fkey(name)')
     .eq('id', sheetId)
     .single()
 
@@ -418,7 +419,17 @@ export default async function SheetViewPage({
             <p className="text-muted-foreground">{companyName}</p>
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <Badge variant="outline">{sheet.status || 'draft'}</Badge>
+            {sheet.mark_as_archived && <Badge variant="secondary">Archived</Badge>}
+            {userCompanyId === sheet.requesting_company_id ? (
+              <SheetCustomerActions
+                sheetId={sheetId}
+                sheetName={sheet.name}
+                status={sheet.status}
+                archived={Boolean(sheet.mark_as_archived)}
+              />
+            ) : (
+              <Badge variant="outline">{sheet.status || 'draft'}</Badge>
+            )}
             <a href={`/api/export/pdf?sheet_id=${sheetId}`} target="_blank" rel="noopener noreferrer">
               <Button size="sm" variant="outline">
                 <FileDown className="h-4 w-4 mr-2" />
