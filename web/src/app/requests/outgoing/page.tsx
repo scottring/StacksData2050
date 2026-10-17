@@ -16,7 +16,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Search, Loader2, FileText, Plus, ChevronRight, Send, CheckCircle2, Clock, RefreshCw } from 'lucide-react'
+import { Search, Loader2, FileText, Plus, ChevronRight, Send, CheckCircle2, Clock, RefreshCw, Ban } from 'lucide-react'
+import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { createClient } from '@/lib/supabase/client'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
 import { UpdateRequestDialog } from '@/components/sheets/update-request-dialog'
@@ -27,6 +38,9 @@ interface OutgoingRequest {
   processed: boolean
   created_at: string
   sheet_id: string | null
+  recipient_email: string | null
+  recipient_name: string | null
+  withdrawn_at: string | null
   sheet: {
     id: string
     name: string
@@ -62,6 +76,9 @@ export default function OutgoingRequestsPage() {
   } | null>(null)
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const [showWithdrawn, setShowWithdrawn] = useState(false)
+  const [withdrawTarget, setWithdrawTarget] = useState<OutgoingRequest | null>(null)
+  const [withdrawing, setWithdrawing] = useState(false)
 
   const fetchRequests = useCallback(async () => {
     const supabase = createClient()
@@ -93,6 +110,9 @@ export default function OutgoingRequestsPage() {
         processed,
         created_at,
         sheet_id,
+        recipient_email,
+        recipient_name,
+        withdrawn_at,
         sheet:sheets(id, name, status),
         reader_company:companies!requesting_from_id(id, name)
       `)
@@ -173,14 +193,37 @@ export default function OutgoingRequestsPage() {
     }
   }, [requests, fetchRequests])
 
-  const filteredRequests = requests.filter(r =>
+  async function handleWithdraw() {
+    if (!withdrawTarget) return
+    setWithdrawing(true)
+    try {
+      const res = await fetch(`/api/requests/${withdrawTarget.id}/withdraw`, { method: 'POST' })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(json.error || 'Failed to withdraw request')
+      toast.success('Request withdrawn')
+      setWithdrawTarget(null)
+      await fetchRequests()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to withdraw request')
+    } finally {
+      setWithdrawing(false)
+    }
+  }
+
+  // Withdrawn requests are hidden by default and listed under their own filter
+  const activeRequests = requests.filter(r => !r.withdrawn_at)
+  const withdrawnCount = requests.length - activeRequests.length
+  const listedRequests = showWithdrawn ? requests.filter(r => r.withdrawn_at) : activeRequests
+
+  const filteredRequests = listedRequests.filter(r =>
     r.sheet?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.reader_company?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    r.reader_company?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.recipient_email?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const pendingCount = requests.filter(r => !r.processed).length
-  const processedCount = requests.filter(r => r.processed).length
-  const sheetStatusCount = requests.filter(r => r.sheet?.status === 'responded' || r.sheet?.status === 'approved').length
+  const pendingCount = activeRequests.filter(r => !r.processed).length
+  const processedCount = activeRequests.filter(r => r.processed).length
+  const sheetStatusCount = activeRequests.filter(r => r.sheet?.status === 'responded' || r.sheet?.status === 'approved').length
 
   const getStatusConfig = (status: string | null | undefined) => {
     if (status === 'submitted') {
@@ -232,21 +275,43 @@ export default function OutgoingRequestsPage() {
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">
-          <StatCard title="Total Requests" value={requests.length} icon={FileText} accentColor="slate" delay={100} />
+          <StatCard title="Total Requests" value={activeRequests.length} icon={FileText} accentColor="slate" delay={100} />
           <StatCard title="Pending" value={pendingCount} icon={Clock} accentColor="amber" delay={150} />
           <StatCard title="Processed" value={processedCount} icon={Send} accentColor="sky" delay={200} />
           <StatCard title="Completed" value={sheetStatusCount} icon={CheckCircle2} accentColor="emerald" delay={250} />
         </div>
 
         {/* Search */}
-        <div className="relative max-w-sm opacity-0 animate-fade-in-up animation-delay-200" style={{ animationFillMode: 'forwards' }}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search requests..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 rounded-xl border-slate-200 focus:border-emerald-300 focus:ring-emerald-200"
-          />
+        <div className="flex items-center gap-3 opacity-0 animate-fade-in-up animation-delay-200" style={{ animationFillMode: 'forwards' }}>
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search requests..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 rounded-xl border-slate-200 focus:border-emerald-300 focus:ring-emerald-200"
+            />
+          </div>
+          {(withdrawnCount > 0 || showWithdrawn) && (
+            <div className="flex gap-1">
+              <Button
+                variant={showWithdrawn ? 'outline' : 'default'}
+                size="sm"
+                className="rounded-lg"
+                onClick={() => setShowWithdrawn(false)}
+              >
+                Active
+              </Button>
+              <Button
+                variant={showWithdrawn ? 'default' : 'outline'}
+                size="sm"
+                className="rounded-lg"
+                onClick={() => setShowWithdrawn(true)}
+              >
+                Withdrawn ({withdrawnCount})
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Table */}
@@ -259,7 +324,7 @@ export default function OutgoingRequestsPage() {
                 <TableHead className="font-semibold text-slate-700">Tags</TableHead>
                 <TableHead className="font-semibold text-slate-700">Status</TableHead>
                 <TableHead className="font-semibold text-slate-700">Created</TableHead>
-                <TableHead className="w-[180px]"></TableHead>
+                <TableHead className="w-[280px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -271,9 +336,13 @@ export default function OutgoingRequestsPage() {
                         <Send className="h-8 w-8 text-slate-400" />
                       </div>
                       <span className="font-medium">
-                        {searchQuery ? 'No requests found matching your search' : 'No outgoing requests yet'}
+                        {searchQuery
+                          ? 'No requests found matching your search'
+                          : showWithdrawn
+                            ? 'No withdrawn requests'
+                            : 'No outgoing requests yet'}
                       </span>
-                      {!searchQuery && (
+                      {!searchQuery && !showWithdrawn && (
                         <p className="text-sm text-slate-400">Click "New Request" to get started</p>
                       )}
                     </div>
@@ -281,7 +350,13 @@ export default function OutgoingRequestsPage() {
                 </TableRow>
               ) : (
                 filteredRequests.map((request) => {
-                  const statusConfig = getStatusConfig(request.sheet?.status)
+                  const statusConfig = request.withdrawn_at
+                    ? { label: 'Withdrawn', className: 'bg-slate-100 text-slate-500 border-slate-200/50' }
+                    : getStatusConfig(request.sheet?.status)
+                  const canWithdraw =
+                    !request.withdrawn_at &&
+                    request.sheet?.status !== 'approved' &&
+                    request.sheet?.status !== 'completed'
                   return (
                     <TableRow
                       key={request.id}
@@ -289,7 +364,15 @@ export default function OutgoingRequestsPage() {
                       onClick={() => router.push(`/sheets/${request.sheet?.id}/review`)}
                     >
                       <TableCell className="font-medium text-slate-900">{request.sheet?.name || 'Untitled'}</TableCell>
-                      <TableCell className="text-slate-600">{request.reader_company?.name || 'Unknown'}</TableCell>
+                      <TableCell className="text-slate-600">
+                        <div>{request.reader_company?.name || 'Unknown'}</div>
+                        <div
+                          className="text-xs text-slate-400"
+                          title={request.recipient_name || undefined}
+                        >
+                          {request.recipient_email || '-'}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-1.5 flex-wrap">
                           {request.request_tags?.map((rt, idx) => (
@@ -313,27 +396,52 @@ export default function OutgoingRequestsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="rounded-lg text-slate-600 hover:text-slate-900"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setUpdateTarget({
-                                id: request.id,
-                                sheet_id: request.sheet?.id || '',
-                                sheet_name: request.sheet?.name || '',
-                                supplier_name: request.reader_company?.name || '',
-                                supplier_company_id: request.reader_company?.id || '',
-                                existing_tags: request.request_tags?.map(rt => rt.tag.name) || [],
-                                existing_tag_ids: request.request_tags?.map(rt => rt.tag.id) || [],
-                              })
-                              setUpdateDialogOpen(true)
-                            }}
-                          >
-                            <RefreshCw className="h-4 w-4 mr-1" />
-                            Update
-                          </Button>
+                          {request.withdrawn_at && (
+                            <span className="text-xs text-slate-400 mr-1">
+                              {new Date(request.withdrawn_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          )}
+                          {!request.withdrawn_at && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-lg text-slate-600 hover:text-slate-900"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setUpdateTarget({
+                                  id: request.id,
+                                  sheet_id: request.sheet?.id || '',
+                                  sheet_name: request.sheet?.name || '',
+                                  supplier_name: request.reader_company?.name || '',
+                                  supplier_company_id: request.reader_company?.id || '',
+                                  existing_tags: request.request_tags?.map(rt => rt.tag.name) || [],
+                                  existing_tag_ids: request.request_tags?.map(rt => rt.tag.id) || [],
+                                })
+                                setUpdateDialogOpen(true)
+                              }}
+                            >
+                              <RefreshCw className="h-4 w-4 mr-1" />
+                              Update
+                            </Button>
+                          )}
+                          {canWithdraw && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-lg text-slate-500 hover:text-rose-700 hover:bg-rose-50"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setWithdrawTarget(request)
+                              }}
+                            >
+                              <Ban className="h-4 w-4 mr-1" />
+                              Withdraw
+                            </Button>
+                          )}
                           <Button variant="ghost" size="sm" className="rounded-lg text-slate-600 hover:text-slate-900">
                             View
                             <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
@@ -353,6 +461,37 @@ export default function OutgoingRequestsPage() {
         open={requestDialogOpen}
         onOpenChange={setRequestDialogOpen}
       />
+
+      <AlertDialog
+        open={!!withdrawTarget}
+        onOpenChange={(open) => {
+          if (!open && !withdrawing) setWithdrawTarget(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Withdraw this request?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {withdrawTarget?.sheet?.name || 'This request'} will no longer appear for{' '}
+              {withdrawTarget?.reader_company?.name || 'the supplier'}, and it moves to your
+              Withdrawn list. Any answers already entered are kept. The supplier is not notified.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={withdrawing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                handleWithdraw()
+              }}
+              disabled={withdrawing}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {withdrawing ? 'Withdrawing...' : 'Withdraw'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <UpdateRequestDialog
         open={updateDialogOpen}

@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
 import { Download, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 
 interface Company {
   id: string
@@ -83,9 +84,10 @@ export default function CustomersPage() {
         .from('requests')
         .select('*')
         .eq('requesting_from_id', myCompanyId)
-        .neq('show_as_removed', true)
+        .is('withdrawn_at', null)
 
-      const allSheets = sheets || []
+      const withdrawnSheetIds = await getWithdrawnSheetIds(supabase, myCompanyId)
+      const allSheets = (sheets || []).filter(s => !withdrawnSheetIds.has(s.id))
       const allRequests = requests || []
 
       const customerIdsFromSheets = allSheets

@@ -2374,6 +2374,8 @@ export type Database = {
           processed: boolean | null
           product_name: string | null
           reader_company_id: string | null
+          recipient_email: string | null
+          recipient_name: string | null
           requesting_from_id: string | null
           requestor_id: string | null
           sheet_id: string | null
@@ -2381,6 +2383,8 @@ export type Database = {
           slug: string | null
           status: string | null
           updated_at: string | null
+          withdrawn_at: string | null
+          withdrawn_by: string | null
         }
         Insert: {
           bubble_id?: string | null
@@ -2405,6 +2409,8 @@ export type Database = {
           processed?: boolean | null
           product_name?: string | null
           reader_company_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
@@ -2412,6 +2418,8 @@ export type Database = {
           slug?: string | null
           status?: string | null
           updated_at?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
         }
         Update: {
           bubble_id?: string | null
@@ -2436,6 +2444,8 @@ export type Database = {
           processed?: boolean | null
           product_name?: string | null
           reader_company_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
           requesting_from_id?: string | null
           requestor_id?: string | null
           sheet_id?: string | null
@@ -2443,6 +2453,8 @@ export type Database = {
           slug?: string | null
           status?: string | null
           updated_at?: string | null
+          withdrawn_at?: string | null
+          withdrawn_by?: string | null
         }
         Relationships: [
           {

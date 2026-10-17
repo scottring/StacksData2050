@@ -27,6 +27,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 import { cn } from '@/lib/utils'
 
 interface Sheet {
@@ -86,8 +87,9 @@ export default function CustomerProductsPage() {
         return
       }
 
+      const withdrawnSheetIds = await getWithdrawnSheetIds(supabase, myCompanyId)
       const sheetsByName = new Map<string, typeof sheetsData[0]>()
-      sheetsData.forEach(sheet => {
+      sheetsData.filter(sheet => !withdrawnSheetIds.has(sheet.id)).forEach(sheet => {
         const existing = sheetsByName.get(sheet.name)
         if (!existing ||
             new Date(sheet.modified_at || sheet.created_at || 0) >

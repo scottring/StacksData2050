@@ -34,6 +34,7 @@ import {
   Pencil,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 
 interface Sheet {
   id: string
@@ -133,13 +134,19 @@ function SheetsContent() {
         query = query.or(`company_id.eq.${userCompanyId},requesting_company_id.eq.${userCompanyId}`)
       }
 
-      const { data: sheetsData, error } = await query
+      const { data: rawSheetsData, error } = await query
 
       if (error) {
         console.error('Error fetching sheets:', error)
         setLoading(false)
         return
       }
+
+      // Hide sheets whose request was withdrawn (super admins still see them)
+      const withdrawnSheetIds = !isSuperAdmin && userCompanyId
+        ? await getWithdrawnSheetIds(supabase, userCompanyId)
+        : new Set<string>()
+      const sheetsData = (rawSheetsData || []).filter(s => !withdrawnSheetIds.has(s.id))
 
       // Fetch companies for names
       const { data: companiesData } = await supabase

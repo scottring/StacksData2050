@@ -38,6 +38,7 @@ import {
   FileText,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getWithdrawnSheetIds } from '@/lib/requests/withdrawn'
 import { cn } from '@/lib/utils'
 import { RequestSheetDialog } from '@/components/sheets/request-sheet-dialog'
 
@@ -149,7 +150,9 @@ export default function ProductsPage() {
         (requestorUsers || []).map(u => [u.id, u.full_name || u.email || 'Unknown'])
       )
 
-      const sheetProducts: SheetProduct[] = (sheetsData || []).map(sheet => {
+      const withdrawnSheetIds = await getWithdrawnSheetIds(supabase, companyId)
+      const visibleSheets = (sheetsData || []).filter(sheet => !withdrawnSheetIds.has(sheet.id))
+      const sheetProducts: SheetProduct[] = visibleSheets.map(sheet => {
         const requestorId = requestorIdBySheet.get(sheet.id) || null
         return {
           ...sheet,

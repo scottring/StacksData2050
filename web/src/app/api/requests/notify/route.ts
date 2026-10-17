@@ -15,6 +15,33 @@ function getServiceClient() {
   )
 }
 
+// Store who the notification went to so Outgoing Requests can show it.
+// Uses the caller's session, so RLS plus the requestor_id filter limit the
+// write to the requesting company. Non-fatal: a failure never blocks the email.
+async function recordRecipient(requestId: string, email: string, name: string | null) {
+  try {
+    const supabase = await createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data: me } = await supabase
+      .from('users')
+      .select('company_id')
+      .eq('id', user.id)
+      .single()
+    if (!me?.company_id) return
+
+    const { error } = await supabase
+      .from('requests')
+      .update({ recipient_email: email, recipient_name: name })
+      .eq('id', requestId)
+      .eq('requestor_id', me.company_id)
+    if (error) console.error('Error recording request recipient:', error)
+  } catch (error) {
+    console.error('Error recording request recipient:', error)
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -23,6 +50,21 @@ export async function POST(request: Request) {
     // Resolve supplier email: accept direct email or look up by company ID
     let supplierEmail = body.supplierEmail
     let supplierName = body.supplierName
+
+    // Re-notifications (e.g. Update Request) go to whoever received the
+    // request originally, rather than falling back to the main contact.
+    if (!supplierEmail && requestId) {
+      const { data: existing } = await getServiceClient()
+        .from('requests')
+        .select('recipient_email, recipient_name')
+        .eq('id', requestId)
+        .maybeSingle()
+
+      if (existing?.recipient_email) {
+        supplierEmail = existing.recipient_email
+        supplierName = supplierName || existing.recipient_name
+      }
+    }
 
     if (!supplierEmail && body.supplierCompanyId) {
       const supabase = getServiceClient()
@@ -42,6 +84,10 @@ export async function POST(request: Request) {
 
     if (!supplierEmail) {
       return NextResponse.json({ error: 'No supplier contact found' }, { status: 400 })
+    }
+
+    if (requestId) {
+      await recordRecipient(requestId, supplierEmail, supplierName || null)
     }
 
     // Generate respond URL
