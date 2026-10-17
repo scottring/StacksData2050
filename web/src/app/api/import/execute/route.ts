@@ -10,6 +10,10 @@ interface MappedAnswer {
   valueType: 'text' | 'choice' | 'number' | 'boolean' | 'date' | 'list_table'
   choiceId?: string
   hasIssue: boolean
+  /** Supplier comment, saved to additional_notes. */
+  additionalNotes?: string | null
+  /** With protectExisting: replace a non-empty answer already on the sheet. */
+  overwrite?: boolean
 }
 
 interface ListTableImport {
@@ -27,12 +31,20 @@ interface ExecuteRequest {
   companyId: string
   answers: MappedAnswer[]
   listTables?: ListTableImport[]
+  /**
+   * Leave answers already on the sheet alone unless the answer says
+   * overwrite, and update the existing row instead of adding a duplicate.
+   * Tables whose question already has rows are skipped.
+   */
+  protectExisting?: boolean
 }
+
+const VALUE_FIELDS = ['text_value', 'text_area_value', 'number_value', 'boolean_value', 'date_value', 'choice_id'] as const
 
 export async function POST(request: NextRequest) {
   try {
     const body: ExecuteRequest = await request.json()
-    const { sheetId, companyId, answers, listTables = [] } = body
+    const { sheetId, companyId, answers, listTables = [], protectExisting = false } = body
     
     if (!sheetId || !companyId || !answers) {
       return NextResponse.json(
@@ -63,8 +75,38 @@ export async function POST(request: NextRequest) {
       .update({ import_source: 'excel_import' })
       .eq('id', sheetId)
 
+    // Existing answers, read only when the caller asked to protect them.
+    const existingByQuestion = new Map<string, { ids: string[]; nonEmpty: boolean }>()
+    const questionsWithTableRows = new Set<string>()
+    if (protectExisting) {
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase
+          .from('answers')
+          .select('id, question_id, list_table_row_id, ' + VALUE_FIELDS.join(', '))
+          .eq('sheet_id', sheetId)
+          .range(from, from + 999)
+        if (error) {
+          return NextResponse.json({ error: `Could not read existing answers: ${error.message}` }, { status: 500 })
+        }
+        for (const a of (data ?? []) as any[]) {
+          if (!a.question_id) continue
+          if (a.list_table_row_id) {
+            questionsWithTableRows.add(a.question_id)
+            continue
+          }
+          const entry = existingByQuestion.get(a.question_id) ?? { ids: [], nonEmpty: false }
+          entry.ids.push(a.id)
+          if (VALUE_FIELDS.some(f => a[f] !== null && a[f] !== undefined && String(a[f]).trim() !== '')) entry.nonEmpty = true
+          existingByQuestion.set(a.question_id, entry)
+        }
+        if (!data || data.length < 1000) break
+      }
+    }
+
     // Build answer records
     const answersToInsert: any[] = []
+    const answersToUpdate: Array<{ ids: string[]; record: any }> = []
+    let skippedExisting = 0
     
     for (const answer of answers) {
       // Skip if no question ID or no value - but allow answers with issues (they'll be stored as text)
@@ -110,6 +152,18 @@ export async function POST(request: NextRequest) {
         default:
           record.text_value = answer.mappedValue
       }
+
+      if (answer.additionalNotes) record.additional_notes = answer.additionalNotes
+
+      const existing = protectExisting ? existingByQuestion.get(answer.questionId) : undefined
+      if (existing) {
+        if (existing.nonEmpty && !answer.overwrite) {
+          skippedExisting++
+          continue
+        }
+        answersToUpdate.push({ ids: existing.ids, record })
+        continue
+      }
       
       answersToInsert.push(record)
     }
@@ -130,6 +184,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Existing rows are updated in place so the sheet keeps one answer per
+    // question; value fields not set by the import are cleared.
+    let updated = 0
+    for (let i = 0; i < answersToUpdate.length; i += 10) {
+      const results = await Promise.all(
+        answersToUpdate.slice(i, i + 10).map(({ ids, record }) => {
+          const { sheet_id, question_id, company_id, created_at, ...values } = record
+          const patch: any = { modified_at: new Date().toISOString() }
+          for (const f of VALUE_FIELDS) patch[f] = values[f] ?? null
+          if (values.additional_notes) patch.additional_notes = values.additional_notes
+          return supabase.from('answers').update(patch).in('id', ids).select('id')
+        }),
+      )
+      results.forEach((r, j) => {
+        if (r.error) errors.push(`Update ${answersToUpdate[i + j].record.question_id}: ${r.error.message}`)
+        else if (!r.data?.length) errors.push(`Update ${answersToUpdate[i + j].record.question_id}: no rows changed (permission?)`)
+        else updated++
+      })
+    }
+
     // List tables: one answer per cell, rows tied together by list_table_row_id
     // and cells to their column by list_table_column_id, which is the shape the
     // sheet editor reads. Columns the workbook has but the question lacks are
@@ -140,7 +214,12 @@ export async function POST(request: NextRequest) {
     // below still go through the user's client so sheet access is enforced.
     const admin = createAdminClient()
 
+    let listTablesSkipped = 0
     for (const table of listTables) {
+      if (protectExisting && questionsWithTableRows.has(table.questionId)) {
+        listTablesSkipped++
+        continue
+      }
       const { data: existing } = await admin
         .from('list_table_columns')
         .select('id, order_number')
@@ -205,7 +284,10 @@ export async function POST(request: NextRequest) {
       sheetId,
       sheetName: sheet.name,
       answersInserted: inserted,
-      listTablesImported: listTables.length,
+      answersUpdated: updated,
+      answersSkippedExisting: skippedExisting,
+      listTablesImported: listTables.length - listTablesSkipped,
+      listTablesSkipped,
       listTableCellsInserted,
       columnsCreated,
       errors

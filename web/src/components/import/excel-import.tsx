@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, XCircle, Loader2 } from 'lucide-react'
+import { Upload, FileSpreadsheet, CheckCircle, AlertCircle, XCircle, Loader2, Sparkles } from 'lucide-react'
+import { AiResponseReview, type AiImportPreview } from './ai-response-review'
 
 interface MappedAnswer {
   bubbleId: string
@@ -74,6 +75,7 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<ImportPreview | null>(null)
+  const [aiPreview, setAiPreview] = useState<AiImportPreview | null>(null)
   const [importing, setImporting] = useState(false)
   const [importResult, setImportResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -83,18 +85,36 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
     if (selectedFile) {
       setFile(selectedFile)
       setPreview(null)
+      setAiPreview(null)
       setImportResult(null)
       setError(null)
     }
   }, [])
 
-  const handleUpload = async () => {
+  // Standard HQ 2.1 workbooks use the fixed cell map; anything else is mapped
+  // with AI and reviewed answer by answer. force skips the layout check.
+  const handleUpload = async (force = false) => {
     if (!file) return
     
     setUploading(true)
     setError(null)
     
     try {
+      const aiForm = new FormData()
+      aiForm.append('file', file)
+      aiForm.append('sheetId', sheetId)
+      if (force) aiForm.append('force', '1')
+      const aiResponse = await fetch('/api/import/excel-ai', { method: 'POST', body: aiForm })
+      const aiResult = await aiResponse.json()
+      if (!aiResponse.ok) {
+        throw new Error(aiResult.error || 'Upload failed')
+      }
+      if (!aiResult.standardWorkbook) {
+        setPreview(null)
+        setAiPreview(aiResult)
+        return
+      }
+
       const formData = new FormData()
       formData.append('file', file)
       
@@ -164,12 +184,12 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
           Import from Excel
         </CardTitle>
         <CardDescription>
-          Upload a PPVIS HQ 2.1 Excel workbook to import answers
+          Upload the supplier&apos;s Excel reply. Standard PPVIS HQ 2.1 workbooks import directly; other layouts are matched to this sheet&apos;s questions with AI for you to review.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* File Upload */}
-        {!preview && !importResult && (
+        {!preview && !aiPreview && !importResult && (
           <div className="space-y-4">
             <div className="border-2 border-dashed rounded-lg p-8 text-center">
               <input
@@ -196,7 +216,7 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
                   <FileSpreadsheet className="h-4 w-4" />
                   <span className="text-sm font-medium">{file.name}</span>
                 </div>
-                <Button onClick={handleUpload} disabled={uploading}>
+                <Button onClick={() => handleUpload()} disabled={uploading}>
                   {uploading ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -208,7 +228,24 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
                 </Button>
               </div>
             )}
+            {uploading && (
+              <p className="text-xs text-muted-foreground">
+                Files in another layout are read with AI, which can take a minute or two.
+              </p>
+            )}
           </div>
+        )}
+
+        {/* AI-mapped answers from a non-standard workbook */}
+        {aiPreview && !importResult && (
+          <AiResponseReview
+            preview={aiPreview}
+            onCancel={() => {
+              setAiPreview(null)
+              setFile(null)
+            }}
+            onImported={onImportComplete}
+          />
         )}
 
         {/* Error */}
@@ -365,6 +402,16 @@ export function ExcelImport({ sheetId, companyId, onImportComplete }: ExcelImpor
                 </div>
               </div>
             )}
+
+            <button
+              type="button"
+              onClick={() => handleUpload(true)}
+              disabled={uploading}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              Answers look wrong or missing? Match this file with AI instead
+            </button>
 
             {/* Actions */}
             <div className="flex gap-2 pt-4 border-t">
