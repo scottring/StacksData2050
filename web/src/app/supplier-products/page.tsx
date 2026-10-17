@@ -35,6 +35,7 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  FileText,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
@@ -54,6 +55,7 @@ interface SheetProduct {
   requesting_company_id: string | null
   created_at: string | null
   modified_at: string | null
+  mark_as_archived: boolean | null
   supplier: Company | null
   requestor_id?: string | null
   requestor_name?: string
@@ -114,7 +116,7 @@ export default function ProductsPage() {
 
       const { data: sheetsData, error: sheetsError } = await supabase
         .from('sheets')
-        .select('id, name, status, company_id, requesting_company_id, created_at, modified_at')
+        .select('id, name, status, mark_as_archived, company_id, requesting_company_id, created_at, modified_at')
         .eq('requesting_company_id', companyId)
         .order('modified_at', { ascending: false })
 
@@ -178,7 +180,16 @@ export default function ProductsPage() {
       .map(p => [p.supplier!.id, p.supplier!])
   ).values()]
 
+  // Archived sheets are hidden everywhere except the Archived filter.
+  const activeProducts = products.filter(p => !p.mark_as_archived)
+
   const filteredProducts = products.filter(p => {
+    if (filterStatus === 'archived') {
+      if (!p.mark_as_archived) return false
+    } else if (p.mark_as_archived) {
+      return false
+    }
+
     const matchesSearch = searchQuery === '' ||
       p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.supplier?.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -190,6 +201,8 @@ export default function ProductsPage() {
       matchesStatus = p.status === 'in_progress'
     } else if (filterStatus === 'pending') {
       matchesStatus = p.status === 'pending' || !p.status
+    } else if (filterStatus === 'imported') {
+      matchesStatus = p.status === 'imported'
     }
 
     const matchesSupplier = filterSupplier === 'all' ||
@@ -215,6 +228,9 @@ export default function ProductsPage() {
     if (product.status === 'pending') {
       return { label: 'Pending', icon: Clock, className: 'bg-amber-50 text-amber-700 border-amber-200/50' }
     }
+    if (product.status === 'imported') {
+      return { label: 'Imported', icon: FileText, className: 'bg-indigo-50 text-indigo-700 border-indigo-200/50' }
+    }
     return { label: 'Draft', icon: AlertCircle, className: 'bg-slate-50 text-slate-600 border-slate-200/50' }
   }
 
@@ -228,10 +244,10 @@ export default function ProductsPage() {
   }
 
   const stats = {
-    total: products.length,
-    completed: products.filter(p => p.status === 'completed' || p.status === 'approved').length,
-    inProgress: products.filter(p => p.status === 'in_progress').length,
-    pending: products.filter(p => p.status === 'pending' || !p.status).length
+    total: activeProducts.length,
+    completed: activeProducts.filter(p => p.status === 'completed' || p.status === 'approved').length,
+    inProgress: activeProducts.filter(p => p.status === 'in_progress').length,
+    pending: activeProducts.filter(p => p.status === 'pending' || !p.status).length
   }
 
   if (loading) {
@@ -301,6 +317,8 @@ export default function ProductsPage() {
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="in_progress">In Progress</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="imported">Imported</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
             </SelectContent>
           </Select>
 
