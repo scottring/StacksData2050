@@ -214,8 +214,9 @@ export async function getSheetDocument(
     const parent = parentOf.get(q.id)
     if (!parent) return true
     const pa = singleAnswer(parent)
-    const v = pa ? answerText(pa).toLowerCase() : ''
-    return v === 'yes' || v === 'true'
+    const v = pa ? answerText(pa).trim().toLowerCase() : ''
+    // Choices like "Yes, details provided in table below." count as Yes
+    return v === 'true' || v.startsWith('yes')
   }
 
   const attachmentsByQuestion = new Map<string, string[]>()
