@@ -61,7 +61,11 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // API routes that use API key authentication (skip session auth)
-  if (request.nextUrl.pathname.startsWith('/api/v1/')) {
+  // /api/cron/* is called by the Vercel scheduler and checks CRON_SECRET itself.
+  if (
+    request.nextUrl.pathname.startsWith('/api/v1/') ||
+    request.nextUrl.pathname.startsWith('/api/cron/')
+  ) {
     // These routes handle their own authentication via API keys
     return supabaseResponse
   }
