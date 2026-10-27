@@ -15,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet, ListChecks, Search, FileDown } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Check, Plus, Trash2, SendHorizontal, AlertTriangle, FileSpreadsheet, ListChecks, Search, FileDown, MessageSquare, Lock } from 'lucide-react'
+import { ConcentrationViewerControl } from '@/components/sheets/concentration-viewer-control'
 import {
   Dialog,
   DialogContent,
@@ -60,6 +61,7 @@ interface ViewAnswer {
   list_table_column_name: string | null
   list_table_column_order: number | null
   additional_notes: string | null
+  concentration_restricted?: boolean | null
 }
 
 interface Choice {
@@ -138,6 +140,10 @@ interface SimpleSheetEditorProps {
   customAnswers?: CustomAnswer[]
   requestingCompanyName?: string
   requestWithdrawn?: boolean
+  requestMessage?: string
+  isSupplier?: boolean
+  customerCompanyId?: string | null
+  concentrationViewerId?: string | null
 }
 
 // Helper to get the display value from an answer (human-readable)
@@ -173,6 +179,10 @@ export function SimpleSheetEditor({
   customAnswers = [],
   requestingCompanyName = '',
   requestWithdrawn = false,
+  requestMessage = '',
+  isSupplier = false,
+  customerCompanyId = null,
+  concentrationViewerId = null,
 }: SimpleSheetEditorProps) {
   // Store values by question_id for single-value questions
   // Store by question_id -> row_id -> column_id for list tables
@@ -1026,12 +1036,22 @@ export function SimpleSheetEditor({
     col: { id: string; name: string; order: number },
     tableColumns: ListTableColumn[],
     displayValue: string,
-    answerId?: string
+    answerId?: string,
+    restricted?: boolean
   ) {
     // Find the full column definition to get response_type and choice_options
     const columnDef = tableColumns.find(c => c.id === col.id)
     const responseType = columnDef?.response_type?.toLowerCase()
     const choiceOptions = columnDef?.choice_options
+
+    if (restricted) {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground italic" title="The supplier restricted concentration values to a named person at your company">
+          <Lock className="h-3 w-3" />
+          Restricted
+        </span>
+      )
+    }
 
     // Number input for concentration columns
     if (responseType === 'number') {
@@ -1225,7 +1245,7 @@ export function SimpleSheetEditor({
 
                     return (
                       <td key={col.id} className="border px-2 py-1">
-                        {renderListTableCell(questionId, rowId, col, tableColumns, displayValue, answer?.id)}
+                        {renderListTableCell(questionId, rowId, col, tableColumns, displayValue, answer?.id, !!answer?.concentration_restricted)}
                       </td>
                     )
                   })}
@@ -1583,6 +1603,28 @@ export function SimpleSheetEditor({
               </div>
             </div>
           </div>
+        )}
+
+        {/* Message from the customer who raised the request */}
+        {requestMessage && (
+          <div className="p-4 rounded-lg bg-sky-50 border border-sky-200 dark:bg-sky-950/20 dark:border-sky-800">
+            <div className="flex items-start gap-3">
+              <MessageSquare className="h-5 w-5 text-sky-600 dark:text-sky-400 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-sky-800 dark:text-sky-200">Message from {requestingCompanyName || 'the customer'}</h3>
+                <p className="text-sm text-sky-700 dark:text-sky-300 mt-1 whitespace-pre-wrap">{requestMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Supplier-only: who at the customer may see concentration values */}
+        {isSupplier && customerCompanyId && (
+          <ConcentrationViewerControl
+            sheetId={sheetId}
+            customerCompanyName={requestingCompanyName}
+            initialViewerId={concentrationViewerId}
+          />
         )}
 
         {/* Revision banner for flagged sheets */}

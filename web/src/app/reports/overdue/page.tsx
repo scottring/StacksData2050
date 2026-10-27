@@ -15,6 +15,8 @@ import {
   Mail,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
 
 interface OverdueSheet {
   id: string
@@ -28,6 +30,8 @@ interface OverdueSheet {
 export default function OverdueSubmissionsReport() {
   const [overdueSheets, setOverdueSheets] = useState<OverdueSheet[]>([])
   const [loading, setLoading] = useState(true)
+  const [reminding, setReminding] = useState<Set<string>>(new Set())
+  const [remindingAll, setRemindingAll] = useState(false)
   const [stats, setStats] = useState({
     total: 0,
     critical: 0,
@@ -126,6 +130,38 @@ export default function OverdueSubmissionsReport() {
     })
   }
 
+  async function remindOne(sheetId: string, silent = false): Promise<boolean> {
+    setReminding(prev => new Set(prev).add(sheetId))
+    try {
+      const res = await fetch(`/api/sheets/${sheetId}/remind`, { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        if (!silent) toast.error(data.error || 'Could not send reminder')
+        return false
+      }
+      if (!silent) toast.success(`Reminder sent to ${data.to}`)
+      return true
+    } catch {
+      if (!silent) toast.error('Could not send reminder')
+      return false
+    } finally {
+      setReminding(prev => { const next = new Set(prev); next.delete(sheetId); return next })
+    }
+  }
+
+  async function remindAll() {
+    setRemindingAll(true)
+    let sent = 0
+    let skipped = 0
+    for (const s of overdueSheets.slice(0, 50)) {
+      const ok = await remindOne(s.id, true)
+      if (ok) sent++
+      else skipped++
+    }
+    setRemindingAll(false)
+    toast.success(`${sent} reminder${sent === 1 ? '' : 's'} sent${skipped ? `, ${skipped} skipped (no open request)` : ''}`)
+  }
+
   const exportToCSV = () => {
     const headers = ['Product', 'Supplier', 'Status', 'Last Modified', 'Days Overdue', 'Urgency']
     const getUrgency = (days: number) => {
@@ -175,13 +211,13 @@ export default function OverdueSubmissionsReport() {
                 Overdue Submissions
               </h1>
               <p className="text-muted-foreground mt-1">
-                Questionnaires that have not been updated in over 7 days
+                Questionnaires that have not been updated in over 7 days. Suppliers are reminded automatically after 7 days, then weekly, up to 3 times.
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Mail className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={remindAll} disabled={loading || remindingAll || overdueSheets.length === 0}>
+              {remindingAll ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
               Send Reminders
             </Button>
             <Button onClick={exportToCSV} disabled={loading || overdueSheets.length === 0}>
@@ -274,8 +310,8 @@ export default function OverdueSubmissionsReport() {
                           {getUrgencyBadge(sheet.daysOverdue)}
                         </td>
                         <td className="text-center py-3 px-4">
-                          <Button size="sm" variant="outline">
-                            <Mail className="h-3 w-3 mr-1" />
+                          <Button size="sm" variant="outline" onClick={() => remindOne(sheet.id)} disabled={reminding.has(sheet.id) || remindingAll}>
+                            {reminding.has(sheet.id) ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Mail className="h-3 w-3 mr-1" />}
                             Remind
                           </Button>
                         </td>

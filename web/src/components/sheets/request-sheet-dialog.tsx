@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -75,6 +76,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
     selectedCustomQuestions: [] as string[],
     newSupplierEmail: '',
     newSupplierCompanyName: '',
+    message: '',
   })
   useEffect(() => {
     if (open) {
@@ -273,6 +275,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           requesting_from_id: supplierCompanyId,
           processed: false,
           created_by: user.id,
+          comment_requestor: formData.message.trim() || null,
         })
         .select()
         .single()
@@ -366,6 +369,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
               productName: formData.productName,
               requesterName: userData.full_name,
               requesterCompany: requesterCompany?.name,
+              message: formData.message.trim() || undefined,
             })
           })
         } catch (emailError) {
@@ -384,6 +388,7 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
           selectedCustomQuestions: [],
           newSupplierEmail: '',
           newSupplierCompanyName: '',
+          message: '',
         })
         setSupplierContacts([])
         onOpenChange(false)
@@ -630,6 +635,21 @@ export function RequestSheetDialog({ open, onOpenChange }: RequestSheetDialogPro
               />
               <p className="text-xs text-muted-foreground">
                 Select which question sets to include in this request
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="requestMessage">Message to Supplier</Label>
+              <Textarea
+                id="requestMessage"
+                placeholder="Optional. Context, deadline, or anything the supplier should know."
+                value={formData.message}
+                onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                disabled={submitting}
+                rows={3}
+                maxLength={2000}
+              />
+              <p className="text-xs text-muted-foreground">
+                Included in the request email and shown to the supplier on the sheet
               </p>
             </div>
             {/* Custom Questions Section */}

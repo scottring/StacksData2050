@@ -6,8 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Users, UserPlus, Loader2, Check, Mail } from 'lucide-react'
+import { Users, UserPlus, Loader2, Check, Mail, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface CompanyUser {
   id: string
@@ -37,6 +47,9 @@ const ROLE_COLORS: Record<string, string> = {
 export function CompanyUsers() {
   const [users, setUsers] = useState<CompanyUser[]>([])
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [removeTarget, setRemoveTarget] = useState<CompanyUser | null>(null)
+  const [removing, setRemoving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
   const [showForm, setShowForm] = useState(false)
@@ -53,6 +66,7 @@ export function CompanyUsers() {
         const data = await res.json()
         setUsers(data.users)
         setCurrentUserRole(data.currentUserRole)
+        setCurrentUserId(data.currentUserId ?? null)
       }
     } catch (err) {
       console.error('Failed to fetch users:', err)
@@ -88,6 +102,26 @@ export function CompanyUsers() {
       toast.error('Failed to add user')
     } finally {
       setAdding(false)
+    }
+  }
+
+  async function handleRemove() {
+    if (!removeTarget) return
+    setRemoving(true)
+    try {
+      const res = await fetch(`/api/settings/users?id=${encodeURIComponent(removeTarget.id)}`, { method: 'DELETE' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to remove user')
+        return
+      }
+      toast.success(`${removeTarget.full_name || removeTarget.email} removed`)
+      setRemoveTarget(null)
+      fetchUsers()
+    } catch {
+      toast.error('Failed to remove user')
+    } finally {
+      setRemoving(false)
     }
   }
 
@@ -208,15 +242,46 @@ export function CompanyUsers() {
                   <p className="text-xs text-slate-500 truncate">{user.email}</p>
                 </div>
               </div>
-              <Badge variant="outline" className={`text-xs border ${ROLE_COLORS[user.role || 'viewer'] || ROLE_COLORS.viewer}`}>
-                {user.is_super_admin ? 'Super Admin' : ROLE_LABELS[user.role || 'viewer'] || user.role}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className={`text-xs border ${ROLE_COLORS[user.role || 'viewer'] || ROLE_COLORS.viewer}`}>
+                  {user.is_super_admin ? 'Super Admin' : ROLE_LABELS[user.role || 'viewer'] || user.role}
+                </Badge>
+                {isAdmin && user.id !== currentUserId && !user.is_super_admin && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => setRemoveTarget(user)}
+                    title="Remove user"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
           {users.length === 0 && (
             <p className="text-sm text-slate-500 text-center py-8">No users found</p>
           )}
         </div>
+
+        <AlertDialog open={!!removeTarget} onOpenChange={open => { if (!open && !removing) setRemoveTarget(null) }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove {removeTarget?.full_name || removeTarget?.email}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                They will lose access to your company&apos;s account immediately. Sheets and requests they created are kept. You can add them again later with the same email.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={removing}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={(e) => { e.preventDefault(); handleRemove() }} disabled={removing} className="bg-red-600 hover:bg-red-700">
+                {removing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   )

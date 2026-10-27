@@ -3,7 +3,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pencil, ClipboardCheck, FileDown } from 'lucide-react'
+import { Pencil, ClipboardCheck, FileDown, MessageSquare, Lock } from 'lucide-react'
 import { BackButton } from '@/components/ui/back-button'
 import Link from 'next/link'
 import { TrackSheetView } from '@/components/trial/track-page-view'
@@ -31,6 +31,7 @@ interface ViewAnswer {
   list_table_column_id: string | null
   list_table_column_name: string | null
   list_table_column_order: number | null
+  concentration_restricted?: boolean | null
 }
 
 export default async function SheetViewPage({
@@ -52,7 +53,7 @@ export default async function SheetViewPage({
   // Fetch sheet info
   const { data: sheet } = await supabase
     .from('sheets')
-    .select('id, name, status, mark_as_archived, company_id, requesting_company_id, companies!sheets_company_id_fkey(name)')
+    .select('id, name, status, mark_as_archived, company_id, requesting_company_id, concentration_viewer_id, companies!sheets_company_id_fkey(name)')
     .eq('id', sheetId)
     .single()
 
@@ -277,7 +278,7 @@ export default async function SheetViewPage({
 
   // Render list table
   function renderListTable(answers: ViewAnswer[]) {
-    const rows = new Map<string, Map<string, string>>()
+    const rows = new Map<string, Map<string, string | null>>()
     const columns = new Map<string, { name: string; order: number }>()
 
     answers.forEach(a => {
@@ -285,7 +286,8 @@ export default async function SheetViewPage({
       if (!rows.has(a.list_table_row_id)) {
         rows.set(a.list_table_row_id, new Map())
       }
-      rows.get(a.list_table_row_id)!.set(a.list_table_column_id, formatAnswer(a))
+      // null marks a cell the supplier restricted to a named viewer
+      rows.get(a.list_table_row_id)!.set(a.list_table_column_id, a.concentration_restricted ? null : formatAnswer(a))
       if (!columns.has(a.list_table_column_id)) {
         columns.set(a.list_table_column_id, {
           name: a.list_table_column_name || 'Column',
@@ -310,9 +312,19 @@ export default async function SheetViewPage({
           <tbody>
             {Array.from(rows.entries()).map(([rowId, rowData]) => (
               <tr key={rowId} className="hover:bg-muted/50">
-                {sortedColumns.map(([colId]) => (
-                  <td key={colId} className="border px-3 py-2">{rowData.get(colId) || ''}</td>
-                ))}
+                {sortedColumns.map(([colId]) => {
+                  const cell = rowData.get(colId)
+                  return (
+                    <td key={colId} className="border px-3 py-2">
+                      {cell === null ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground italic">
+                          <Lock className="h-3 w-3" />
+                          Restricted
+                        </span>
+                      ) : (cell || '')}
+                    </td>
+                  )
+                })}
               </tr>
             ))}
           </tbody>
@@ -328,7 +340,7 @@ export default async function SheetViewPage({
   // First, find the request associated with this sheet
   const { data: request } = await supabase
     .from('requests')
-    .select('id, requestor_id')
+    .select('id, requestor_id, comment_requestor')
     .eq('sheet_id', sheetId)
     .single()
 
@@ -402,6 +414,14 @@ export default async function SheetViewPage({
     }
   }
 
+  // Name of the one person allowed to see concentrations (customer side note)
+  let concentrationViewerName: string | null = null
+  const concentrationRestrictedForMe = (answers || []).some((a: any) => a.concentration_restricted)
+  if (sheet.concentration_viewer_id && userCompanyId === sheet.requesting_company_id) {
+    const { data: viewer } = await supabase.from('users').select('full_name, email').eq('id', sheet.concentration_viewer_id).maybeSingle()
+    concentrationViewerName = viewer?.full_name || viewer?.email || null
+  }
+
   // Create a map for quick answer lookup
   const customAnswerMap = new Map(customAnswers.map(ca => [ca.company_question_id, ca.value]))
 
@@ -459,6 +479,31 @@ export default async function SheetViewPage({
           <span>{sortedQuestions.length} questions</span>
           {tagIds.length > 0 && <span>• {tagIds.length} tag(s) selected</span>}
         </div>
+
+        {/* Message the customer attached to the request */}
+        {request?.comment_requestor && (
+          <div className="p-4 rounded-lg bg-sky-50 border border-sky-200">
+            <div className="flex items-start gap-3">
+              <MessageSquare className="h-5 w-5 text-sky-600 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-sky-800">Message from {requestingCompanyName || 'the customer'}</h3>
+                <p className="text-sm text-sky-700 mt-1 whitespace-pre-wrap">{request.comment_requestor}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Concentration values restricted by the supplier */}
+        {sheet.concentration_viewer_id && userCompanyId === sheet.requesting_company_id && (
+          <div className="p-3 rounded-lg border bg-muted/30 flex items-center gap-3 text-sm">
+            <Lock className="h-4 w-4 text-muted-foreground" />
+            <span>
+              {concentrationRestrictedForMe
+                ? <>The supplier limited concentration values on this sheet to {concentrationViewerName ? <strong>{concentrationViewerName}</strong> : 'one named person'}. Other answers are unaffected.</>
+                : <>Concentration values on this sheet are visible only to you, as the person the supplier named.</>}
+            </span>
+          </div>
+        )}
 
         {/* Supplier documents (RDS / SDS) attached to the product as a whole */}
         <SheetDocuments sheetId={sheetId} />

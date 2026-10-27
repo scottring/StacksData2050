@@ -46,6 +46,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { requestId, sheetId, productName, requesterName, requesterCompany } = body
+    const message: string = typeof body.message === 'string' ? body.message.trim().slice(0, 2000) : ''
+    const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
     // Resolve supplier email: accept direct email or look up by company ID
     let supplierEmail = body.supplierEmail
@@ -134,6 +136,7 @@ export async function POST(request: Request) {
               <p>Hello${supplierName ? ` ${supplierName}` : ''},</p>
               <p><strong>${requesterName || 'A customer'}</strong>${requesterCompany ? ` from <strong>${requesterCompany}</strong>` : ''} has requested product compliance data for:</p>
               <p class="product-name">${productName}</p>
+              ${message ? `<div style="background:#f8f9fa;border-left:4px solid #0070f3;padding:12px 16px;margin:16px 0;white-space:pre-wrap;"><strong>Message from ${escapeHtml(requesterName || requesterCompany || 'your customer')}:</strong><br>${escapeHtml(message)}</div>` : ''}
               <p>Please click the button below to complete the questionnaire:</p>
               <p style="text-align: center;">
                 <a href="${respondUrl}" class="button">Complete Questionnaire</a>
@@ -158,7 +161,7 @@ Hello${supplierName ? ` ${supplierName}` : ''},
 ${requesterName || 'A customer'}${requesterCompany ? ` from ${requesterCompany}` : ''} has requested product compliance data for:
 
 ${productName}
-
+${message ? `\nMessage from ${requesterName || requesterCompany || 'your customer'}:\n${message}\n` : ''}
 Click here to complete the questionnaire: ${respondUrl}
 
 This email was sent by StacksData.

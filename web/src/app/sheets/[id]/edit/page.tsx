@@ -12,7 +12,7 @@ export default async function SheetEditPage({
   // Fetch sheet info
   const { data: sheet } = await supabase
     .from("sheets")
-    .select("id, name, status, company_id, companies!sheets_company_id_fkey(name)")
+    .select("id, name, status, company_id, requesting_company_id, concentration_viewer_id, companies!sheets_company_id_fkey(name)")
     .eq("id", sheetId)
     .single()
 
@@ -23,6 +23,14 @@ export default async function SheetEditPage({
         <p className="text-muted-foreground">The requested sheet could not be found.</p>
       </div>
     )
+  }
+
+  // Who is looking: the supplier (owner of the data) or the customer
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+  let isSupplier = false
+  if (authUser) {
+    const { data: me } = await supabase.from("users").select("company_id").eq("id", authUser.id).single()
+    isSupplier = !!me?.company_id && me.company_id === sheet.company_id
   }
 
   // === Fetch the sheet's tags ===
@@ -283,7 +291,7 @@ export default async function SheetEditPage({
   // First, find the request associated with this sheet
   const { data: request } = await supabase
     .from("requests")
-    .select("id, requestor_id, withdrawn_at")
+    .select("id, requestor_id, withdrawn_at, comment_requestor")
     .eq("sheet_id", sheetId)
     .single()
 
@@ -362,6 +370,10 @@ export default async function SheetEditPage({
       customAnswers={customAnswers}
       requestingCompanyName={requestingCompanyName}
       requestWithdrawn={!!request?.withdrawn_at}
+      requestMessage={request?.comment_requestor || ''}
+      isSupplier={isSupplier}
+      customerCompanyId={sheet.requesting_company_id}
+      concentrationViewerId={sheet.concentration_viewer_id}
     />
   )
 }

@@ -146,6 +146,29 @@ export async function getSheetExportData(
     `)
     .eq('sheet_id', sheetId)
 
+  // Mask concentration cells the supplier restricted to a named viewer
+  // (the sheet_answers_display view does this itself; this path reads
+  // answers directly, so apply the same rule here).
+  const { data: restricted } = await supabase.rpc('concentration_restricted', { target_sheet_id: sheetId })
+  if (restricted === true && answers) {
+    const colIds = new Set((answers || []).map(a => a.list_table_column_id).filter(Boolean) as string[])
+    const { data: cols } = colIds.size > 0
+      ? await supabase.from('list_table_columns').select('id, name').in('id', [...colIds])
+      : { data: [] }
+    const concCols = new Set((cols || []).filter(c => /conc/i.test(c.name || '')).map(c => c.id))
+    for (const a of answers) {
+      if (a.list_table_column_id && concCols.has(a.list_table_column_id)) {
+        a.text_value = 'Restricted'
+        a.text_area_value = null
+        a.number_value = null
+        a.boolean_value = null
+        a.date_value = null
+        a.choice_id = null
+        ;(a as any).choices = null
+      }
+    }
+  }
+
   // Create answer lookup by question ID.
   // Answers link to their question via question_id; fall back to the
   // parent/originating fields for legacy rows where question_id is null.

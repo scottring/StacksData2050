@@ -2385,6 +2385,8 @@ export type Database = {
           updated_at: string | null
           withdrawn_at: string | null
           withdrawn_by: string | null
+          last_reminder_at: string | null
+          reminder_count: number
         }
         Insert: {
           bubble_id?: string | null
@@ -2420,6 +2422,8 @@ export type Database = {
           updated_at?: string | null
           withdrawn_at?: string | null
           withdrawn_by?: string | null
+          last_reminder_at?: string | null
+          reminder_count?: number
         }
         Update: {
           bubble_id?: string | null
@@ -2455,6 +2459,8 @@ export type Database = {
           updated_at?: string | null
           withdrawn_at?: string | null
           withdrawn_by?: string | null
+          last_reminder_at?: string | null
+          reminder_count?: number
         }
         Relationships: [
           {
@@ -2930,6 +2936,7 @@ export type Database = {
           imported_processed: number | null
           imported_to_process: number | null
           mark_as_archived: boolean | null
+          concentration_viewer_id: string | null
           mark_as_test_sheet: boolean | null
           modified_at: string | null
           name: string
@@ -2972,6 +2979,7 @@ export type Database = {
           imported_processed?: number | null
           imported_to_process?: number | null
           mark_as_archived?: boolean | null
+          concentration_viewer_id?: string | null
           mark_as_test_sheet?: boolean | null
           modified_at?: string | null
           name: string
@@ -3014,6 +3022,7 @@ export type Database = {
           imported_processed?: number | null
           imported_to_process?: number | null
           mark_as_archived?: boolean | null
+          concentration_viewer_id?: string | null
           mark_as_test_sheet?: boolean | null
           modified_at?: string | null
           name?: string
@@ -3997,6 +4006,7 @@ export type Database = {
           list_table_column_id: string | null
           list_table_column_name: string | null
           list_table_column_order: number | null
+          concentration_restricted: boolean | null
           list_table_column_response_type: string | null
           list_table_row_id: string | null
           modified_at: string | null

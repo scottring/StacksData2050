@@ -33,7 +33,7 @@ export async function GET() {
       .not('email', 'ilike', '%placeholder%')
       .order('full_name')
 
-    return NextResponse.json({ users: users || [], currentUserRole: profile.role })
+    return NextResponse.json({ users: users || [], currentUserRole: profile.role, currentUserId: authUser.id })
   } catch (error: any) {
     console.error('Error fetching users:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
@@ -91,8 +91,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'User already belongs to your company' }, { status: 409 })
       }
 
-      // User exists in auth but different company or no profile -- update their profile
+      // User exists in auth but different company or no profile -- update their profile.
+      // A previously removed user is banned; lift the ban so they can log in again.
       authUserId = existingUser.id
+      await admin.auth.admin.updateUserById(authUserId, { ban_duration: 'none' })
     } else {
       // Create new auth user with a random temporary password
       const tempPassword = crypto.randomUUID() + '!A1' // meets complexity requirements
@@ -205,6 +207,72 @@ export async function POST(request: Request) {
     })
   } catch (error: any) {
     console.error('Error adding user:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+// DELETE: remove a user from the caller's company.
+// Not a hard delete: sheets, requests and answers keep created_by references to
+// users, so the profile row stays. The auth account is banned (cannot log in)
+// and the profile is detached from the company. Re-adding the same email via
+// POST reattaches and unbans.
+export async function DELETE(request: Request) {
+  try {
+    const supabase = await createClient()
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+
+    const { data: profile } = await supabase
+      .from('users')
+      .select('company_id, role, is_super_admin')
+      .eq('id', authUser.id)
+      .single()
+
+    if (!profile?.company_id) {
+      return NextResponse.json({ error: 'No company' }, { status: 400 })
+    }
+    if (profile.role !== 'admin' && !profile.is_super_admin) {
+      return NextResponse.json({ error: 'Only admins can remove users' }, { status: 403 })
+    }
+
+    const targetId = new URL(request.url).searchParams.get('id')
+    if (!targetId) return NextResponse.json({ error: 'id is required' }, { status: 400 })
+    if (targetId === authUser.id) {
+      return NextResponse.json({ error: 'You cannot remove yourself' }, { status: 400 })
+    }
+
+    const admin = createAdminClient()
+    const { data: target } = await admin
+      .from('users')
+      .select('id, email, company_id, is_super_admin')
+      .eq('id', targetId)
+      .single()
+
+    if (!target || target.company_id !== profile.company_id) {
+      return NextResponse.json({ error: 'User not found in your company' }, { status: 404 })
+    }
+    if (target.is_super_admin) {
+      return NextResponse.json({ error: 'Super admins cannot be removed here' }, { status: 403 })
+    }
+
+    const { error: banError } = await admin.auth.admin.updateUserById(targetId, { ban_duration: '876600h' })
+    if (banError) {
+      console.error('Error banning auth user:', banError)
+      return NextResponse.json({ error: banError.message }, { status: 500 })
+    }
+
+    const { error: detachError } = await admin
+      .from('users')
+      .update({ company_id: null, role: 'removed', is_company_main_contact: false })
+      .eq('id', targetId)
+    if (detachError) {
+      console.error('Error detaching user profile:', detachError)
+      return NextResponse.json({ error: detachError.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    console.error('Error removing user:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
